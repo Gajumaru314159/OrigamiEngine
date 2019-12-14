@@ -64,6 +64,7 @@ namespace OrigamiEngine {
 		// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Ì‰Šú‰»
 		if (DxLib_Init() < 0) return -1;
 
+
 		// •`‰ææ‚ğ— ‰æ–Ê‚Öİ’è
 		SetDrawScreen(DX_SCREEN_BACK);
 

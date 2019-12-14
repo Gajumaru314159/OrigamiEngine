@@ -6,9 +6,6 @@
 #include "EmptyTab.h"
 #include "ExplorerTab.h"
 
-#include <memory>
-
-
 
 namespace OrigamiEngine {
 	WindowManager::WindowManager() :
@@ -70,23 +67,28 @@ namespace OrigamiEngine {
 
 
 		// マウスカーソルの変更
-		if (m_CurrentCursor != m_NextCursor) {
+		static const auto arrow = LoadCursor(NULL, IDC_ARROW);
+		static const auto hand = LoadCursor(NULL, IDC_HAND);
+		static const auto sizens = LoadCursor(NULL, IDC_SIZENS);
+		static const auto sizewe = LoadCursor(NULL, IDC_SIZEWE);
+		
+		//if (m_CurrentCursor != m_NextCursor) {
 			switch (m_NextCursor) {
 			case ARROW:
-				SetClassLong(GetMainWindowHandle(), GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_ARROW));
+				SetCursor(arrow);
 				break;
 			case HAND:
-				SetClassLong(GetMainWindowHandle(), GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_HAND));
+				SetCursor(hand);
 				break;
 			case SIZENS:
-				SetClassLong(GetMainWindowHandle(), GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_SIZENS));
+				SetCursor(sizens);
 				break;
 			case SIZEWE:
-				SetClassLong(GetMainWindowHandle(), GCL_HCURSOR, (LONG)LoadCursor(NULL, IDC_SIZEWE));
+				SetCursor(sizewe);
 				break;
 			}
 			m_CurrentCursor = m_NextCursor;
-		}
+		//}
 		SetMouseCursor(ARROW);
 	}
 

@@ -26,7 +26,7 @@ namespace OrigamiEngine {
 		for (auto& tab : m_Tabs) {
 			std::wstring tabNameString = tab->GetTabName();
 			const wchar_t* tabName = tabNameString.c_str();
-			int tabW = GetDrawStringWidth(tabName, wcslen(tabName)) + 16 + 20;// 文字幅+余白16+クローズボタン20
+			int tabW = GetDrawStringWidth(tabName, (int)wcslen(tabName)) + 16 + 20;// 文字幅+余白16+クローズボタン20
 
 			// タブの描画
 			if (index == m_ActiveIndex) {

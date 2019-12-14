@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Prerequisites.h"
+#include "OrigamiAPI.h"
 
 namespace OrigamiEngine {
 	class UUID

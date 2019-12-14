@@ -28,7 +28,7 @@ namespace OrigamiEngine{
 	U32 AssetManager::AddAsset(SPtr<EntryAsset> asset)
 	{
 		long id = rand();
-		U32 size = GetInstance().m_AssetMap.size();
+		U32 size = (U32)GetInstance().m_AssetMap.size();
 		GetInstance().m_AssetMap.emplace(id,asset);
 
 		return id;
