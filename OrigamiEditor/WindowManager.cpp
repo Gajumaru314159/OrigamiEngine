@@ -72,23 +72,21 @@ namespace OrigamiEngine {
 		static const auto sizens = LoadCursor(NULL, IDC_SIZENS);
 		static const auto sizewe = LoadCursor(NULL, IDC_SIZEWE);
 		
-		//if (m_CurrentCursor != m_NextCursor) {
-			switch (m_NextCursor) {
-			case ARROW:
-				SetCursor(arrow);
-				break;
-			case HAND:
-				SetCursor(hand);
-				break;
-			case SIZENS:
-				SetCursor(sizens);
-				break;
-			case SIZEWE:
-				SetCursor(sizewe);
-				break;
-			}
-			m_CurrentCursor = m_NextCursor;
-		//}
+		switch (m_NextCursor) {
+		case ARROW:
+			SetCursor(arrow);
+			break;
+		case HAND:
+			SetCursor(hand);
+			break;
+		case SIZENS:
+			SetCursor(sizens);
+			break;
+		case SIZEWE:
+			SetCursor(sizewe);
+			break;
+		}
+		m_CurrentCursor = m_NextCursor;
 		SetMouseCursor(ARROW);
 	}
 

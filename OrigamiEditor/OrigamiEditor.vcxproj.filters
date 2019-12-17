@@ -189,5 +189,8 @@
     <ClInclude Include="OrigamiEngine.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="ITab.h">
+      <Filter>ソース ファイル\%40TabSystem\Tab</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
