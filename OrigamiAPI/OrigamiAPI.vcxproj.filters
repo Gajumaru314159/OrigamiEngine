@@ -28,6 +28,9 @@
     <Filter Include="ソース ファイル\Vector">
       <UniqueIdentifier>{e198bf6b-210e-4c3d-821c-1fe2f391df0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Input">
+      <UniqueIdentifier>{9cb19be1-adae-4213-aa0d-7e2234b60bd2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -60,6 +63,9 @@
     <ClInclude Include="Vector2.h">
       <Filter>ソース ファイル\Vector</Filter>
     </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>ソース ファイル\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OrigamiAPI.cpp">
@@ -76,6 +82,9 @@
     </ClCompile>
     <ClCompile Include="Random.cpp">
       <Filter>ソース ファイル\Random</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>ソース ファイル\Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

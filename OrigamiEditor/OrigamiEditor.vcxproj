@@ -174,7 +174,6 @@
     <ClCompile Include="EmptyTab.cpp" />
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="EntryAsset.cpp" />
-    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SplitContainer.cpp" />
     <ClCompile Include="SystemManager.cpp" />
@@ -194,7 +193,6 @@
     <ClInclude Include="EntryAsset.h" />
     <ClInclude Include="GUIMonoSkin.h" />
     <ClInclude Include="GUISkin.h" />
-    <ClInclude Include="Input.h" />
     <ClInclude Include="ITab.h" />
     <ClInclude Include="ITabBuilder.h" />
     <ClInclude Include="OrigamiEngine.h" />
