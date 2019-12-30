@@ -1,8 +1,6 @@
-#include "SplitContainer.h"
-
-#include <algorithm>
-
 #include <DxLib.h>
+
+#include "SplitContainer.h"
 
 #include "Input.h"
 #include "WindowManager.h"

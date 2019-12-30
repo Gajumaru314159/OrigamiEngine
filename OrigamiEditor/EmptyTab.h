@@ -1,14 +1,19 @@
+/**
+* @file EmptyTab.h
+*/
 #pragma once
 
-#include "Tab.h"
-
+#include "ITab.h"
 
 
 namespace OrigamiEngine {
-	class EmptyTab :public Tab {
+	/**
+	* @brief 何も表示しない空のタブ。
+	*/
+	class EmptyTab :public ITab {
 	public:
 		EmptyTab();
 
-		void OnGUI()override;
+		virtual void OnGUI(ITabBuilder& tabBuilder);
 	};
 }

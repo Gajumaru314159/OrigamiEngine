@@ -3,29 +3,34 @@
 #include "Prerequisites.h"
 
 namespace OrigamiEngine {
-	class Vector4
+
+	/**
+	* @brief 3次元ベクトルのクラス。
+	*/
+	class Vector3
 	{
 	public:
-		//! 各ベクトルの値
-		F32 x, y, z, w;
+		//! @brief ベクトルのX値
+		F32 x;
+		//! @brief ベクトルのY値
+		F32 y;
+		//! @brief ベクトルのZ値
+		F32 z;
 
 
 		/**
-		* @brief 四次元ベクトルの作成
-		* @param x
-		* @param y
-		* @param z
-		* @param w
+		* @brief 3次元ベクトルの作成
 		*/
-		Vector4(F32 _x, F32 _y, F32 _z, F32 _w) :x(_x), y(_y), z(_z), w(_w) {}
+		Vector3(F32 _x, F32 _y, F32 _z) :x(_x), y(_y), z(_z) {}
 
 		/**
-		* @brief 引数なしのコンストラクタではゼロベクトルで初期化される
+		* @brief 3次元ベクトルの作成
+		* @details 引数なしのコンストラクタではゼロベクトルで初期化される
 		*/
-		Vector4() :Vector4(0, 0, 0, 0) {}
+		Vector3() :Vector3(0, 0, 0) {}
 
 
-		inline Vector4& operator = (const Vector4& v)
+		inline Vector3& operator = (const Vector3& v)
 		{
 			x = v.x;
 			y = v.y;
@@ -34,114 +39,124 @@ namespace OrigamiEngine {
 			return *this;
 		}
 
-		inline bool operator == (const Vector4& v) const
+		inline bool operator == (const Vector3& v) const
 		{
 			return (x == v.x && y == v.y && z == v.z);
 		}
 
-		inline bool operator != (const Vector4 & v) const
+		inline bool operator != (const Vector3 & v) const
 		{
 			return (x != v.x || y != v.y || z != v.z);
 		}
 
-		inline Vector4 operator + (const Vector4 & v) const
+		inline bool operator < (const Vector3& v) const
 		{
-			return Vector4(x + v.x, y + v.y, z + v.z, w + v.w);
+			return (x < v.x && y < v.y && z < v.z);
 		}
 
-		inline Vector4 operator - (const Vector4 & v) const
+		inline bool operator > (const Vector3& v) const
 		{
-			return Vector4(x - v.x, y - v.y, z - v.z, w - v.w);
+			return (x > v.x&& y > v.y&& z > v.z);
 		}
 
-		inline Vector4 operator * (float f) const
+		inline Vector3 operator + (const Vector3 & v) const
 		{
-			return Vector4(x * f, y * f, z * f, w * f);
+			return Vector3(x + v.x, y + v.y, z + v.z);
 		}
 
-		inline Vector4 operator * (const Vector4 & v) const
+		inline Vector3 operator - (const Vector3 & v) const
 		{
-			return Vector4(x * v.x, y * v.y, z * v.z, w * v.w);
+			return Vector3(x - v.x, y - v.y, z - v.z);
 		}
 
-		inline Vector4 operator / (float f) const
+		inline Vector3 operator * (float f) const
+		{
+			return Vector3(x * f, y * f, z * f);
+		}
+
+		inline Vector3 operator * (const Vector3 & v) const
+		{
+			return Vector3(x * v.x, y * v.y, z * v.z);
+		}
+
+		inline Vector3 operator / (float f) const
 		{
 			f = 1.0f / f;
-			return Vector4(x * f, y * f, z * f, w * f);
+			return Vector3(x * f, y * f, z * f);
 		}
 
-		inline Vector4 operator - () const
+		inline Vector3 operator - () const
 		{
-			return Vector4(-x, -y, -z, -w);
+			return Vector3(-x, -y, -z);
 		}
 
-		inline friend Vector4 operator * (float f, const Vector4 & v)
+		inline friend Vector3 operator * (float f, const Vector3 & v)
 		{
-			return Vector4(f * v.x, f * v.y, f * v.z, f * v.w);
+			return Vector3(f * v.x, f * v.y, f * v.z);
 		}
 
-		// arithmetic updates
-		inline Vector4& operator += (const Vector4 & v)
+		inline Vector3& operator += (const Vector3 & v)
 		{
 			x += v.x;
 			y += v.y;
 			z += v.z;
-			w += v.w;
 
 			return *this;
 		}
 
-		inline Vector4& operator -= (const Vector4 & v)
+		inline Vector3& operator -= (const Vector3 & v)
 		{
 			x -= v.x;
 			y -= v.y;
 			z -= v.z;
-			w -= v.w;
 
 			return *this;
 		}
 
-		inline Vector4& operator *= (float f)
+		inline Vector3& operator *= (float f)
 		{
 			x *= f;
 			y *= f;
 			z *= f;
-			w *= f;
+
 			return *this;
 		}
 
-		inline Vector4& operator /= (float f)
+		inline Vector3& operator /= (float f)
 		{
 			f = 1.0f / f;
 
 			x *= f;
 			y *= f;
 			z *= f;
-			w *= f;
 
 			return *this;
 		}
 
+		/**
+		* @brief ベクトルの長さ。
+		*/
 		inline float Length() const
 		{
 			return (float)sqrt(SquaredLength());
 		}
 
+		/**
+		* @brief ベクトルの長さの二乗。
+		*/
 		inline float SquaredLength() const
 		{
-			return x * x + y * y + z * z + w * w;
+			return x * x + y * y + z * z;
 		}
 
-		inline float Dot(const Vector4 & v) const
-		{
-			return x * v.x + y * v.y + z * v.z + w * v.w;
-		}
-
-		inline Vector4& Normalise()
+		/**
+		* @brief ベクトルを正規化する。
+		*/
+		inline Vector3& Normalise()
 		{
 			float f = (float)sqrt(SquaredLength());
 
-			// Will also work for zero-sized vectors, but will change nothing
+			// 0ベクトルの場合は何もしない
 			if (f > 1e-06f)
 			{
 				f = 1.0f / f;
@@ -153,19 +168,21 @@ namespace OrigamiEngine {
 			return *this;
 		}
 
-		inline Vector4 Cross(const Vector4 & v) const
+		/**
+		* @brief 二つのベクトルの内積を計算する。
+		*/
+		static float Dot(const Vector3& a, const Vector3& b)
 		{
-			return Vector4(y * v.z - z * v.y, z * v.w - w * v.z, w * v.x - x * v.w, x * v.y - y * v.x);
+			return a.x * b.x + a.y * b.y + a.z * b.z;
 		}
 
-		inline bool operator < (const Vector4 & v) const
-		{
-			return (x < v.x && y < v.y && z < v.z && w < v.w);
-		}
 
-		inline bool operator > (const Vector4 & v) const
+		/**
+		* @brief 二つのベクトルの外積を計算する。
+		*/
+		static Vector3 Cross(const Vector3 & a,const Vector3& b)
 		{
-			return (x > v.x && y > v.y && z > v.z && w > v.w);
+			return Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 		}
 	};
 }

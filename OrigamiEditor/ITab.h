@@ -1,14 +1,20 @@
 #pragma once
 
-#include "Prerequisites.h"
+#include "OrigamiAPI.h"
+#include "ITabBuilder.h"
 
 namespace OrigamiEngine {
-	class ITab {
+	class ITab
+	{
+	public:
+		String GetTabName() { return m_TabName; };
+
+		virtual void OnGUI(ITabBuilder& tabBuilder) = 0;
+
 	protected:
-		virtual bool PlaceRepeatButton()=0;
-		virtual void PlaceSpace()=0;
-		virtual bool PlaceToggle()=0;
-		virtual String PlaceTextField()=0;
-		virtual String PlaceTextArea()=0;
+		String m_TabName = L"No Name";
+	private:
+		Rect m_TabRect;
+		I32 m_Y;
 	};
 }

@@ -1,8 +1,8 @@
-#include "UUID.h"
+#include "GUID.h"
 
 namespace OrigamiEngine {
 
-	UUID::UUID()
+	GUID::GUID()
 	{
 		a = Random::GetU32();
 		b = Random::GetU32();
@@ -10,16 +10,16 @@ namespace OrigamiEngine {
 		d = Random::GetU32();
 	}
 
-	UUID::UUID(String str)
+	GUID::GUID(String str)
 	{
 
 	}
 
 	/**
 	* @brief データを文字列として取り出す。"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"形式
-	* @return String形式のUUID
+	* @return String形式のGUID
 	*/
-	String UUID::ToString()
+	String GUID::ToString()
 	{
 		wchar_t buffer[64] = {};
 		swprintf_s(buffer,64, L"%8.X-%8.X-%8.X-%8.X", a,b,c,d);
@@ -27,7 +27,7 @@ namespace OrigamiEngine {
 	}
 
 	// 比較演算子
-	bool UUID::operator==(const UUID& an)
+	bool GUID::operator==(const GUID& an)
 	{
 		return
 			a == an.a &&
@@ -36,7 +36,7 @@ namespace OrigamiEngine {
 			d == an.d;
 	}
 
-	bool UUID::operator!=(const UUID& an)
+	bool GUID::operator!=(const GUID& an)
 	{
 		return
 			a != an.a ||

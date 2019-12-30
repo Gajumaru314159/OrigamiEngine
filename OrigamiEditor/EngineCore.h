@@ -1,16 +1,17 @@
+/**
+* @file EngineCore.h
+*/
 #pragma once
 
 
 
 namespace OrigamiEngine {
+	/**
+	* @brief ゲームエディタを起動するためのクラス。
+	*/
 	class EngineCore
 	{
 	public:
-		EngineCore(const EngineCore&) = delete;
-		EngineCore& operator=(const EngineCore&) = delete;
-		EngineCore(EngineCore&&) = delete;
-		EngineCore& operator=(EngineCore&&) = delete;
-
 		static EngineCore& GetInstance() {
 			static EngineCore enginCore;
 			return enginCore;

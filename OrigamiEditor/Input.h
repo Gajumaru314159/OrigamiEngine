@@ -1,15 +1,38 @@
+/**
+* @file Input.h
+*/
 #pragma once
 
-#include "Prerequisites.h"
+#include "OrigamiAPI.h"
 
 
 
 namespace OrigamiEngine {
+	/**
+	* @brief 入力システムのマネージャ。
+	* @details マウス、キーボード、ゲームパッドの入力を検知する。入力に別名をつけることによって複数の入力をまとめて扱うこともできる。
+	*/
 	class Input :public Singleton<Input>
 	{
 		friend class Singleton<Input>;
 	public:
+		//! @brief マウスの左ボタンの番号
+		static int LEFT;
+		//! @brief マウスの右ボタンの番号
+		static int RIGHT;
+		//! @brief マウスの中ボタンの番号
+		static int MIDDLE;
+
+		/**
+		* @brief 入力の更新処理。
+		*/
 		void Update();
+
+		/**
+		* @brief 指定したマウスのボタンの押されている時間を取得する。
+		* @param num マウスのボタン坂東
+		* @return おされている時間(ms)
+		*/
 		int GetMouseButtonPressedTime(const unsigned int num);
 
 

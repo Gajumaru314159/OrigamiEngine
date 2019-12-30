@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Prerequisites.h"
+#include "Vector2.h"
 
 namespace OrigamiEngine {
 	/**
@@ -13,19 +14,12 @@ namespace OrigamiEngine {
 	{
 	public:
 		Rect();
-		Rect(I32 _top, I32 _bottom, I32 _left, I32 _right);
+		Rect(F32 _x, F32 _y, F32 _width, F32 _height);
 
-		//! 上座標。
-		I32 top;
-		//! 下座標。
-		I32 bottom;
-		//! 左座標。
-		I32 left;
-		//! 右座標。
-		I32 right;
+		//! 矩形の左上座標。
+		Vector2 position;
 
-
-		/*I32 GetWidth()const;
-		I32 GetHeight()const;*/
+		//! 矩形のサイズ
+		Vector2 size;
 	};
 }

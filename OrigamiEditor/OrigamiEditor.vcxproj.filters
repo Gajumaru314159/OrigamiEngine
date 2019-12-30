@@ -32,9 +32,6 @@
     <Filter Include="ソース ファイル\%40Asset\EntryAsset">
       <UniqueIdentifier>{78d2b09d-d4a2-4dfe-8011-cef049217b6b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\%40TabSystem\ExplorerTab">
-      <UniqueIdentifier>{8e08b705-9c12-4b33-b0d4-fef668307e6e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\%40GUILayout\Skin">
       <UniqueIdentifier>{d8debd85-42c0-4e3c-9633-f8bce9d60d6e}</UniqueIdentifier>
     </Filter>
@@ -68,11 +65,14 @@
     <Filter Include="ソース ファイル\%40System\WindowManager">
       <UniqueIdentifier>{7c5a9e4a-9c7d-47cf-9b71-87b522ae1f13}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\%40Utility\UUID">
-      <UniqueIdentifier>{1d730a1c-a3dc-40ab-b22f-c1a346d8bc19}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\%40System\Input">
       <UniqueIdentifier>{0320bbe9-b359-4ca7-b4be-109f15fe6f4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\%40TabSystem\TabBuilder">
+      <UniqueIdentifier>{0a50f27a-eaec-481a-8f7b-1067dc592ea1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\%40Utility\GUID">
+      <UniqueIdentifier>{1d730a1c-a3dc-40ab-b22f-c1a346d8bc19}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -112,20 +112,17 @@
     <ClCompile Include="WindowManager.cpp">
       <Filter>ソース ファイル\%40System\WindowManager</Filter>
     </ClCompile>
-    <ClCompile Include="ExplorerTab.cpp">
-      <Filter>ソース ファイル\%40TabSystem\ExplorerTab</Filter>
-    </ClCompile>
     <ClCompile Include="SplitContainer.cpp">
       <Filter>ソース ファイル\%40TabSystem\SplitContainer</Filter>
-    </ClCompile>
-    <ClCompile Include="Tab.cpp">
-      <Filter>ソース ファイル\%40TabSystem\Tab</Filter>
     </ClCompile>
     <ClCompile Include="TabContainer.cpp">
       <Filter>ソース ファイル\%40TabSystem\TabContainer</Filter>
     </ClCompile>
-    <ClCompile Include="UUID.cpp">
-      <Filter>ソース ファイル\%40Utility\UUID</Filter>
+    <ClCompile Include="TabBuilder.cpp">
+      <Filter>ソース ファイル\%40TabSystem\TabBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="GUID.cpp">
+      <Filter>ソース ファイル\%40Utility\GUID</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -168,14 +165,8 @@
     <ClInclude Include="WindowManager.h">
       <Filter>ソース ファイル\%40System\WindowManager</Filter>
     </ClInclude>
-    <ClInclude Include="ExplorerTab.h">
-      <Filter>ソース ファイル\%40TabSystem\ExplorerTab</Filter>
-    </ClInclude>
     <ClInclude Include="SplitContainer.h">
       <Filter>ソース ファイル\%40TabSystem\SplitContainer</Filter>
-    </ClInclude>
-    <ClInclude Include="Tab.h">
-      <Filter>ソース ファイル\%40TabSystem\Tab</Filter>
     </ClInclude>
     <ClInclude Include="TabContainer.h">
       <Filter>ソース ファイル\%40TabSystem\TabContainer</Filter>
@@ -183,14 +174,20 @@
     <ClInclude Include="SystemColor.h">
       <Filter>ソース ファイル\%40Utility\%40Constants</Filter>
     </ClInclude>
-    <ClInclude Include="UUID.h">
-      <Filter>ソース ファイル\%40Utility\UUID</Filter>
-    </ClInclude>
     <ClInclude Include="OrigamiEngine.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="ITab.h">
       <Filter>ソース ファイル\%40TabSystem\Tab</Filter>
+    </ClInclude>
+    <ClInclude Include="ITabBuilder.h">
+      <Filter>ソース ファイル\%40TabSystem\TabBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="TabBuilder.h">
+      <Filter>ソース ファイル\%40TabSystem\TabBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="GUID.h">
+      <Filter>ソース ファイル\%40Utility\GUID</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -39,7 +39,7 @@ namespace OrigamiEngine {
 		// 描画エリア外は判定を除外する。
 		RECT rect;
 		GetDrawArea(&rect);
-		if (mouseX<rect.left||rect.right<=mouseX||mouseY<rect.top||rect.bottom<=mouseY)
+		if (mouseX < rect.left || rect.right <= mouseX || mouseY < rect.top || rect.bottom <= mouseY)
 		{
 			return false;
 		}
@@ -66,5 +66,10 @@ namespace OrigamiEngine {
 	{
 		return (GetMouseButtonDown(num) && GetMouseHover(x1, y1, x2, y2));
 	}
+
+
+	int Input::LEFT = 0;
+	int Input::RIGHT = 1;
+	int Input::MIDDLE = 2;
 
 }

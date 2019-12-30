@@ -4,11 +4,7 @@
 
 #pragma once
 
-#include <vector>
-#include <memory>
-#include <string>
-
-#include "Prerequisites.h"
+#include "OrigamiAPI.h"
 
 #include "EntryAsset.h"
 
@@ -19,6 +15,10 @@ namespace OrigamiEngine {
 	*/
 	class DirectoryAsset :public EntryAsset {
 	public:
+		/**
+		* @brief 指定したパスをディレクトリアセットとして読み込む。
+		* @param path 読み込むディレクトリのパス。
+		*/
 		DirectoryAsset(String path);
 
 
@@ -32,16 +32,18 @@ namespace OrigamiEngine {
 		* @brief 子要素をリストで取得する。
 		*/
 		const ArrayList<SPtr<EntryAsset>>& GetChildren();
+
+		/**
+		* @brief このディレクトリ以下のアセットを再帰的に読み込む。
+		*/
 		void LoadChildEntries();
 
 		/**
-		* @brief 子要素にディレクトリを含むかどうか
+		* @brief 子要素にディレクトリを含むかどうかを調べる。
 		*/
 		bool HasDirectory();
 	private:
-		// サムネ
-
-		//! 子要素のリスト
+		// 子要素のリスト
 		ArrayList<SPtr<EntryAsset>> m_Children;
 	};
 }

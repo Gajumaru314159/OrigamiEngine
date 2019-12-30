@@ -32,11 +32,12 @@ namespace OrigamiEngine {
 	}
 
 	String Path::Extension() {
-		auto pos = m_Path.rfind(L".");
+		String fileName = FileName();
+		auto pos = fileName.rfind(L".");
 		if (pos == std::string::npos) {
 			return L"";
 		}
-		return m_Path.substr(pos);
+		return fileName.substr(pos);
 	}
 
 	String Path::Directory() {

@@ -2,13 +2,13 @@
 
 namespace OrigamiEngine {
 	EntryAsset::EntryAsset(String path) :
-		m_Path(path),
-		m_UUID()
+		m_Path(path)//,
+		//m_GUID()
 	{
 		// メタファイルの生成
 
-		// UUIDの生成
-		String s = m_UUID.ToString();
+		// GUIDの生成
+		//String s = m_GUID.ToString();
 	}
 
 	const String EntryAsset::GetPath()

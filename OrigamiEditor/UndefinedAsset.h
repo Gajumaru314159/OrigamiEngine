@@ -20,7 +20,5 @@ namespace OrigamiEngine {
 		* @brief コンストラクタ。
 		*/
 		UndefinedAsset(String path) :EntryAsset(path) {}
-	protected:
-	private:
 	};
 }

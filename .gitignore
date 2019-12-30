@@ -148,3 +148,5 @@ $RECYCLE.BIN/
 .DS_Store
 *.db
 Data/デザイン/
+.vs/OrigamiEngine/v16/Browse.VC.opendb
+Document/

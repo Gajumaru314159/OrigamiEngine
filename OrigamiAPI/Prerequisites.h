@@ -1,7 +1,7 @@
 /**
 * @file Prerequisites.h
 * @brief すべてのファイルに共通して読み込むべきヘッダ。
-* @details プリミティブ型のリネームやSTLのリネームを行う。
+* @details プリミティブ型のリネームやSTLのリネームを行う。通常API使用時はこちらではなくOrigamiAPI.hを読み込む。
 */
 
 #pragma once
@@ -56,3 +56,5 @@ namespace OrigamiEngine {
 #define MUPtr std::make_unique
 		;
 }
+
+using namespace OrigamiEngine;

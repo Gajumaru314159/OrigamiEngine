@@ -3,11 +3,10 @@
 */
 
 #pragma once
-#include <filesystem>
 
 #include "OrigamiAPI.h"
 
-#include "UUID.h"
+//#include "GUID.h"
 
 namespace OrigamiEngine {
 
@@ -23,7 +22,6 @@ namespace OrigamiEngine {
 		* @param path	アセットのパス。
 		*/
 		EntryAsset(String path);
-
 
 		/**
 		* @brief アセットのパスを取得。
@@ -41,10 +39,10 @@ namespace OrigamiEngine {
 		void SetName(String name);
 
 	protected:
-		//! アセットのパス。
+		// アセットのパス。
 		Path m_Path;
 	private:
-		//! アセット固有のID。
-		UUID m_UUID;
+		// アセット固有のID。
+		//GUID m_GUID;
 	};
 }

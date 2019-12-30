@@ -1,8 +1,14 @@
+/**
+* @file SystemManager.h
+*/
 #pragma once
 
 #include "Prerequisites.h"
 
 namespace OrigamiEngine{
+	/**
+	* @brief システムマネージャ
+	*/
 	class SystemManager :public Singleton<SystemManager>
 	{
 		friend class Singleton<SystemManager>;

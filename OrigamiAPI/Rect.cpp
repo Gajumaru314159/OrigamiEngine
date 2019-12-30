@@ -2,22 +2,10 @@
 #include "Rect.h"
 
 namespace OrigamiEngine {
-	Rect::Rect(I32 _top, I32 _bottom, I32 _left, I32 _right) :
-		top(_top),
-		bottom(_bottom), 
-		left(_left), 
-		right(_right)
+	Rect::Rect(F32 _x, F32 _y, F32 _width, F32 _height) :
+		position(_x,_y),
+		size(_width,_height)
 	{};
 
-	Rect::Rect() :Rect(0, 0, 0, 0) {};
-
-	/*I32 Rect::GetWidth()const
-	{
-		return right - left;
-	}
-
-	I32 Rect::GetHeight()const
-	{
-		return bottom - top;
-	}*/
+	Rect::Rect() :Rect(0, 0, 10, 10) {};
 }

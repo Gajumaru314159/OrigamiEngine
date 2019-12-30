@@ -25,6 +25,9 @@
     <Filter Include="ソース ファイル\Random">
       <UniqueIdentifier>{b7cdb3cb-edff-4bda-8029-d3a1a53607a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Vector">
+      <UniqueIdentifier>{e198bf6b-210e-4c3d-821c-1fe2f391df0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -50,6 +53,12 @@
     </ClInclude>
     <ClInclude Include="Random.h">
       <Filter>ソース ファイル\Random</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>ソース ファイル\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>ソース ファイル\Vector</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

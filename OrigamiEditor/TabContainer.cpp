@@ -1,11 +1,13 @@
+#include <DxLib.h>
+
 #include "TabContainer.h"
 
-#include <DxLib.h>
 
 #include "WindowManager.h"
 #include "Input.h"
 
 #include "EmptyTab.h"
+#include "TabBuilder.h"
 
 using namespace std;
 
@@ -59,11 +61,11 @@ namespace OrigamiEngine {
 		DrawBox(x, y + tabH, x + width, y + height, GetColor(94, 94, 94), FALSE);
 
 		// タブコンテンツの描画
-		m_Tabs.at(m_ActiveIndex)->SetRect( y + tabH + 1, y + height - 1,x+1, x + width - 1);
-		m_Tabs.at(m_ActiveIndex)->OnGUI();
+		TabBuilder::GetInstance().BeginDraw(x + 1, y + tabH + 1,  width - 2, height - 2);
+		m_Tabs.at(m_ActiveIndex)->OnGUI(TabBuilder::GetInstance());
 	}
 
-	void TabContainer::AddTab(std::unique_ptr<Tab>&& tab, const unsigned int index) {
+	void TabContainer::AddTab(std::unique_ptr<ITab>&& tab, const unsigned int index) {
 		if (index < 0 || m_Tabs.size() < index) {
 			m_Tabs.emplace_back(std::move(tab));
 		}

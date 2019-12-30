@@ -7,6 +7,9 @@
 
 namespace OrigamiEngine {
 	namespace GUILayout {
+		/**
+		* @brief エディターのGUIを構成するコンポーネントのクラス。
+		*/
 		class Component
 		{
 		public:
@@ -29,15 +32,11 @@ namespace OrigamiEngine {
 
 			/**
 			* @brief コンポーネントの最小サイズを設定。
-			* @param 横幅。
-			* @param 高さ。
 			*/
 			void SetMinimumSize(U32 width, U32 height);
 
 			/**
 			* @brief コンポーネントの最大サイズを設定。
-			* @param 横幅。
-			* @param 高さ。
 			*/
 			void SetMaximumSize(U32 width, U32 height);
 
@@ -54,22 +53,22 @@ namespace OrigamiEngine {
 			*/
 			U32 GetHeight();
 		private:
-			//! 描画処理が有効か
+			// 描画処理が有効か
 			bool m_IsEnable;
 
-			//! コンポーネントの横幅
+			// コンポーネントの横幅
 			U32 m_Width;
-			//! コンポーネントの高さ
+			// コンポーネントの高さ
 			U32 m_Height;
 
-			//! コンポーネントの最小の横幅
+			// コンポーネントの最小の横幅
 			U32 m_MinWidth;
-			//! コンポーネントの最小の高さ
+			// コンポーネントの最小の高さ
 			U32 m_MinHeight;
 
-			//! コンポーネントの最大の横幅
+			// コンポーネントの最大の横幅
 			U32 m_MaxWidth;
-			//! コンポーネントの最大の高さ
+			// コンポーネントの最大の高さ
 			U32 m_MaxHeight;
 		};
 	}

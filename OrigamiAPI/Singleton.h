@@ -1,10 +1,19 @@
+/**
+* @file Singleton.h
+*/
 #pragma once
 
 namespace OrigamiEngine {
+	/**
+	* @brief シングルトンパターンのテンプレート。
+	*/
 	template <class T>
 	class Singleton
 	{
 	public:
+		/**
+		* @brief インスタンスの取得。
+		*/
 		static T& GetInstance()
 		{
 			static typename T::singleton_pointer_type s_singleton(T::createInstance());

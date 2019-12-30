@@ -1,6 +1,6 @@
-#include "SystemManager.h"
-
 #include "DxLib.h"
+
+#include "SystemManager.h"
 
 namespace OrigamiEngine {
 

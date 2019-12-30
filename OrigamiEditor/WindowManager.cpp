@@ -1,10 +1,10 @@
+#include <DxLib.h>
+
 #include "WindowManager.h"
 
-#include <DxLib.h>
 
 #include "TabContainer.h"
 #include "EmptyTab.h"
-#include "ExplorerTab.h"
 
 
 namespace OrigamiEngine {
@@ -43,18 +43,13 @@ namespace OrigamiEngine {
 
 		auto tc2 = MUPtr<TabContainer>();
 		{
-			tc2->AddTab(MUPtr<ExplorerTab>(m_WindowTex));
+			tc2->AddTab(MUPtr<EmptyTab>());
 		}
 
 		m_Container.AddContainer(std::move(tc2), 1.0f);
 		m_Container.AddContainer(std::move(sc1), 0.6f);
 
 		m_Container.SetIsVertical(true);
-	}
-
-
-	WindowManager::~WindowManager()
-	{
 	}
 
 	void WindowManager::Update() {

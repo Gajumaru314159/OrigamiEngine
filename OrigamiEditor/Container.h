@@ -1,9 +1,15 @@
+/**
+* @file Container.h
+*/
 #pragma once
 #include "Container.h"
 
 
 
 namespace OrigamiEngine {
+	/**
+	* @brief タブを保持することのできるコンテナ。
+	*/
 	class Container {
 	public:
 		Container();

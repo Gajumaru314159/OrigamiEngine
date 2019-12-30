@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Prerequisites.h"
+#include "OrigamiAPI.h"
 
 #include "DirectoryAsset.h"
 
@@ -25,7 +25,7 @@ namespace OrigamiEngine {
 
 
 		/**
-		* @brief ルートディレクトリの取得
+		* @brief ルートディレクトリの取得。
 		*/
 		static DirectoryAsset& GetRootDirectory();
 
