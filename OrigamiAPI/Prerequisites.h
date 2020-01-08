@@ -47,7 +47,6 @@ namespace OrigamiEngine {
 	template<class T>
 	using ArrayList = std::vector<T>;
 
-
 	template<class T>
 	using Queue = std::queue<T>;
 

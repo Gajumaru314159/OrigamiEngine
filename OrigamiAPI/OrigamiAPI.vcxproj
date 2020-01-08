@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="OrigamiAPI.h" />
     <ClInclude Include="Path.h" />
     <ClInclude Include="pch.h" />
@@ -181,6 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="OrigamiAPI.cpp" />
     <ClCompile Include="Path.cpp" />
     <ClCompile Include="pch.cpp">

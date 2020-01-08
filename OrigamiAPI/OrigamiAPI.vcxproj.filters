@@ -27,8 +27,8 @@
     <Filter Include="ソース ファイル\Input">
       <UniqueIdentifier>{9cb19be1-adae-4213-aa0d-7e2234b60bd2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Public">
-      <UniqueIdentifier>{c5833a59-53be-4d8e-83e7-3bfb0329f986}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\Object">
+      <UniqueIdentifier>{216d1a60-94ce-44ae-92d9-b5279fb24a30}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +65,9 @@
     <ClInclude Include="OrigamiAPI.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>ソース ファイル\Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -84,6 +87,9 @@
     </ClCompile>
     <ClCompile Include="OrigamiAPI.cpp">
       <Filter>必須ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
