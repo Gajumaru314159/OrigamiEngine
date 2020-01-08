@@ -5,7 +5,6 @@
 
 #include "ITab.h"
 
-
 namespace OrigamiEngine {
 	/**
 	* @brief 何も表示しない空のタブ。

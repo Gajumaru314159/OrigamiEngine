@@ -5,10 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="必須ファイル">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
@@ -31,6 +27,9 @@
     <Filter Include="ソース ファイル\Input">
       <UniqueIdentifier>{9cb19be1-adae-4213-aa0d-7e2234b60bd2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Public">
+      <UniqueIdentifier>{c5833a59-53be-4d8e-83e7-3bfb0329f986}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -38,9 +37,6 @@
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>必須ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="OrigamiAPI.h">
-      <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Path.h">
       <Filter>ソース ファイル\Path</Filter>
@@ -66,11 +62,11 @@
     <ClInclude Include="Rect.h">
       <Filter>ソース ファイル\Rect</Filter>
     </ClInclude>
+    <ClInclude Include="OrigamiAPI.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OrigamiAPI.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>必須ファイル</Filter>
     </ClCompile>
@@ -85,6 +81,9 @@
     </ClCompile>
     <ClCompile Include="Rect.cpp">
       <Filter>ソース ファイル\Rect</Filter>
+    </ClCompile>
+    <ClCompile Include="OrigamiAPI.cpp">
+      <Filter>必須ファイル</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

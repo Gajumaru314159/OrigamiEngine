@@ -168,17 +168,17 @@
     <ClInclude Include="OrigamiEngine.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ITab.h">
-      <Filter>ソース ファイル\%40TabSystem\Tab</Filter>
-    </ClInclude>
-    <ClInclude Include="ITabBuilder.h">
-      <Filter>ソース ファイル\%40TabSystem\TabBuilder</Filter>
-    </ClInclude>
     <ClInclude Include="TabBuilder.h">
       <Filter>ソース ファイル\%40TabSystem\TabBuilder</Filter>
     </ClInclude>
     <ClInclude Include="GUID.h">
       <Filter>ソース ファイル\%40Utility\GUID</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\ITabBuilder.h">
+      <Filter>ソース ファイル\%40TabSystem\TabBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\ITab.h">
+      <Filter>ソース ファイル\%40TabSystem\Tab</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

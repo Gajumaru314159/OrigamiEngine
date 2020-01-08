@@ -79,6 +79,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(MSBuildProjectDirectory)\Out\bin\$(Configuration)\</OutDir>
     <IntDir>$(MSBuildProjectDirectory)\Out\obj\$(Configuration)\</IntDir>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <IncludePath>$(ProjectDir)\Public;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -89,6 +91,8 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(MSBuildProjectDirectory)\Out\bin\$(Configuration)\</OutDir>
     <IntDir>$(MSBuildProjectDirectory)\Out\obj\$(Configuration)\</IntDir>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <IncludePath>$(ProjectDir)\Public;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -113,7 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\My\Productions\C++\lib\DxLib;C:\My\Productions\C++\OrigamiEngine\OrigamiAPI</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\My\Productions\C++\lib\DxLib;C:\My\Productions\C++\OrigamiEngine\OrigamiAPI;$(VC_SourcePath)\Public</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -153,7 +157,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\My\Productions\C++\lib\DxLib;C:\My\Productions\C++\OrigamiEngine\OrigamiAPI</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\My\Productions\C++\lib\DxLib;C:\My\Productions\C++\OrigamiEngine\OrigamiAPI;$(VC_SourcePath)\Public</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -193,9 +197,9 @@
     <ClInclude Include="EntryAsset.h" />
     <ClInclude Include="GUIMonoSkin.h" />
     <ClInclude Include="GUISkin.h" />
-    <ClInclude Include="ITab.h" />
-    <ClInclude Include="ITabBuilder.h" />
     <ClInclude Include="OrigamiEngine.h" />
+    <ClInclude Include="Public\ITab.h" />
+    <ClInclude Include="Public\ITabBuilder.h" />
     <ClInclude Include="SplitContainer.h" />
     <ClInclude Include="SystemColor.h" />
     <ClInclude Include="SystemManager.h" />

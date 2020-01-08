@@ -20,41 +20,55 @@
 namespace OrigamiEngine {
 
 	// アトミック型の再定義
-	typedef std::int8_t		S8;
-	typedef std::int16_t	S16;
-	typedef std::int32_t	S32;
-	typedef std::int64_t	S64;
-	typedef std::uint8_t	U8;
-	typedef std::uint16_t	U16;
-	typedef std::uint32_t	U32;
-	typedef std::uint64_t	U64;
+	using S8 = std::int8_t;
+	using S16 = std::int16_t;
+	using S32 = std::int32_t;
+	using S64 = std::int64_t;
+	using U8 = std::uint8_t;
+	using U16 = std::uint16_t;
+	using U32 = std::uint32_t;
+	using U64 = std::uint64_t;
 
-	typedef unsigned char Byte;
+	using Byte = unsigned char;
 
-	typedef float F32;
-	typedef double F64;
-	
-	typedef std::wstring String;
+	using F32 = float;
+	using F64 = double;
 
-#define HashMap std::unordered_map
-#define HashSet std::unordered_set
-#define ArrayList std::vector
+	// 文字列型の再定義
+	using String = std::wstring;
 
-#define Queue std::queue
-#define Stack std::stack
+	// コンテナの再定義
+	template<class Key, class T>
+	using HashMap = std::unordered_map<Key, T>;
 
-	
+	template<class Key, class T>
+	using HashSet = std::unordered_set<Key, T>;
+
+	template<class T>
+	using ArrayList = std::vector<T>;
 
 
+	template<class T>
+	using Queue = std::queue<T>;
+
+	template<class T>
+	using Stack = std::stack<T>;
 
 
-#define SPtr std::shared_ptr
-#define UPtr std::unique_ptr
-#define WPtr std::weak_ptr
+	// スマートポインタの再定義
 
-#define MSPtr std::make_shared
-#define MUPtr std::make_unique
-		;
+	template<class T>
+	using SPtr = std::shared_ptr<T>;
+	template<class T>
+	using UPtr = std::unique_ptr<T>;
+	template<class T>
+	using WPtr = std::weak_ptr<T>;
+
+
+	template<class T>
+	using MSPtr = std::make_shared<T>;
+	template<class T>
+	using MUPtr = std::make_unique<T>;
 }
 
 using namespace OrigamiEngine;
