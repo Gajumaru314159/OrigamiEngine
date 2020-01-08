@@ -10,15 +10,16 @@ namespace OrigamiEngine {
 	public:
 		virtual void BeginDraw(F32 x, F32 y, F32 width, F32 height);
 
-		virtual bool PlaceButton();
+		virtual bool PlaceButton(U32 color);
 		/*virtual bool PlaceRepeatButton();
 		virtual void PlaceSpace();
 		virtual bool PlaceToggle();
 		virtual String PlaceTextField();
 		virtual String PlaceTextArea();*/
 	private:
+		TabBuilder():m_DrawPos(0){}
 		Rect m_Rect;
+		int m_DrawPos;
 
-		TabBuilder() {};
 	};
 }

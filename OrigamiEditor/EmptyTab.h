@@ -15,5 +15,6 @@ namespace OrigamiEngine {
 		EmptyTab();
 
 		virtual void OnGUI(ITabBuilder& tabBuilder);
+		virtual ITab* CreateInstance();
 	};
 }

@@ -12,10 +12,6 @@ namespace OrigamiEngine {
 
 	}
 
-	void Container::Draw(const int x, const int y, const int width, const int height) {
-
-	}
-
 	float Container::GetPercentage() {
 		return m_Percentage;
 	}

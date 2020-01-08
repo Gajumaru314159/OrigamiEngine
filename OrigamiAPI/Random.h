@@ -31,7 +31,7 @@ namespace OrigamiEngine {
 		* @param maximum —”‚ÌÅ‘å’l+1B
 		* @return minimum‚©‚çmaximum‚ÌŠÔ‚Ì—”B
 		*/
-		static I32 Range(I32 minimum, I32 maximum);
+		static S32 Range(S32 minimum, S32 maximum);
 
 
 		/**

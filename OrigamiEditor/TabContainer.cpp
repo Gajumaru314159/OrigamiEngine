@@ -19,7 +19,7 @@ namespace OrigamiEngine {
 
 	}
 
-	void TabContainer::Draw(const int x, const int y, const int width, const int height) {
+	void TabContainer::Draw(const F32 x, const F32 y, const F32 width, const F32 height) {
 		if (m_Tabs.empty())return;
 		const int tabH = 22;
 
@@ -65,12 +65,13 @@ namespace OrigamiEngine {
 		m_Tabs.at(m_ActiveIndex)->OnGUI(TabBuilder::GetInstance());
 	}
 
-	void TabContainer::AddTab(std::unique_ptr<ITab>&& tab, const unsigned int index) {
+	bool TabContainer::AddTab(ITab* tab, const U32 index) {
 		if (index < 0 || m_Tabs.size() < index) {
-			m_Tabs.emplace_back(std::move(tab));
+			m_Tabs.emplace_back(UPtr<ITab>(tab));
 		}
 		else {
-			m_Tabs.emplace(m_Tabs.begin() + index, std::move(tab));
+			m_Tabs.emplace(m_Tabs.begin() + index, UPtr<ITab>(tab));
 		}
+		return true;
 	}
 }

@@ -46,20 +46,45 @@ namespace OrigamiEngine {
 		* @brief マウスカーソルを変更する。
 		*/
 		void SetMouseCursor(const CURSOR cursor);
+
+
+		/**
+		* @brief 文字列で指定してタブを開く。
+		* @param tabName 開くタブの名前。
+		* @return 指定したタブが存在しない場合はfalseを返す。
+		*/
+		bool OpenTab(String tabName);
+
+
+		/**
+		* @brief 作成可能なタブの登録。
+		* @param tabName タブの名前。
+		* @param tab テンプレートとなるタブのインスタンス。
+		*/
+		void ResisterTabTemplate(String tabName,UPtr<ITab> tab);
+
+		//void RemoveTabTemplate(String tabName);
+
 	protected:
 		WindowManager();
 	private:
+		// 作成可能なタブのマップ
+		HashMap<String, UPtr<ITab>> m_TabMap;
+
 		// 最上位のタブコンテナ。
 		SplitContainer m_Container;
+
 		// システムカラーのマップ
 		HashMap<String, int> m_ColorMap;
+
 		// 次のフレームで設定するマウスカーソルの種類。
 		CURSOR m_NextCursor;
+
 		// 現在のフレームのマウスカーソルの種類。
 		CURSOR m_CurrentCursor;
+
 		// ウィドウに使用するテクスチャID。
 		int m_WindowTex;
-		UPtr<ITab> m_FloatingTab;
 	};
 
 }

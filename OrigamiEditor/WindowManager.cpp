@@ -24,16 +24,16 @@ namespace OrigamiEngine {
 		{
 			auto tc11 = MUPtr<TabContainer>();
 			{
-				tc11->AddTab(MUPtr<EmptyTab>());
-				tc11->AddTab(MUPtr<EmptyTab>());
+				tc11->AddTab(new EmptyTab());
+				tc11->AddTab(new EmptyTab());
 			}
 			auto tc12 = MUPtr<TabContainer>();
 			{
-				tc12->AddTab(MUPtr<EmptyTab>());
+				tc12->AddTab(new EmptyTab());
 			}
 			auto tc13 = MUPtr<TabContainer>();
 			{
-				tc13->AddTab(MUPtr<EmptyTab>());
+				tc13->AddTab(new EmptyTab());
 			}
 			sc1->AddContainer(std::move(tc11), 1.0f);
 			sc1->AddContainer(std::move(tc12), 0.6f);
@@ -43,7 +43,7 @@ namespace OrigamiEngine {
 
 		auto tc2 = MUPtr<TabContainer>();
 		{
-			tc2->AddTab(MUPtr<EmptyTab>());
+			tc2->AddTab(new EmptyTab());
 		}
 
 		m_Container.AddContainer(std::move(tc2), 1.0f);
@@ -66,7 +66,7 @@ namespace OrigamiEngine {
 		static const auto hand = LoadCursor(NULL, IDC_HAND);
 		static const auto sizens = LoadCursor(NULL, IDC_SIZENS);
 		static const auto sizewe = LoadCursor(NULL, IDC_SIZEWE);
-		
+
 		switch (m_NextCursor) {
 		case ARROW:
 			SetCursor(arrow);
@@ -90,10 +90,21 @@ namespace OrigamiEngine {
 		return m_ColorMap[key];
 	}
 
-
-
-
 	void WindowManager::SetMouseCursor(const CURSOR cursor) {
 		m_NextCursor = cursor;
+	}
+
+	void WindowManager::ResisterTabTemplate(String tabName, UPtr<ITab> tab)
+	{
+		m_TabMap[tabName]=std::move(tab);
+	}
+
+	bool WindowManager::OpenTab(String tabName) {
+		if (m_TabMap.find(tabName) == m_TabMap.end()) {
+			return false;
+		}
+
+		m_Container.AddTab(m_TabMap[tabName]->CreateInstance());
+		return true;
 	}
 }

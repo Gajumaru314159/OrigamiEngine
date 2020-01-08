@@ -1,4 +1,5 @@
 #include "EmptyTab.h"
+#include "DxLib.h"
 
 namespace OrigamiEngine {
 
@@ -7,6 +8,11 @@ namespace OrigamiEngine {
 	}
 
 	void EmptyTab::OnGUI(ITabBuilder& tabBuilder) {
-		tabBuilder.PlaceButton();
+		tabBuilder.PlaceButton(GetColor(255,0,0));
+	}
+
+
+	ITab* EmptyTab::CreateInstance() {
+		return new EmptyTab();
 	}
 }

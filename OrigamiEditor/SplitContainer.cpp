@@ -16,7 +16,7 @@ namespace OrigamiEngine {
 		m_IsVertical = isVertival;
 	}
 
-	void SplitContainer::Draw(const int x, const int y, const int width, const int height) {
+	void SplitContainer::Draw(const F32 x, const F32 y, const F32 width, const F32 height) {
 		const int BORDER_WEIGHT = 4;
 		const int MIN_WIDTH = 120;
 		const int MIN_HEIGHT = 100;
@@ -28,12 +28,12 @@ namespace OrigamiEngine {
 		if (m_IsVertical) {
 			//□
 			//□
-			int top = y;
-			for (unsigned int i = 0; i < m_Containers.size(); i++) {
+			S32 top = y;
+			for (size_t i = 0; i < m_Containers.size(); i++) {
 				auto& container = m_Containers.at(i);
 
 				// コンテナの下座標を計算
-				int bottom = y + int(height * container->GetPercentage());
+				S32 bottom = y + int(height * container->GetPercentage());
 
 				// ボーダのドラッグ処理
 				if (i < m_Containers.size() - 1) {
@@ -46,7 +46,7 @@ namespace OrigamiEngine {
 
 					if (m_DragIndex == containerIndex) {
 						auto& nextContainer = m_Containers.at(i + 1);
-						int nextBorder = y + int(height * nextContainer->GetPercentage());
+						S32 nextBorder = y + S32(height * nextContainer->GetPercentage());
 
 						int draggedPoint = mouseY - BORDER_WEIGHT / 2;
 						// ドラッグ位置がはみ出さないように正規化
@@ -70,7 +70,7 @@ namespace OrigamiEngine {
 		else {
 			//□□
 			int left = x;
-			for (unsigned int i = 0; i < m_Containers.size(); i++) {
+			for (size_t i = 0; i < m_Containers.size(); i++) {
 				auto& container = m_Containers.at(i);
 
 				// コンテナの右座標を計算
@@ -116,6 +116,19 @@ namespace OrigamiEngine {
 			m_DragIndex = -1;
 		}
 	}
+
+
+	bool SplitContainer::AddTab(ITab* tab, const U32 index) {
+		for (unsigned int i = 0; i < m_Containers.size(); i++) {
+			auto& container = m_Containers.at(i);
+			bool result=container->AddTab(tab);
+			if (result) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void SplitContainer::AddContainer(std::unique_ptr<Container>&& container, float endPercentage) {
 		// 範囲外の場合は補正して処理を続行
 		endPercentage = max(min(endPercentage, 1.0f), 0.0f);

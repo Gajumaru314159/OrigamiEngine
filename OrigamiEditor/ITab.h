@@ -11,10 +11,12 @@ namespace OrigamiEngine {
 
 		virtual void OnGUI(ITabBuilder& tabBuilder) = 0;
 
+		virtual ITab* CreateInstance()=0;
+
 	protected:
 		String m_TabName = L"No Name";
 	private:
 		Rect m_TabRect;
-		I32 m_Y;
+		S32 m_Y;
 	};
 }

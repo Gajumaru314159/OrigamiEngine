@@ -33,7 +33,7 @@ namespace OrigamiEngine {
 		return w;
 	}
 
-	I32 Random::Range(I32 minimum, I32 maximum)
+	S32 Random::Range(S32 minimum, S32 maximum)
 	{
 		return GetU32() % (maximum - minimum) + minimum;
 	}
