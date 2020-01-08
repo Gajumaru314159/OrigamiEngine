@@ -24,6 +24,6 @@ namespace OrigamiEngine::GUILayout {
 		GUIMonoSkin pressed;
 
 		// —]”’
-		int margin;
+		S32 margin;
 	};
 }

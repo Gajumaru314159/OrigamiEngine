@@ -8,7 +8,7 @@ namespace OrigamiEngine {
 	{
 		friend class Singleton<TabBuilder>;
 	public:
-		virtual void BeginDraw(F32 x, F32 y, F32 width, F32 height);
+		virtual void BeginDraw(S32 x, S32 y, S32 width, S32 height);
 
 		virtual bool PlaceButton(U32 color);
 		/*virtual bool PlaceRepeatButton();
@@ -19,7 +19,7 @@ namespace OrigamiEngine {
 	private:
 		TabBuilder():m_DrawPos(0){}
 		Rect m_Rect;
-		int m_DrawPos;
+		S32 m_DrawPos;
 
 	};
 }

@@ -19,16 +19,16 @@ namespace OrigamiEngine {
 
 	}
 
-	void TabContainer::Draw(const F32 x, const F32 y, const F32 width, const F32 height) {
+	void TabContainer::Draw(const S32 x, const S32 y, const S32 width, const S32 height) {
 		if (m_Tabs.empty())return;
-		const int tabH = 22;
+		const S32 tabH = 22;
 
-		int index = 0;
-		int tabX = x;
+		S32 index = 0;
+		S32 tabX = x;
 		for (auto& tab : m_Tabs) {
 			std::wstring tabNameString = tab->GetTabName();
 			const wchar_t* tabName = tabNameString.c_str();
-			int tabW = GetDrawStringWidth(tabName, (int)wcslen(tabName)) + 16 + 20;// 文字幅+余白16+クローズボタン20
+			S32 tabW = GetDrawStringWidth(tabName, (S32)wcslen(tabName)) + 16 + 20;// 文字幅+余白16+クローズボタン20
 
 			// タブの描画
 			if (index == m_ActiveIndex) {

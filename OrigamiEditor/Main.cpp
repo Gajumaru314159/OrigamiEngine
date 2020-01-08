@@ -3,11 +3,11 @@
 #include "WindowManager.h"
 
 #include "ITab.h"
-int APIENTRY wWinMain(
+S32 APIENTRY wWinMain(
 	_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR lpCmdLine,
-	_In_ int nShowCmd
+	_In_ S32 nShowCmd
 ){
 
 	// ƒQ[ƒ€ƒGƒ“ƒWƒ“‚Ì‰Šú‰»
@@ -28,7 +28,7 @@ int APIENTRY wWinMain(
 
 	typedef ITab* (WINAPI *TAddProc)();
 
-	TAddProc add = reinterpret_cast<TAddProc>(proc);
+	TAddProc add = reS32erpret_cast<TAddProc>(proc);
 	WindowManager::GetInstance().ResisterTabTemplate(L"T", UPtr<ITab>(add()));
 	WindowManager::GetInstance().OpenTab(L"T");
 	WindowManager::GetInstance().OpenTab(L"T");

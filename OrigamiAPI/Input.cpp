@@ -9,8 +9,8 @@ namespace OrigamiEngine {
 
 	void Input::Update()
 	{
-		int mouseInput = GetMouseInput();
-		for (unsigned int i = 0; i < m_PressedTimes.size(); i++)
+		S32 mouseInput = GetMouseInput();
+		for (U32 i = 0; i < m_PressedTimes.size(); i++)
 		{
 			if (mouseInput & (1 << i))
 			{
@@ -24,7 +24,7 @@ namespace OrigamiEngine {
 	}
 
 
-	int Input::GetMouseButtonPressedTime(const unsigned int num)
+	S32 Input::GetMouseButtonPressedTime(const U32 num)
 	{
 		if (m_PressedTimes.size() <= num) return -1;
 		return m_PressedTimes.at(num);
@@ -33,9 +33,9 @@ namespace OrigamiEngine {
 
 
 
-	bool Input::GetMouseHover(const int x1, const int y1, const int x2, const int y2)
+	bool Input::GetMouseHover(const S32 x1, const S32 y1, const S32 x2, const S32 y2)
 	{
-		int mouseX, mouseY;
+		S32 mouseX, mouseY;
 		GetMousePoint(&mouseX, &mouseY);
 
 		// 描画エリア外は判定を除外する。
@@ -50,28 +50,28 @@ namespace OrigamiEngine {
 	}
 
 
-	bool Input::GetMouseButton(const unsigned int num)
+	bool Input::GetMouseButton(const U32 num)
 	{
-		int MouseInput = GetMouseInput();
+		S32 MouseInput = GetMouseInput();
 		return MouseInput & (1 << num);
 	}
-	bool Input::GetMouseButton(const unsigned int num, const int x1, const int y1, const int x2, const int y2)
+	bool Input::GetMouseButton(const U32 num, const S32 x1, const S32 y1, const S32 x2, const S32 y2)
 	{
 		return (GetMouseButton(num) && GetMouseHover(x1, y1, x2, y2));
 	}
 
-	bool Input::GetMouseButtonDown(const unsigned int num)
+	bool Input::GetMouseButtonDown(const U32 num)
 	{
 		return GetInstance().GetMouseButtonPressedTime(num) == 1;
 	}
-	bool Input::GetMouseButtonDown(const unsigned int num, const int x1, const int y1, const int x2, const int y2)
+	bool Input::GetMouseButtonDown(const U32 num, const S32 x1, const S32 y1, const S32 x2, const S32 y2)
 	{
 		return (GetMouseButtonDown(num) && GetMouseHover(x1, y1, x2, y2));
 	}
 
 
-	int Input::LEFT = 0;
-	int Input::RIGHT = 1;
-	int Input::MIDDLE = 2;
+	S32 Input::LEFT = 0;
+	S32 Input::RIGHT = 1;
+	S32 Input::MIDDLE = 2;
 
 }

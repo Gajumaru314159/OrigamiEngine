@@ -3,7 +3,7 @@
 */
 #pragma once
 
-
+#include "OrigamiAPI.h"
 
 namespace OrigamiEngine {
 	/**
@@ -17,7 +17,7 @@ namespace OrigamiEngine {
 			return enginCore;
 		}
 
-		int Init();
+		S32 Init();
 		void Run();
 
 	private:

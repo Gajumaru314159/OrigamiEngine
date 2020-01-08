@@ -14,10 +14,10 @@ namespace OrigamiEngine{
 		friend class Singleton<SystemManager>;
 	public:
 		static String GetProjectPath();
-		static int FindFontHandle();
+		static S32 FindFontHandle();
 	private:
 		String m_ProjectPath;
-		HashMap<int, int> m_SystemFontMap;
+		HashMap<S32, S32> m_SystemFontMap;
 
 		static SystemManager& GetInstance() {
 			static SystemManager instance;

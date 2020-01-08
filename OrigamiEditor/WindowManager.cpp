@@ -56,7 +56,7 @@ namespace OrigamiEngine {
 		// ”wŒiF‚ğw’è
 		SetBackgroundColor(30, 30, 30);
 		// •`‰æ—Ìˆæ‚ğ‰æ–Ê‘S‘Ì‚É‚µ‚Äƒ^ƒu‚ğ•`‰æ
-		int windowH, windowV;
+		S32 windowH, windowV;
 		GetWindowSize(&windowH, &windowV);
 		m_Container.Draw(3, 3, windowH - 6, windowV - 6);
 
@@ -85,7 +85,7 @@ namespace OrigamiEngine {
 		SetMouseCursor(ARROW);
 	}
 
-	int WindowManager::GetSystemColor(String key) {
+	S32 WindowManager::GetSystemColor(String key) {
 		if (m_ColorMap.find(key) == m_ColorMap.end())return GetColor(0, 0, 0);
 		return m_ColorMap[key];
 	}

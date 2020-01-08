@@ -17,11 +17,11 @@ namespace OrigamiEngine {
 		friend class Singleton<Input>;
 	public:
 		//! @brief マウスの左ボタンの番号
-		static int LEFT;
+		static S32 LEFT;
 		//! @brief マウスの右ボタンの番号
-		static int RIGHT;
+		static S32 RIGHT;
 		//! @brief マウスの中ボタンの番号
-		static int MIDDLE;
+		static S32 MIDDLE;
 
 		/**
 		* @brief 入力の更新処理。
@@ -33,14 +33,14 @@ namespace OrigamiEngine {
 		* @param num マウスのボタン坂東
 		* @return おされている時間(ms)
 		*/
-		int GetMouseButtonPressedTime(const unsigned int num);
+		S32 GetMouseButtonPressedTime(const U32 num);
 
 
-		static bool GetMouseHover(const int x1, const int y1, const int x2, const int y2);
-		static bool GetMouseButton(const unsigned int num);
-		static bool GetMouseButton(const unsigned int num, const int x1, const int y1, const int x2, const int y2);
-		static bool GetMouseButtonDown(const unsigned int num);
-		static bool GetMouseButtonDown(const unsigned int num, const int x1, const int y1, const int x2, const int y2);
+		static bool GetMouseHover(const S32 x1, const S32 y1, const S32 x2, const S32 y2);
+		static bool GetMouseButton(const U32 num);
+		static bool GetMouseButton(const U32 num, const S32 x1, const S32 y1, const S32 x2, const S32 y2);
+		static bool GetMouseButtonDown(const U32 num);
+		static bool GetMouseButtonDown(const U32 num, const S32 x1, const S32 y1, const S32 x2, const S32 y2);
 
 		// GetAxis
 		// GetButton
@@ -52,6 +52,6 @@ namespace OrigamiEngine {
 
 	private:
 		Input() :m_PressedTimes(8) {};
-		ArrayList<int> m_PressedTimes;
+		ArrayList<S32> m_PressedTimes;
 	};
 }

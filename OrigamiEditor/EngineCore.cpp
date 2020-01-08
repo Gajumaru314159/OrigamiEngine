@@ -20,7 +20,7 @@ namespace OrigamiEngine {
 		DxLib_End();
 	}
 
-	int EngineCore::Init() {
+	S32 EngineCore::Init() {
 
 
 		// ウインドウモードで起動
@@ -46,11 +46,11 @@ namespace OrigamiEngine {
 
 
 		//有効なデバイス数を取得
-		int nDevs = DxLib::GetDirectDrawDeviceNum();
-		int maxDesktopW = 0, maxDesktopH = 0;
-		for (int i = nDevs - 1; 0 <= i; i--) {
+		S32 nDevs = DxLib::GetDirectDrawDeviceNum();
+		S32 maxDesktopW = 0, maxDesktopH = 0;
+		for (S32 i = nDevs - 1; 0 <= i; i--) {
 			SetUseDirectDrawDeviceIndex(i);
-			int DesktopW, DesktopH;
+			S32 DesktopW, DesktopH;
 			GetDefaultState(&DesktopW, &DesktopH, NULL);
 			maxDesktopW = max(maxDesktopW, DesktopW);
 			maxDesktopH = max(maxDesktopH, DesktopH);

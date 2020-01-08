@@ -16,8 +16,8 @@ namespace OrigamiEngine {
 		Container();
 		virtual ~Container();
 
-		virtual unsigned int GetChildCount() { return 0; };
-		virtual void Draw(const F32 x, const F32 y, const F32 width, const F32 height)=0;
+		virtual U32 GetChildCount() { return 0; };
+		virtual void Draw(const S32 x, const S32 y, const S32 width, const S32 height)=0;
 		virtual bool AddTab(ITab* tab, const U32 index = -1)=0;
 		float GetPercentage();
 		void SetPercentage(const float percentage);

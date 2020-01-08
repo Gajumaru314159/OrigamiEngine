@@ -40,7 +40,7 @@ namespace OrigamiEngine {
 		* @param id 取得したいシステムカラーの名前。
 		* @return システムカラー。
 		*/
-		int GetSystemColor(String id);
+		S32 GetSystemColor(String id);
 
 		/**
 		* @brief マウスカーソルを変更する。
@@ -75,7 +75,7 @@ namespace OrigamiEngine {
 		SplitContainer m_Container;
 
 		// システムカラーのマップ
-		HashMap<String, int> m_ColorMap;
+		HashMap<String, S32> m_ColorMap;
 
 		// 次のフレームで設定するマウスカーソルの種類。
 		CURSOR m_NextCursor;
@@ -84,7 +84,7 @@ namespace OrigamiEngine {
 		CURSOR m_CurrentCursor;
 
 		// ウィドウに使用するテクスチャID。
-		int m_WindowTex;
+		S32 m_WindowTex;
 	};
 
 }
