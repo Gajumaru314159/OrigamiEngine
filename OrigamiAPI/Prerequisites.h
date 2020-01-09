@@ -55,6 +55,8 @@ namespace OrigamiEngine {
 
 
 	// スマートポインタの再定義
+#define MSPtr std::make_shared
+#define MUPtr std::make_unique
 
 	template<class T>
 	using SPtr = std::shared_ptr<T>;
@@ -62,12 +64,6 @@ namespace OrigamiEngine {
 	using UPtr = std::unique_ptr<T>;
 	template<class T>
 	using WPtr = std::weak_ptr<T>;
-
-
-	template<class T>
-	using MSPtr = std::make_shared<T>;
-	template<class T>
-	using MUPtr = std::make_unique<T>;
 }
 
 using namespace OrigamiEngine;
