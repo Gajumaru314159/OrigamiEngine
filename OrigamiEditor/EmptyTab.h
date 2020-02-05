@@ -13,7 +13,9 @@ namespace OrigamiEngine {
 	public:
 		EmptyTab();
 
-		virtual void OnGUI(ITabBuilder& tabBuilder);
-		virtual ITab* CreateInstance();
+		void OnGUI(ITabBuilder& tabBuilder)override;
+		ITab* CreateInstance()override;
+
+		void Delete()override;
 	};
 }

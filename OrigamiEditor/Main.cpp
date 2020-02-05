@@ -12,7 +12,7 @@ S32 APIENTRY wWinMain(
 
 	// ゲームエンジンの初期化
 	if (OrigamiEngine::EngineCore::GetInstance().Init() < 0)return -1;
-	/*
+	
 
 	HMODULE dll = LoadLibrary(L"C:/My/Productions/C++/OrigamiEngine/TabDLLTest/Out/bin/Debug/TabDLLTest.dll");
 	if (dll == NULL)
@@ -28,17 +28,17 @@ S32 APIENTRY wWinMain(
 
 	typedef ITab* (WINAPI *TAddProc)();
 
-	TAddProc add = reS32erpret_cast<TAddProc>(proc);
+	TAddProc add = reinterpret_cast<TAddProc>(proc);
 	WindowManager::GetInstance().ResisterTabTemplate(L"T", UPtr<ITab>(add()));
 	WindowManager::GetInstance().OpenTab(L"T");
-	WindowManager::GetInstance().OpenTab(L"T");
-	*/
+	
 
 
 
 	OrigamiEngine::EngineCore::GetInstance().Run();
 
-	//FreeLibrary(dll);
+
+	FreeLibrary(dll);
 
 	// ソフトの終了
 	return 0;

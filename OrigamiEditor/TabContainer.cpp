@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include <functional>
 
 #include "TabContainer.h"
 
@@ -66,12 +67,14 @@ namespace OrigamiEngine {
 	}
 
 	bool TabContainer::AddTab(ITab* tab, const U32 index) {
+		size_t index2 = index;
 		if (index < 0 || m_Tabs.size() < index) {
-			m_Tabs.emplace_back(UPtr<ITab>(tab));
+			index2 = m_Tabs.size();
 		}
-		else {
-			m_Tabs.emplace(m_Tabs.begin() + index, UPtr<ITab>(tab));
-		}
+
+
+		m_Tabs.emplace(m_Tabs.begin() + index2,UPtr <ITab>(tab));
+
 		return true;
 	}
 }

@@ -44,7 +44,9 @@ namespace OrigamiEngine {
 						}
 					}
 
+					// 現在のコンテナがドラッグ対象の時
 					if (m_DragIndex == containerIndex) {
+						WindowManager::GetInstance().SetMouseCursor(WindowManager::SIZENS);
 						auto& nextContainer = m_Containers.at(i + 1);
 						S32 nextBorder = y + S32(height * nextContainer->GetPercentage());
 
@@ -87,6 +89,7 @@ namespace OrigamiEngine {
 					}
 
 					if (m_DragIndex == containerIndex) {
+						WindowManager::GetInstance().SetMouseCursor(WindowManager::SIZEWE);
 						auto& nextContainer = m_Containers.at(i + 1);
 						S32 nextBorder = x + S32(width * nextContainer->GetPercentage());
 

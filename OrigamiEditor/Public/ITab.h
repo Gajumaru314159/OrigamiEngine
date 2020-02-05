@@ -13,6 +13,7 @@ namespace OrigamiEngine {
 
 		virtual ITab* CreateInstance()=0;
 
+		virtual void Delete() { delete this; };
 	protected:
 		String m_TabName = L"No Name";
 	private:
@@ -20,3 +21,16 @@ namespace OrigamiEngine {
 		S32 m_Y;
 	};
 }
+
+
+namespace std
+{
+	template<>
+	struct default_delete<OrigamiEngine::ITab>
+	{
+		void operator()(OrigamiEngine::ITab* p) const
+		{
+			p->Delete();
+		}
+	};
+};

@@ -8,6 +8,8 @@
 
 #include "Prerequisites.h"
 
+
+#include "Allocator.h"
 #include "Rect.h"
 #include "Path.h"
 #include "Random.h"

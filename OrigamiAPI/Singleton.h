@@ -16,17 +16,17 @@ namespace OrigamiEngine {
 		*/
 		static T& GetInstance()
 		{
-			static typename T::singleton_poS32er_type s_singleton(T::createInstance());
+			static typename T::singleton_pointer_type s_singleton(T::createInstance());
 
 			return getReference(s_singleton);
 		}
 
 	private:
-		typedef std::unique_ptr<T> singleton_poS32er_type;
+		typedef std::unique_ptr<T> singleton_pointer_type;
 
 		inline static T* createInstance() { return new T(); }
 
-		inline static T& getReference(const singleton_poS32er_type& ptr) { return *ptr; }
+		inline static T& getReference(const singleton_pointer_type& ptr) { return *ptr; }
 
 	protected:
 		Singleton() {}

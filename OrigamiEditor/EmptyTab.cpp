@@ -15,4 +15,9 @@ namespace OrigamiEngine {
 	ITab* EmptyTab::CreateInstance() {
 		return new EmptyTab();
 	}
+
+
+	void EmptyTab::Delete() {
+		delete this;
+	}
 }
