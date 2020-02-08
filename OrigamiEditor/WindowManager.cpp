@@ -8,11 +8,12 @@
 
 
 namespace OrigamiEngine {
-	WindowManager::WindowManager() :
-		m_CurrentCursor(ARROW),
-		m_NextCursor(ARROW),
-		m_WindowTex(0)
+	WindowManager::WindowManager() :Singleton<WindowManager>()
 	{
+		m_NextCursor = CursorType::ARROW;
+		m_CurrentCursor = CursorType::ARROW;
+		m_WindowTex = 0;
+
 		// ウィンドウ関係のテクスチャを読み込み
 		m_WindowTex = LoadGraph(L"Data/Textures/WindowTex.png");
 
@@ -68,43 +69,44 @@ namespace OrigamiEngine {
 		static const auto sizewe = LoadCursor(NULL, IDC_SIZEWE);
 
 		switch (m_NextCursor) {
-		case ARROW:
-			SetCursor(arrow);
-			break;
-		case HAND:
+		case CursorType::HAND:
 			SetCursor(hand);
 			break;
-		case SIZENS:
+		case CursorType::SIZENS:
 			SetCursor(sizens);
 			break;
-		case SIZEWE:
+		case CursorType::SIZEWE:
 			SetCursor(sizewe);
+			break;
+		default:
+			SetCursor(arrow);
 			break;
 		}
 		m_CurrentCursor = m_NextCursor;
-		SetMouseCursor(ARROW);
+		SetMouseCursor(CursorType::ARROW);
 	}
+
 
 	S32 WindowManager::GetSystemColor(String key) {
 		if (m_ColorMap.find(key) == m_ColorMap.end())return GetColor(0, 0, 0);
 		return m_ColorMap[key];
 	}
 
-	void WindowManager::SetMouseCursor(const CURSOR cursor) {
+	void WindowManager::SetMouseCursor(const CursorType cursor) {
 		m_NextCursor = cursor;
 	}
 
 	void WindowManager::ResisterTabTemplate(String tabName, UPtr<ITab> tab)
 	{
-		m_TabMap[tabName]=std::move(tab);
+		ms_Instance->m_TabMap[tabName]=std::move(tab);
 	}
 
 	bool WindowManager::OpenTab(String tabName) {
-		if (m_TabMap.find(tabName) == m_TabMap.end()) {
+		if (ms_Instance->m_TabMap.find(tabName) == ms_Instance->m_TabMap.end()) {
 			return false;
 		}
 
-		m_Container.AddTab(m_TabMap[tabName]->CreateInstance());
+		ms_Instance->m_Container.AddTab(ms_Instance->m_TabMap[tabName]->CreateInstance());
 		return true;
 	}
 }

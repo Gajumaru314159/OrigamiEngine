@@ -7,22 +7,73 @@
 #include "AssetManager.h"
 #include "Input.h"
 
-
 namespace OrigamiEngine {
-
-	EngineCore::EngineCore()
+	HMODULE dll;
+	EngineCore::EngineCore() :Singleton<EngineCore>(),
+		m_WindowManager(nullptr),
+		m_SystemManager(nullptr),
+		m_AssetManager(nullptr),
+		m_Input(nullptr)
 	{
+
 	}
 
 	EngineCore::~EngineCore()
 	{
-		// ＤＸライブラリの後始末
+		// マネージャの削除
+		while (!m_ManagerStack.empty()) {
+			delete m_ManagerStack.top();
+			m_ManagerStack.pop();
+		}
+
+		FreeLibrary(dll);
+
+		// ＤＸライブラリの終了処理
 		DxLib_End();
 	}
 
-	S32 EngineCore::Init() {
+
+	void EngineCore::Run() {
+		// エンジンの初期化
+		// 初期化に失敗したら直ちに終了する
+		if (ms_Instance->StartUp() == false)return;
 
 
+
+
+
+		dll = LoadLibrary(L"C:/My/Productions/C++/OrigamiEngine/TabDLLTest/Out/bin/Debug/TabDLLTest.dll");
+		if (dll == NULL)
+		{
+			return;
+		}
+
+		FARPROC proc = GetProcAddress(dll, "CreateTab");
+		if (proc == NULL)
+		{
+			return;
+		}
+
+		typedef ITab* (WINAPI* TAddProc)();
+
+		TAddProc add = reinterpret_cast<TAddProc>(proc);
+		WindowManager::ResisterTabTemplate(L"T", UPtr<ITab>(add()));
+		WindowManager::OpenTab(L"T");
+
+
+
+
+
+		// メインループ
+		while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
+			ms_Instance->m_Input->Update();
+			ms_Instance->m_WindowManager->Update();
+		}
+	}
+
+
+	bool EngineCore::StartUp()
+	{
 		// ウインドウモードで起動
 		ChangeWindowMode(TRUE);
 		// ウィンドウタイトルを変更
@@ -64,24 +115,31 @@ namespace OrigamiEngine {
 
 
 		// ＤＸライブラリの初期化
-		if (DxLib_Init() < 0) return -1;
+		if (DxLib_Init() < 0) return false;
 
 
 		// 描画先を裏画面へ設定
 		SetDrawScreen(DX_SCREEN_BACK);
 
+
+		// マネージャの登録
+		// 登録した逆順に解放される
+		m_WindowManager = ResisterManager<WindowManager>(WindowManager::Create());
+		m_SystemManager = ResisterManager<SystemManager>(SystemManager::Create());
+		m_AssetManager  = ResisterManager<AssetManager>(AssetManager::Create());
+		m_Input			= ResisterManager<Input>(Input::Create());
+
+
 		// アセットの読み込み
-		AssetManager::GetInstance().LoadAssets(SystemManager::GetProjectPath() + L"\\Assets");
-		return 0;
+		m_AssetManager->LoadAssets(String(m_SystemManager->GetProjectPath()) + L"\\Assets");
+
+		return true;
 	}
 
 
-
-	void EngineCore::Run() {
-		// メインループ
-		while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
-			Input::GetInstance().Update();
-			WindowManager::GetInstance().Update();
-		}
+	template<class T>
+	T* EngineCore::ResisterManager(T* manager) {
+		m_ManagerStack.push(manager);
+		return manager;
 	}
 }

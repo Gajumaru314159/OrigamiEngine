@@ -10,8 +10,8 @@ namespace OrigamiEngine {
 		m_DrawPos = 0;
 	}
 
-	bool TabBuilder::PlaceButton(U32 color) {
-		DrawBoxAA(m_Rect.position.x+ m_DrawPos, m_Rect.position.y, m_Rect.position.x+32+ m_DrawPos, m_Rect.position.y + 32,color,TRUE);
+	bool TabBuilder::PlaceButton(const Color& color) {
+		DrawBoxAA(m_Rect.position.x+ m_DrawPos, m_Rect.position.y, m_Rect.position.x+32+ m_DrawPos, m_Rect.position.y + 32,color.ToCode(),TRUE);
 		m_DrawPos += 34;
 		return false;
 	}

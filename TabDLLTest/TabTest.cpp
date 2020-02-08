@@ -9,9 +9,10 @@ DLLTab::DLLTab() {
 }
 
 void DLLTab::OnGUI(ITabBuilder& tabBuilder) {
-	tabBuilder.PlaceButton(0x1234214);
-	tabBuilder.PlaceButton(0x1234214);
-	tabBuilder.PlaceButton(0x1234214);
+	tabBuilder.PlaceButton(Color(1, 0, 0));
+	tabBuilder.PlaceButton(Color(0, 1, 0));
+	tabBuilder.PlaceButton(Color(0, 0, 1));
+	tabBuilder.PlaceButton(Color(0, 0, 1));
 }
 
 

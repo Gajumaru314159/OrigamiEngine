@@ -16,8 +16,8 @@ using namespace std;
 
 namespace OrigamiEngine {
 
-	TabContainer::~TabContainer() {
-
+	TabContainer::TabContainer():Container() {
+		m_TabBuilder = MUPtr<TabBuilder>();
 	}
 
 	void TabContainer::Draw(const S32 x, const S32 y, const S32 width, const S32 height) {
@@ -46,7 +46,7 @@ namespace OrigamiEngine {
 
 			// タブ切り替え
 			if (Input::GetMouseHover(tabX, y, tabX + tabW, y + tabH)) {
-				WindowManager::GetInstance().SetMouseCursor(WindowManager::HAND);
+				//WindowManager::GetInstance().SetMouseCursor(WindowManager::HAND);
 				if (Input::GetMouseButtonDown(0)) {
 					m_ActiveIndex = index;
 				}
@@ -62,8 +62,8 @@ namespace OrigamiEngine {
 		DrawBox(x, y + tabH, x + width, y + height, GetColor(94, 94, 94), FALSE);
 
 		// タブコンテンツの描画
-		TabBuilder::GetInstance().BeginDraw(x + 1, y + tabH + 1,  width - 2, height - 2);
-		m_Tabs.at(m_ActiveIndex)->OnGUI(TabBuilder::GetInstance());
+		m_TabBuilder->BeginDraw(x + 1, y + tabH + 1,  width - 2, height - 2);
+		m_Tabs.at(m_ActiveIndex)->OnGUI(*m_TabBuilder);
 	}
 
 	bool TabContainer::AddTab(ITab* tab, const U32 index) {

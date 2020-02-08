@@ -5,31 +5,27 @@
 #include "SystemManager.h"
 
 namespace OrigamiEngine{
-
-
-	AssetManager::AssetManager()
-	{
-	}
-
-	// 指定フォルダ以下のファイルとフォルダの読み込み
 	void AssetManager::LoadAssets(const String path){
-		if (m_RootDir)m_RootDir.reset();
+		if (ms_Instance->m_RootDir)ms_Instance->m_RootDir.reset();
 
 
 		// Assets以下のアセットを読み込み
-		m_RootDir = MSPtr<DirectoryAsset>(path);
+		ms_Instance->m_RootDir = MSPtr<DirectoryAsset>(path);
 	}
 
 	DirectoryAsset& AssetManager::GetRootDirectory() {
-		return *GetInstance().m_RootDir;
-	}
+		assert(ms_Instance != nullptr);
 
+		return *(ms_Instance->m_RootDir);
+	}
 
 	U32 AssetManager::AddAsset(SPtr<EntryAsset> asset)
 	{
+		assert(ms_Instance != nullptr);
+
 		long id = rand();
-		U32 size = (U32)GetInstance().m_AssetMap.size();
-		GetInstance().m_AssetMap.emplace(id,asset);
+		U32 size = (U32)(ms_Instance->m_AssetMap.size());
+		ms_Instance->m_AssetMap.emplace(id,asset);
 
 		return id;
 	}

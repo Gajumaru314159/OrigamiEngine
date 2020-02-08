@@ -53,6 +53,8 @@ namespace OrigamiEngine {
 		* @return ディレクトリのパス。
 		*/
 		String Directory();
+
+		operator String() const { return m_Path; }
 	private:
 		String m_Path;
 		bool m_HasExtention;

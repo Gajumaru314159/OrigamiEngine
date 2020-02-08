@@ -9,8 +9,6 @@
 #include "SplitContainer.h"
 #include "ITab.h"
 
-
-
 namespace OrigamiEngine {
 	/**
 	* @brief エディタのタブを管理する。
@@ -22,7 +20,7 @@ namespace OrigamiEngine {
 		/**
 		* @brief マウスカーソルの種類。
 		*/
-		enum CURSOR {
+		enum class CursorType {
 			ARROW,
 			HAND,
 			SIZENS,
@@ -35,6 +33,7 @@ namespace OrigamiEngine {
 		*/
 		void Update();
 
+
 		/**
 		* @brief システムカラーの取得
 		* @param id 取得したいシステムカラーの名前。
@@ -45,7 +44,7 @@ namespace OrigamiEngine {
 		/**
 		* @brief マウスカーソルを変更する。
 		*/
-		void SetMouseCursor(const CURSOR cursor);
+		void SetMouseCursor(const CursorType cursor);
 
 
 		/**
@@ -53,7 +52,7 @@ namespace OrigamiEngine {
 		* @param tabName 開くタブの名前。
 		* @return 指定したタブが存在しない場合はfalseを返す。
 		*/
-		bool OpenTab(String tabName);
+		static bool OpenTab(String tabName);
 
 
 		/**
@@ -61,12 +60,9 @@ namespace OrigamiEngine {
 		* @param tabName タブの名前。
 		* @param tab テンプレートとなるタブのインスタンス。
 		*/
-		void ResisterTabTemplate(String tabName,UPtr<ITab> tab);
+		static void ResisterTabTemplate(String tabName,UPtr<ITab> tab);
 
 		//void RemoveTabTemplate(String tabName);
-
-	protected:
-		WindowManager();
 	private:
 		// 作成可能なタブのマップ
 		HashMap<String, UPtr<ITab>> m_TabMap;
@@ -78,13 +74,18 @@ namespace OrigamiEngine {
 		HashMap<String, S32> m_ColorMap;
 
 		// 次のフレームで設定するマウスカーソルの種類。
-		CURSOR m_NextCursor;
+		CursorType m_NextCursor;
 
 		// 現在のフレームのマウスカーソルの種類。
-		CURSOR m_CurrentCursor;
+		CursorType m_CurrentCursor;
 
 		// ウィドウに使用するテクスチャID。
 		S32 m_WindowTex;
+
+		/**
+		* @brief コンストラクタ
+		*/
+		WindowManager();
 	};
 
 }

@@ -10,7 +10,7 @@ namespace OrigamiEngine {
 	void Input::Update()
 	{
 		S32 mouseInput = GetMouseInput();
-		for (U32 i = 0; i < m_PressedTimes.size(); i++)
+		for (U32 i = 0; i < 8; i++)
 		{
 			if (mouseInput & (1 << i))
 			{
@@ -26,8 +26,8 @@ namespace OrigamiEngine {
 
 	S32 Input::GetMouseButtonPressedTime(const U32 num)
 	{
-		if (m_PressedTimes.size() <= num) return -1;
-		return m_PressedTimes.at(num);
+		if (ms_MaxMouseButton <= num) return -1;
+		return m_PressedTimes[num];
 	}
 
 
@@ -62,7 +62,8 @@ namespace OrigamiEngine {
 
 	bool Input::GetMouseButtonDown(const U32 num)
 	{
-		return GetInstance().GetMouseButtonPressedTime(num) == 1;
+		assert(Exist());
+		return ms_Instance->GetMouseButtonPressedTime(num) == 1;
 	}
 	bool Input::GetMouseButtonDown(const U32 num, const S32 x1, const S32 y1, const S32 x2, const S32 y2)
 	{

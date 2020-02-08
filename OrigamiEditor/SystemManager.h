@@ -3,7 +3,7 @@
 */
 #pragma once
 
-#include "Prerequisites.h"
+#include "OrigamiAPI.h"
 
 namespace OrigamiEngine{
 	/**
@@ -13,16 +13,24 @@ namespace OrigamiEngine{
 	{
 		friend class Singleton<SystemManager>;
 	public:
-		static String GetProjectPath();
-		static S32 FindFontHandle();
-	private:
-		String m_ProjectPath;
-		HashMap<S32, S32> m_SystemFontMap;
+		/**
+		* @brief 現在開いているプロジェクトの基底フォルダの絶対パスを取得。
+		* @return パス。
+		*/
+		Path GetProjectPath()const;
 
-		static SystemManager& GetInstance() {
-			static SystemManager instance;
-			return instance;
-		}
+		/**
+		* @brief 現在開いているプロジェクトの基底フォルダの絶対パスの文字列を取得。
+		* @return パス。
+		*/
+		String GetProjectPathString()const;
+
+		S32 FindFontHandle();
+	private:
+		// プロジェクトのパス
+		Path m_ProjectPath;
+		// システムの描画で使用するフォントのマップ
+		HashMap<S32, S32> m_SystemFontMap;
 
 		// TODO:プロジェクト名読み込み
 		SystemManager();

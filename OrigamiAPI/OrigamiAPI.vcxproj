@@ -112,7 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>C:\My\Productions\C++\lib\DxLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\My\Productions\C++\lib\DxLib;C:\My\Productions\C++\OrigamiEngine\OrigamiAPI\Public;C:\My\Productions\C++\OrigamiEngine\OrigamiAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,7 +154,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>C:\My\Productions\C++\lib\DxLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\My\Productions\C++\lib\DxLib;C:\My\Productions\C++\OrigamiEngine\OrigamiAPI\Public;C:\My\Productions\C++\OrigamiEngine\OrigamiAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -168,31 +168,35 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
-    <ClInclude Include="Input.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="OrigamiAPI.h" />
-    <ClInclude Include="Path.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Prerequisites.h" />
-    <ClInclude Include="Random.h" />
-    <ClInclude Include="Rect.h" />
-    <ClInclude Include="Singleton.h" />
-    <ClInclude Include="Vector2.h" />
-    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Public\Color.h" />
+    <ClInclude Include="Public\Input.h" />
+    <ClInclude Include="Public\ITab.h" />
+    <ClInclude Include="Public\ITabBuilder.h" />
+    <ClInclude Include="Public\Object.h" />
+    <ClInclude Include="Public\OrigamiAPI.h" />
+    <ClInclude Include="Public\Path.h" />
+    <ClInclude Include="Public\Prerequisites.h" />
+    <ClInclude Include="Public\Random.h" />
+    <ClInclude Include="Public\Rect.h" />
+    <ClInclude Include="Public\Singleton.h" />
+    <ClInclude Include="Public\Vector2.h" />
+    <ClInclude Include="Public\Vector3.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Input.cpp" />
-    <ClCompile Include="Object.cpp" />
     <ClCompile Include="OrigamiAPI.cpp" />
-    <ClCompile Include="Path.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Random.cpp" />
-    <ClCompile Include="Rect.cpp" />
+    <ClCompile Include="Private\Color.cpp" />
+    <ClCompile Include="Private\Input.cpp" />
+    <ClCompile Include="Private\Object.cpp" />
+    <ClCompile Include="Private\Path.cpp" />
+    <ClCompile Include="Private\Random.cpp" />
+    <ClCompile Include="Private\Rect.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

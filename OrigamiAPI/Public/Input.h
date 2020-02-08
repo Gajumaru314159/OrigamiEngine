@@ -51,7 +51,8 @@ namespace OrigamiEngine {
 		// GetKeyUp
 
 	private:
-		Input() :m_PressedTimes(8) {};
-		ArrayList<S32> m_PressedTimes;
+		static const U32 ms_MaxMouseButton=8;
+
+		S32 m_PressedTimes[ms_MaxMouseButton] = {0};
 	};
 }

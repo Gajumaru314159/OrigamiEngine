@@ -53,9 +53,6 @@
     <Filter Include="ソース ファイル\%40System\SystemManager">
       <UniqueIdentifier>{518ca9ea-fdc5-44f8-a352-26a7370d34d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\%40TabSystem\Tab">
-      <UniqueIdentifier>{7665ff1e-dde0-44c6-ba50-3732b6be0ffa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\%40TabSystem\TabContainer">
       <UniqueIdentifier>{35b5d23d-7c32-4f3c-9a54-6646cb5e2a62}</UniqueIdentifier>
     </Filter>
@@ -173,12 +170,6 @@
     </ClInclude>
     <ClInclude Include="GUID.h">
       <Filter>ソース ファイル\%40Utility\GUID</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\ITabBuilder.h">
-      <Filter>ソース ファイル\%40TabSystem\TabBuilder</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\ITab.h">
-      <Filter>ソース ファイル\%40TabSystem\Tab</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,7 +5,8 @@
 namespace OrigamiEngine {
 
 	SystemManager::SystemManager():
-		m_ProjectPath(L"C:\\My\\Productions\\OrigamiProject\\Test") {
+		m_ProjectPath(L"C:\\My\\Productions\\OrigamiProject\\Test")
+	{
 		S32 handle=CreateFontToHandle(NULL, 10, -1);
 		m_SystemFontMap.emplace(0, handle);
 
@@ -16,7 +17,15 @@ namespace OrigamiEngine {
 		SetFontSize(12);
 	}
 
-	String SystemManager::GetProjectPath() {
-		return GetInstance().m_ProjectPath;
+	Path SystemManager::GetProjectPath()const {
+		return m_ProjectPath;
+	}
+
+	String SystemManager::GetProjectPathString()const {
+		return String(m_ProjectPath);
+	}
+
+	S32 SystemManager::FindFontHandle(){
+		return 0;
 	}
 }

@@ -13,6 +13,7 @@
 #include <vector>
 #include <queue>
 #include <stack>
+#include <cassert>
 
 #include "Singleton.h"
 
@@ -60,8 +61,8 @@ namespace OrigamiEngine {
 
 	template<class T>
 	using SPtr = std::shared_ptr<T>;
-	template<class T,class D= std::default_delete<T>>
-	using UPtr = std::unique_ptr<T,D>;
+	template<class T>
+	using UPtr = std::unique_ptr<T>;
 	template<class T>
 	using WPtr = std::weak_ptr<T>;
 }

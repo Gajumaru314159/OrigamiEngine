@@ -38,7 +38,7 @@ namespace OrigamiEngine {
 				// ボーダのドラッグ処理
 				if (i < m_Containers.size() - 1) {
 					if (Input::GetMouseHover(x, bottom, x + width, bottom + BORDER_WEIGHT)) {
-						WindowManager::GetInstance().SetMouseCursor(WindowManager::SIZENS);
+						//WindowManager::GetInstance().SetMouseCursor(WindowManager::SIZENS);
 						if (Input::GetMouseButtonDown(0)) {
 							m_DragIndex = containerIndex;
 						}
@@ -46,7 +46,7 @@ namespace OrigamiEngine {
 
 					// 現在のコンテナがドラッグ対象の時
 					if (m_DragIndex == containerIndex) {
-						WindowManager::GetInstance().SetMouseCursor(WindowManager::SIZENS);
+						//WindowManager::GetInstance().SetMouseCursor(WindowManager::SIZENS);
 						auto& nextContainer = m_Containers.at(i + 1);
 						S32 nextBorder = y + S32(height * nextContainer->GetPercentage());
 
@@ -82,14 +82,14 @@ namespace OrigamiEngine {
 				if (i < m_Containers.size() - 1) {
 					// クリックされた境界のインデックスを記録
 					if (Input::GetMouseHover(right, y, right + BORDER_WEIGHT, y + height)) {
-						WindowManager::GetInstance().SetMouseCursor(WindowManager::SIZEWE);
+						//WindowManager::GetInstance().SetMouseCursor(WindowManager::SIZEWE);
 						if (Input::GetMouseButtonDown(0)) {
 							m_DragIndex = containerIndex;
 						}
 					}
 
 					if (m_DragIndex == containerIndex) {
-						WindowManager::GetInstance().SetMouseCursor(WindowManager::SIZEWE);
+						//WindowManager::GetInstance().SetMouseCursor(WindowManager::SIZEWE);
 						auto& nextContainer = m_Containers.at(i + 1);
 						S32 nextBorder = x + S32(width * nextContainer->GetPercentage());
 
