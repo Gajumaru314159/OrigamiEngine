@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="必須ファイル">
+      <UniqueIdentifier>{8b6e907f-e2fa-4c59-8d43-2781ab03ee67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Main">
+      <UniqueIdentifier>{4a88bd12-1c43-45df-ad7d-5d0504ce3385}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\System">
+      <UniqueIdentifier>{b68a8171-c6ae-4cc3-a9ac-271b1a844642}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Private\framework.h">
+      <Filter>必須ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\pch.h">
+      <Filter>必須ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\DXWrapper.h">
+      <Filter>ソース ファイル\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\IDXWrapper.h">
+      <Filter>ソース ファイル\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\DX12Wrapper.h">
+      <Filter>ソース ファイル\System</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Private\dllmain.cpp">
+      <Filter>必須ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\pch.cpp">
+      <Filter>必須ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\DX12Wrapper.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\DXWrapper.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

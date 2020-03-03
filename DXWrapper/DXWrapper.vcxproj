@@ -12,20 +12,20 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{C5ED4C88-21A6-4EA7-BF2E-D5BD2441E0D8}</ProjectGuid>
+    <ProjectGuid>{69B6E803-C958-42F4-9D8C-6F458ECFBA23}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>OrigamiAPI</RootNamespace>
+    <RootNamespace>DXWrapper</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -47,84 +47,65 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(MSBuildProjectDirectory)\Out\bin\$(Configuration)\</OutDir>
     <IntDir>$(MSBuildProjectDirectory)\Out\obj\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(MSBuildProjectDirectory)\Out\bin\$(Configuration)\</OutDir>
     <IntDir>$(MSBuildProjectDirectory)\Out\obj\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DXWRAPPER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)\Public;$(ProjectDir)\Private;$(SolutionDir)\Common;$(IncludePath);C:\My\Productions\C++\lib\DxLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\Public;$(ProjectDir)\Private;$(SolutionDir)\Common;C:\My\Productions\C++\lib\DirectXTex</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>C:\My\Productions\C++\lib\DirectXTex;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <Lib>
-      <AdditionalLibraryDirectories>C:\My\Productions\C++\lib\DxLib</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;DXWRAPPER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)\Public;$(ProjectDir)\Private;$(SolutionDir)\Common;$(IncludePath);C:\My\Productions\C++\lib\DxLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\Public;$(ProjectDir)\Private;$(SolutionDir)\Common;C:\My\Productions\C++\lib\DirectXTex</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>C:\My\Productions\C++\lib\DirectXTex;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <Lib>
-      <AdditionalLibraryDirectories>C:\My\Productions\C++\lib\DxLib</AdditionalLibraryDirectories>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Common\Prerequisites.h" />
-    <ClInclude Include="..\Common\Singleton.h" />
+    <ClInclude Include="Private\DX12Wrapper.h" />
     <ClInclude Include="Private\framework.h" />
     <ClInclude Include="Private\pch.h" />
-    <ClInclude Include="Public\Color.h" />
-    <ClInclude Include="Public\Input.h" />
-    <ClInclude Include="Public\ITab.h" />
-    <ClInclude Include="Public\ITabBuilder.h" />
-    <ClInclude Include="Public\Object.h" />
-    <ClInclude Include="Public\OrigamiAPI.h" />
-    <ClInclude Include="Public\Path.h" />
-    <ClInclude Include="Public\Random.h" />
-    <ClInclude Include="Public\Rect.h" />
-    <ClInclude Include="Public\Vector2.h" />
-    <ClInclude Include="Public\Vector3.h" />
+    <ClInclude Include="Public\DXWrapper.h" />
+    <ClInclude Include="Public\IDXWrapper.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Private\Color.cpp" />
-    <ClCompile Include="Private\Input.cpp" />
-    <ClCompile Include="Private\Object.cpp" />
-    <ClCompile Include="Private\OrigamiAPI.cpp" />
-    <ClCompile Include="Private\Path.cpp" />
-    <ClCompile Include="Private\pch.cpp" />
-    <ClCompile Include="Private\Random.cpp" />
-    <ClCompile Include="Private\Rect.cpp" />
+    <ClCompile Include="Private\dllmain.cpp" />
+    <ClCompile Include="Private\DX12Wrapper.cpp" />
+    <ClCompile Include="Private\DXWrapper.cpp" />
+    <ClCompile Include="Private\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

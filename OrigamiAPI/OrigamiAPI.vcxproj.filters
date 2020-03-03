@@ -15,9 +15,6 @@
     <Filter Include="ソース ファイル\Path">
       <UniqueIdentifier>{5bc7104f-fe9c-4295-83bd-4b225976c0f9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Singleton">
-      <UniqueIdentifier>{a7073d66-aaf3-4e4f-bc8c-5fe590cc1bfd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Random">
       <UniqueIdentifier>{b7cdb3cb-edff-4bda-8029-d3a1a53607a4}</UniqueIdentifier>
     </Filter>
@@ -33,17 +30,14 @@
     <Filter Include="ソース ファイル\Tab">
       <UniqueIdentifier>{212d673a-ee01-401f-bf55-2f620e9c0d2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\_Common">
+      <UniqueIdentifier>{a7073d66-aaf3-4e4f-bc8c-5fe590cc1bfd}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ソース ファイル\Color">
       <UniqueIdentifier>{c7de2d43-d599-4aeb-b43b-9f6235d6b80f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>必須ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>必須ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Input.h">
       <Filter>ソース ファイル\Input</Filter>
     </ClInclude>
@@ -59,9 +53,6 @@
     <ClInclude Include="Public\Rect.h">
       <Filter>ソース ファイル\Rect</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Singleton.h">
-      <Filter>ソース ファイル\Singleton</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Vector2.h">
       <Filter>ソース ファイル\Vector</Filter>
     </ClInclude>
@@ -69,9 +60,6 @@
       <Filter>ソース ファイル\Vector</Filter>
     </ClInclude>
     <ClInclude Include="Public\OrigamiAPI.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Prerequisites.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Public\ITab.h">
@@ -83,14 +71,20 @@
     <ClInclude Include="Public\Color.h">
       <Filter>ソース ファイル\Color</Filter>
     </ClInclude>
+    <ClInclude Include="Private\framework.h">
+      <Filter>必須ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\pch.h">
+      <Filter>必須ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Singleton.h">
+      <Filter>ソース ファイル\_Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Prerequisites.h">
+      <Filter>ソース ファイル\_Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>必須ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="OrigamiAPI.cpp">
-      <Filter>必須ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Input.cpp">
       <Filter>ソース ファイル\Input</Filter>
     </ClCompile>
@@ -108,6 +102,12 @@
     </ClCompile>
     <ClCompile Include="Private\Color.cpp">
       <Filter>ソース ファイル\Color</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\OrigamiAPI.cpp">
+      <Filter>必須ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\pch.cpp">
+      <Filter>必須ファイル</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

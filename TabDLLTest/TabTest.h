@@ -1,7 +1,7 @@
 // MathLibrary.h - Contains declarations of math functions
 #pragma once
 
-#include "Public/ITab.h"
+#include "ITab.h"
 
 #ifdef TABDLLTEST_EXPORTS
 #define MATHLIBRARY_API __declspec(dllexport)

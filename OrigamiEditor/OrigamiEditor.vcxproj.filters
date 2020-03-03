@@ -70,105 +70,105 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="Private\Main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="AssetManager.cpp">
+    <ClCompile Include="Private\AssetManager.cpp">
       <Filter>ソース ファイル\%40Asset\AssetManager</Filter>
     </ClCompile>
-    <ClCompile Include="Component.cpp">
+    <ClCompile Include="Private\Component.cpp">
       <Filter>ソース ファイル\%40GUILayout\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Container.cpp">
+    <ClCompile Include="Private\Container.cpp">
       <Filter>ソース ファイル\%40TabSystem\Container</Filter>
     </ClCompile>
-    <ClCompile Include="DirectoryAsset.cpp">
+    <ClCompile Include="Private\DirectoryAsset.cpp">
       <Filter>ソース ファイル\%40Asset\DirectoryAsset</Filter>
     </ClCompile>
-    <ClCompile Include="EmptyTab.cpp">
+    <ClCompile Include="Private\EmptyTab.cpp">
       <Filter>ソース ファイル\%40TabSystem\EmptyTab</Filter>
     </ClCompile>
-    <ClCompile Include="EntryAsset.cpp">
+    <ClCompile Include="Private\EntryAsset.cpp">
       <Filter>ソース ファイル\%40Asset\EntryAsset</Filter>
     </ClCompile>
-    <ClCompile Include="UndefinedAsset.cpp">
+    <ClCompile Include="Private\UndefinedAsset.cpp">
       <Filter>ソース ファイル\%40Asset\UndefinedAsset</Filter>
     </ClCompile>
-    <ClCompile Include="EngineCore.cpp">
+    <ClCompile Include="Private\EngineCore.cpp">
       <Filter>ソース ファイル\%40System\EngineCore</Filter>
     </ClCompile>
-    <ClCompile Include="SystemManager.cpp">
+    <ClCompile Include="Private\SystemManager.cpp">
       <Filter>ソース ファイル\%40System\SystemManager</Filter>
     </ClCompile>
-    <ClCompile Include="WindowManager.cpp">
+    <ClCompile Include="Private\WindowManager.cpp">
       <Filter>ソース ファイル\%40System\WindowManager</Filter>
     </ClCompile>
-    <ClCompile Include="SplitContainer.cpp">
+    <ClCompile Include="Private\SplitContainer.cpp">
       <Filter>ソース ファイル\%40TabSystem\SplitContainer</Filter>
     </ClCompile>
-    <ClCompile Include="TabContainer.cpp">
+    <ClCompile Include="Private\TabContainer.cpp">
       <Filter>ソース ファイル\%40TabSystem\TabContainer</Filter>
     </ClCompile>
-    <ClCompile Include="TabBuilder.cpp">
+    <ClCompile Include="Private\TabBuilder.cpp">
       <Filter>ソース ファイル\%40TabSystem\TabBuilder</Filter>
     </ClCompile>
-    <ClCompile Include="GUID.cpp">
+    <ClCompile Include="Private\GUID.cpp">
       <Filter>ソース ファイル\%40Utility\GUID</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AssetManager.h">
+    <ClInclude Include="Private\AssetManager.h">
       <Filter>ソース ファイル\%40Asset\AssetManager</Filter>
     </ClInclude>
-    <ClInclude Include="Component.h">
+    <ClInclude Include="Private\Component.h">
       <Filter>ソース ファイル\%40GUILayout\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Container.h">
+    <ClInclude Include="Private\Container.h">
       <Filter>ソース ファイル\%40TabSystem\Container</Filter>
     </ClInclude>
-    <ClInclude Include="DirectoryAsset.h">
+    <ClInclude Include="Private\DirectoryAsset.h">
       <Filter>ソース ファイル\%40Asset\DirectoryAsset</Filter>
     </ClInclude>
-    <ClInclude Include="EmptyTab.h">
+    <ClInclude Include="Private\EmptyTab.h">
       <Filter>ソース ファイル\%40TabSystem\EmptyTab</Filter>
     </ClInclude>
-    <ClInclude Include="EntryAsset.h">
+    <ClInclude Include="Private\EntryAsset.h">
       <Filter>ソース ファイル\%40Asset\EntryAsset</Filter>
     </ClInclude>
-    <ClInclude Include="UndefinedAsset.h">
+    <ClInclude Include="Private\UndefinedAsset.h">
       <Filter>ソース ファイル\%40Asset\UndefinedAsset</Filter>
     </ClInclude>
-    <ClInclude Include="GUIMonoSkin.h">
+    <ClInclude Include="Private\GUIMonoSkin.h">
       <Filter>ソース ファイル\%40GUILayout\Skin</Filter>
     </ClInclude>
-    <ClInclude Include="GUISkin.h">
+    <ClInclude Include="Private\GUISkin.h">
       <Filter>ソース ファイル\%40GUILayout\Skin</Filter>
     </ClInclude>
-    <ClInclude Include="EngineCore.h">
+    <ClInclude Include="Private\EngineCore.h">
       <Filter>ソース ファイル\%40System\EngineCore</Filter>
     </ClInclude>
-    <ClInclude Include="SystemManager.h">
+    <ClInclude Include="Private\SystemManager.h">
       <Filter>ソース ファイル\%40System\SystemManager</Filter>
     </ClInclude>
-    <ClInclude Include="WindowManager.h">
+    <ClInclude Include="Private\WindowManager.h">
       <Filter>ソース ファイル\%40System\WindowManager</Filter>
     </ClInclude>
-    <ClInclude Include="SplitContainer.h">
+    <ClInclude Include="Private\SplitContainer.h">
       <Filter>ソース ファイル\%40TabSystem\SplitContainer</Filter>
     </ClInclude>
-    <ClInclude Include="TabContainer.h">
+    <ClInclude Include="Private\TabContainer.h">
       <Filter>ソース ファイル\%40TabSystem\TabContainer</Filter>
     </ClInclude>
-    <ClInclude Include="SystemColor.h">
+    <ClInclude Include="Private\SystemColor.h">
       <Filter>ソース ファイル\%40Utility\%40Constants</Filter>
     </ClInclude>
-    <ClInclude Include="OrigamiEngine.h">
+    <ClInclude Include="Private\OrigamiEngine.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="TabBuilder.h">
+    <ClInclude Include="Private\TabBuilder.h">
       <Filter>ソース ファイル\%40TabSystem\TabBuilder</Filter>
     </ClInclude>
-    <ClInclude Include="GUID.h">
+    <ClInclude Include="Private\GUID.h">
       <Filter>ソース ファイル\%40Utility\GUID</Filter>
     </ClInclude>
   </ItemGroup>
