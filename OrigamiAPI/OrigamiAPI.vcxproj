@@ -45,14 +45,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(MSBuildProjectDirectory)\Out\bin\$(Configuration)\</OutDir>
-    <IntDir>$(MSBuildProjectDirectory)\Out\obj\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Out\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(MSBuildProjectDirectory)\Out\bin\$(Configuration)\</OutDir>
-    <IntDir>$(MSBuildProjectDirectory)\Out\obj\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Out\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -122,7 +122,10 @@
     <ClCompile Include="Private\Object.cpp" />
     <ClCompile Include="Private\OrigamiAPI.cpp" />
     <ClCompile Include="Private\Path.cpp" />
-    <ClCompile Include="Private\pch.cpp" />
+    <ClCompile Include="Private\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Private\Random.cpp" />
     <ClCompile Include="Private\Rect.cpp" />
   </ItemGroup>

@@ -45,13 +45,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(MSBuildProjectDirectory)\Out\bin\$(Configuration)\</OutDir>
-    <IntDir>$(MSBuildProjectDirectory)\Out\obj\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Out\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(MSBuildProjectDirectory)\Out\bin\$(Configuration)\</OutDir>
-    <IntDir>$(MSBuildProjectDirectory)\Out\obj\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Out\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -61,7 +61,8 @@
       <PreprocessorDefinitions>_DEBUG;DXWRAPPER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\Public;$(ProjectDir)\Private;$(SolutionDir)\Common;C:\My\Productions\C++\lib\DirectXTex</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\Public;$(ProjectDir)\Private;$(SolutionDir)\Common;C:\My\Productions\C++\lib\DirectXTex;C:\My\Productions\C++\OrigamiEngine\OrigamiAPI\Public</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>Prerequisites.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,10 +103,26 @@
     <ClCompile Include="Private\dllmain.cpp" />
     <ClCompile Include="Private\DX12Wrapper.cpp" />
     <ClCompile Include="Private\DXWrapper.cpp" />
+    <ClCompile Include="Private\Graphic.cpp" />
     <ClCompile Include="Private\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OrigamiAPI\OrigamiAPI.vcxproj">
+      <Project>{c5ed4c88-21a6-4ea7-bf2e-d5bd2441e0d8}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Data\Shaders\VertexColorShaderFrag.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="..\Data\Shaders\VertexColorShaderVert.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

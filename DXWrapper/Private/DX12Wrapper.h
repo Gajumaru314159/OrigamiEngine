@@ -2,11 +2,20 @@
 
 #include "IDXWrapper.h"
 
-#include <vector>
+#include <functional>
 
 #include <d3d12.h>
 #include<dxgi1_6.h>
-//#include<d3dx12.h>
+#include<d3dx12.h>
+
+#include <DirectXTex.h>
+#ifdef _DEBUG
+#pragma comment(lib,"DirectXTex_x64_Debug.lib")
+#else
+#pragma comment(lib,"DirectXTex_x64_Release.lib")
+#endif
+
+
 #include <wrl.h>
 
 namespace OrigamiGraphic
@@ -17,6 +26,9 @@ namespace OrigamiGraphic
 		int Init()override;
 
 		int SwapScreen()override;
+
+		int LoadGraph(const String& path)override;
+
 	private:
 		// ウィンドウ回り
 		HWND m_Hwnd;
@@ -46,6 +58,12 @@ namespace OrigamiGraphic
 		ComPtr<ID3D12Fence> m_Fence = nullptr;
 		UINT64 m_FenceVal = 0;
 
+		// テクスチャロードテーブル
+		using LoadLambda_t = std::function<HRESULT(const String & path, DirectX::TexMetadata*, DirectX::ScratchImage&)>;
+		HashMap < String, LoadLambda_t> m_LoadLambdaTable;
+
+		ArrayList<ComPtr<ID3D12Resource>> m_TextureMap;
+
 
 		HRESULT CreateMainWindow();
 		HRESULT InitializeDXGIDevice();
@@ -54,5 +72,8 @@ namespace OrigamiGraphic
 		HRESULT CreateFinalRenderTargets();
 		HRESULT CreateSceneView();
 		HRESULT CreateFence();
+
+
+		void CreateTextureLoaderTable();
 	};
 }

@@ -2,8 +2,6 @@
 
 #include"DX12Wrapper.h"
 
-#include<string>
-
 #include<d3d12.h>
 #pragma comment(lib, "d3d12.lib")
 #include<dxgi1_6.h>
@@ -71,6 +69,9 @@ namespace OrigamiGraphic
 		if (FAILED(CreateFence())) {
 			return -1;
 		}
+
+		// テクスチャロードテーブルの作成
+		CreateTextureLoaderTable();
 
 		ShowWindow(m_Hwnd, SW_SHOW);
 		return 0;

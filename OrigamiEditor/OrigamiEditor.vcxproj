@@ -45,15 +45,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(MSBuildProjectDirectory)\Out\bin\$(Configuration)\</OutDir>
-    <IntDir>$(MSBuildProjectDirectory)\Out\obj\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Out\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <SourcePath>$(SourcePath)</SourcePath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(MSBuildProjectDirectory)\Out\bin\$(Configuration)\</OutDir>
-    <IntDir>$(MSBuildProjectDirectory)\Out\obj\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Out\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <SourcePath>$(SourcePath)</SourcePath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>

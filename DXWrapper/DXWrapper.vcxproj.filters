@@ -14,6 +14,12 @@
     <Filter Include="ソース ファイル\System">
       <UniqueIdentifier>{b68a8171-c6ae-4cc3-a9ac-271b1a844642}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Graphic">
+      <UniqueIdentifier>{5fa9162c-f9f2-4356-8b55-624d587b0eb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="シェーダ">
+      <UniqueIdentifier>{75efe805-b76a-42fa-9867-6300168e8c3d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Private\framework.h">
@@ -42,8 +48,19 @@
     <ClCompile Include="Private\DX12Wrapper.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
-    <ClCompile Include="Private\DXWrapper.cpp">
-      <Filter>ソース ファイル\System</Filter>
+    <ClCompile Include="Private\Graphic.cpp">
+      <Filter>ソース ファイル\Graphic</Filter>
     </ClCompile>
+    <ClCompile Include="Private\DXWrapper.cpp">
+      <Filter>ソース ファイル\Main</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Data\Shaders\VertexColorShaderVert.hlsl">
+      <Filter>シェーダ</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Data\Shaders\VertexColorShaderFrag.hlsl">
+      <Filter>シェーダ</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

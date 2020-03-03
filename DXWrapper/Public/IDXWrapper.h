@@ -17,7 +17,7 @@ namespace OrigamiGraphic
 		
 		virtual int SwapScreen()=0;
 
-		//virtual int LoadGraph(const char*)=0;
+		virtual int LoadGraph(const String& path)=0;
 	};
 }
 
