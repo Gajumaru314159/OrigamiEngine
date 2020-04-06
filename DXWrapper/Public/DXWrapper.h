@@ -1,8 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include <memory>
 #include "IDXWrapper.h"
-
 
 //#define DX12WRAPPER_EXPORTS
 #ifdef DXWRAPPER_EXPORTS
@@ -12,5 +11,5 @@
 #endif
 
 extern "C" {
-	DLL OrigamiGraphic::IDXWrapper * CreateWrapper(OrigamiGraphic::DX_VERSION version);
+	DLL OrigamiGraphic::IDXWrapper* CreateWrapper(OrigamiGraphic::DirectXVersion version);
 }

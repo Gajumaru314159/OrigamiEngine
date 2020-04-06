@@ -20,6 +20,12 @@
     <Filter Include="シェーダ">
       <UniqueIdentifier>{75efe805-b76a-42fa-9867-6300168e8c3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\PipelineDesc">
+      <UniqueIdentifier>{9e462e47-7782-4015-9e95-0016e1834768}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Material">
+      <UniqueIdentifier>{a917b7bb-c81f-4c88-8df6-025a68aa51eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Private\framework.h">
@@ -36,6 +42,12 @@
     </ClInclude>
     <ClInclude Include="Private\DX12Wrapper.h">
       <Filter>ソース ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\PipelineDesc.h">
+      <Filter>ソース ファイル\PipelineDesc</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Material.h">
+      <Filter>ソース ファイル\Material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

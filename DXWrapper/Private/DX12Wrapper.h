@@ -1,70 +1,63 @@
-#pragma once
+ï»¿#pragma once
 
 #include "IDXWrapper.h"
 
 #include <functional>
 
 #include <d3d12.h>
-#include<dxgi1_6.h>
-#include<d3dx12.h>
+#include <dxgi1_6.h>
+#include <d3dx12.h>
 
 #include <DirectXTex.h>
 #ifdef _DEBUG
-#pragma comment(lib,"DirectXTex_x64_Debug.lib")
+#pragma comment(lib, "DirectXTex_x64_Debug.lib")
 #else
-#pragma comment(lib,"DirectXTex_x64_Release.lib")
+#pragma comment(lib, "DirectXTex_x64_Release.lib")
 #endif
-
 
 #include <wrl.h>
 
+#include "Material.h"
+
 namespace OrigamiGraphic
 {
-	class DX12Wrapper :public IDXWrapper
+
+
+	class DX12Wrapper : public IDXWrapper
 	{
 	public:
-		int Init()override;
+		#pragma region
+		// é–¢æ•°ã®èª¬æ˜ã¯IDXWrapperã‚’å‚ç…§
 
-		int SwapScreen()override;
+		S32 Init() override;
 
-		int LoadGraph(const String& path)override;
+		S32 SwapScreen() override;
 
+		S32 LoadGraph(const String& path) override;
+
+
+
+		S32 LoadShader(const String& path, ShaderType type, String& errorDest) override;
+		S32 DeleteShader(const S32 id)override;
+
+
+		S32 CreateGraphicPipeline(const PipelineDesc& desc)override;
+		S32 DeleteGraphicPipeline(const S32 id) override;
+
+
+
+		S32 CreateMaterial(const S32 id)override;
+		S32 DeleteMaterial(const S32 id) override;
+
+		S32 SetMaterial(const S32 id)override;
+
+		S32 SetMaterialFloatParam(const String& name, const F32 value)override;
+
+
+		S32 CreateTexture(S32 width, S32 height, TextureFormat format)override;
+		#pragma endregion
 	private:
-		// ƒEƒBƒ“ƒhƒE‰ñ‚è
-		HWND m_Hwnd;
-		LONG windowWidth;
-		LONG windowHeight;
-
-		template<typename T>
-		using ComPtr = Microsoft::WRL::ComPtr<T>;
-
-		// DXGI‚Ü‚í‚è
-		ComPtr<IDXGIFactory4> m_DxgiFactory = nullptr;	// DXGIƒCƒ“ƒ^[ƒtƒFƒCƒX
-		ComPtr<IDXGISwapChain4> m_Swapchain = nullptr;	// ƒXƒƒbƒvƒ`ƒFƒCƒ“
-
-		// DirectX12‚Ü‚í‚è
-		ComPtr<ID3D12Device> m_Dev = nullptr;//ƒfƒoƒCƒX
-		ComPtr<ID3D12CommandAllocator> m_CmdAllocator = nullptr;//ƒRƒ}ƒ“ƒhƒAƒƒP[ƒ^
-		ComPtr<ID3D12GraphicsCommandList> m_CmdList = nullptr;//ƒRƒ}ƒ“ƒhƒŠƒXƒg
-		ComPtr<ID3D12CommandQueue> m_CmdQueue = nullptr;//ƒRƒ}ƒ“ƒhƒLƒ…[
-
-		// •\¦‚ÉŠÖ‚í‚éƒoƒbƒtƒ@ü‚è
-		std::vector<ID3D12Resource*> m_BackBuffers;	//ƒoƒbƒNƒoƒbƒtƒ@(2‚ÂˆÈãcƒXƒƒbƒvƒ`ƒFƒCƒ“‚ªŠm•Û)
-		ComPtr<ID3D12DescriptorHeap> m_RtvHeaps = nullptr;//ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg—pƒfƒXƒNƒŠƒvƒ^ƒq[ƒv
-		std::unique_ptr<D3D12_VIEWPORT> m_Viewport;//ƒrƒ…[ƒ|[ƒg
-		std::unique_ptr<D3D12_RECT> m_Scissorrect;//ƒVƒU[‹éŒ`
-
-		// ƒtƒFƒ“ƒX
-		ComPtr<ID3D12Fence> m_Fence = nullptr;
-		UINT64 m_FenceVal = 0;
-
-		// ƒeƒNƒXƒ`ƒƒƒ[ƒhƒe[ƒuƒ‹
-		using LoadLambda_t = std::function<HRESULT(const String & path, DirectX::TexMetadata*, DirectX::ScratchImage&)>;
-		HashMap < String, LoadLambda_t> m_LoadLambdaTable;
-
-		ArrayList<ComPtr<ID3D12Resource>> m_TextureMap;
-
-
+		// åˆæœŸåŒ–
 		HRESULT CreateMainWindow();
 		HRESULT InitializeDXGIDevice();
 		HRESULT InitializeCommand();
@@ -72,8 +65,72 @@ namespace OrigamiGraphic
 		HRESULT CreateFinalRenderTargets();
 		HRESULT CreateSceneView();
 		HRESULT CreateFence();
-
-
 		void CreateTextureLoaderTable();
+		HRESULT CreateDefaultAssets();
+
+		bool IsCompiledShader(const String& path);
+		S32 GetShaderDataSize(ShaderParamType type);
+		S32 GetTextureFormatSize(const TextureFormat format)const;
+		DXGI_FORMAT ConvertTextureFormat(const TextureFormat format)const;
+
+	private:
+		#pragma region
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦é–¢ä¿‚
+		HWND m_Hwnd;
+		LONG windowWidth;
+		LONG windowHeight;
+
+		template <typename T>
+		using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+		// DXGIé–¢ä¿‚
+		ComPtr<IDXGIFactory4> m_DxgiFactory = nullptr;  // DXGIã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹
+		ComPtr<IDXGISwapChain4> m_Swapchain = nullptr;  // ã‚¹ãƒ¯ãƒƒãƒ—ãƒã‚§ã‚¤ãƒ³
+
+		// DirectX12é–¢ä¿‚
+		ComPtr<ID3D12Device> m_Dev = nullptr;  //ãƒ‡ãƒã‚¤ã‚¹
+		ComPtr<ID3D12CommandAllocator> m_CmdAllocator = nullptr;  //ã‚³ãƒãƒ³ãƒ‰ã‚¢ãƒ­ã‚±ãƒ¼ã‚¿
+		ComPtr<ID3D12GraphicsCommandList> m_CmdList = nullptr;  //ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆ
+		ComPtr<ID3D12CommandQueue> m_CmdQueue = nullptr;  //ã‚³ãƒãƒ³ãƒ‰ã‚­ãƒ¥ãƒ¼
+
+		// è¡¨ç¤ºã«é–¢ã‚ã‚‹ãƒãƒƒãƒ•ã‚¡é–¢ä¿‚
+		ArrayList<ID3D12Resource*> m_BackBuffers;         //ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡(2ã¤ä»¥ä¸Šâ€¦ã‚¹ãƒ¯ãƒƒãƒ—ãƒã‚§ã‚¤ãƒ³ãŒç¢ºä¿)
+		ComPtr<ID3D12DescriptorHeap> m_RtvHeaps = nullptr;  //ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆç”¨ãƒ‡ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—
+		UPtr<D3D12_VIEWPORT> m_Viewport;         //ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆ
+		UPtr<D3D12_RECT> m_Scissorrect;          //ã‚·ã‚¶ãƒ¼çŸ©å½¢
+
+		// ãƒ•ã‚§ãƒ³ã‚¹
+		ComPtr<ID3D12Fence> m_Fence = nullptr;
+		UINT64 m_FenceVal = 0;
+
+
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£èª­ã¿è¾¼ã¿é–¢ä¿‚
+		using LoadLambdaFunc = std::function<HRESULT(const String & path, DirectX::TexMetadata*, DirectX::ScratchImage&)>;
+		HashMap<String, LoadLambdaFunc> m_LoadLambdaTable;
+
+
+
+
+		// ãƒªã‚½ãƒ¼ã‚¹ç®¡ç†é–¢ä¿‚
+		struct PipelineSet
+		{
+			PipelineDesc desc;
+			ComPtr<ID3D12PipelineState> pipelineState;
+			ComPtr<ID3D12RootSignature> rootSignature;
+			S32 referenceCount = 0;
+		};
+
+		ArrayList<ComPtr<ID3DBlob>> m_ShaderList;
+		ArrayList<PipelineSet> m_PipelineList;
+		ArrayList<SPtr<Material>> m_MaterialList;
+		ArrayList<ComPtr<ID3D12Resource>> m_TextureList;
+
+		S32 m_CurrentMaterialID;
+
+		// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚¢ã‚»ãƒƒãƒˆ
+		S32 m_whiteTexID;
+
+
+		#pragma endregion
 	};
-}
+}  // namespace OrigamiGraphic

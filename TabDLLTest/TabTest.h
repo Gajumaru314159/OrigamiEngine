@@ -9,6 +9,8 @@
 #define MATHLIBRARY_API __declspec(dllimport)
 #endif
 
+using namespace OrigamiEngine;
+
 class DLLTab:public ITab {
 public:
 	DLLTab();

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Prerequisites.h"
+#include "Singleton.h"
 
 
 

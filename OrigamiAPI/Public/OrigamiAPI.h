@@ -9,6 +9,7 @@
 #include "Prerequisites.h"
 
 
+#include "Singleton.h"
 #include "Allocator.h"
 #include "Rect.h"
 #include "Path.h"
