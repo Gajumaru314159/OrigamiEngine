@@ -1,22 +1,21 @@
-/**
-* @file Prerequisites.h
-* @brief ‚·‚×‚Ä‚Ìƒtƒ@ƒCƒ‹‚É‹¤’Ê‚µ‚Ä“Ç‚İ‚Ş‚×‚«ƒwƒbƒ_B
-* @details ƒvƒŠƒ~ƒeƒBƒuŒ^‚ÌƒŠƒl[ƒ€‚âSTL‚ÌƒŠƒl[ƒ€‚ğs‚¤B’ÊíAPIg—p‚Í‚±‚¿‚ç‚Å‚Í‚È‚­OrigamiAPI.h‚ğ“Ç‚İ‚ŞB
-*/
+ï»¿#pragma once
 
-#pragma once
+#ifdef COMMONLIBRARY_EXPORTS
+#define DLL __declspec(dllexport)
+#else
+#define DLL __declspec(dllimport)
+#endif
+
 
 #include <memory>
-#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 #include <queue>
 #include <stack>
-#include <cassert>
 
 
-// ƒAƒgƒ~ƒbƒNŒ^‚ÌÄ’è‹`
+// ã‚¢ãƒˆãƒŸãƒƒã‚¯å‹ã®å†å®šç¾©
 using S8 = std::int8_t;
 using S16 = std::int16_t;
 using S32 = std::int32_t;
@@ -31,10 +30,11 @@ using Byte = unsigned char;
 using F32 = float;
 using F64 = double;
 
-// •¶š—ñŒ^‚ÌÄ’è‹`
-using String = std::wstring;
+// æ–‡å­—åˆ—å‹ã®å†å®šç¾©
+//using String = std::wstring;
+//using Char = char;
 
-// ƒRƒ“ƒeƒi‚ÌÄ’è‹`
+// ã‚³ãƒ³ãƒ†ãƒŠã®å†å®šç¾©
 template<class Key, class T>
 using HashMap = std::unordered_map<Key, T>;
 
@@ -51,7 +51,7 @@ template<class T>
 using Stack = std::stack<T>;
 
 
-// ƒXƒ}[ƒgƒ|ƒCƒ“ƒ^‚ÌÄ’è‹`
+// ã‚¹ãƒãƒ¼ãƒˆãƒã‚¤ãƒ³ã‚¿ã®å†å®šç¾©
 #define MSPtr std::make_shared
 #define MUPtr std::make_unique
 

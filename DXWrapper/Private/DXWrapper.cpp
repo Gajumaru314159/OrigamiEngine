@@ -1,22 +1,14 @@
 ﻿#include "pch.h"
-#include "DXWrapper.h"
+
 #include "DX12Wrapper.h"
+#include "DXWrapper.h"
 
-using namespace OrigamiGraphic;
-
-IDXWrapper* CreateWrapper(DirectXVersion version)
+namespace og
 {
-	switch (version)
+	IGraphicWrapper* CreateGraphicWrapper()
 	{
-	case DirectXVersion::DX12:
-		return new DX12Wrapper();
-	default:
-		break;
+		auto ptr = new DX12Wrapper();
+		//singleton = UPtr<og::IGraphicWrapper>(ptr);
+		return ptr;
 	}
-	return nullptr;
-}
-
-int Test()
-{
-	return 0;
 }

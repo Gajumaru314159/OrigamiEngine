@@ -110,11 +110,6 @@
     </ClCompile>
     <ClCompile Include="TabTest.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\OrigamiAPI\OrigamiAPI.vcxproj">
-      <Project>{c5ed4c88-21a6-4ea7-bf2e-d5bd2441e0d8}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

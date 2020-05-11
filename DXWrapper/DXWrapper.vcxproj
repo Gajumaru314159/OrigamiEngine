@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -63,15 +63,18 @@
       <PreprocessorDefinitions>_DEBUG;DXWRAPPER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)Public;$(ProjectDir)Private;C:\My\Productions\C++\lib\DirectXTex</AdditionalIncludeDirectories>
-      <ForcedIncludeFiles>
-      </ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>Public;Private;C:\My\Productions\C++\lib\DirectXTex;../CommonLibrary/Public</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>CommonLibrary.h</ForcedIncludeFiles>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>C:\My\Productions\C++\lib\DirectXTex;$(SolutionDir)Common;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AssemblyDebug>true</AssemblyDebug>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -84,9 +87,8 @@
       <PreprocessorDefinitions>NDEBUG;DXWRAPPER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)Public;$(ProjectDir)Private;C:\My\Productions\C++\lib\DirectXTex</AdditionalIncludeDirectories>
-      <ForcedIncludeFiles>
-      </ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>Public;Private;C:\My\Productions\C++\lib\DirectXTex;../CommonLibrary/Public</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>CommonLibrary.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -98,33 +100,86 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Private\DefaultAsset.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Private\DX12Wrapper.h" />
+    <ClInclude Include="Private\DXBase.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Private\framework.h" />
+    <ClInclude Include="Private\GraphicPipeline.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Private\InnerGraphicPipelineDesc.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Private\pch.h" />
+    <ClInclude Include="Private\Shader.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Private\Shape.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Private\Texture.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Public\AssetID.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Public\DXWrapper.h" />
-    <ClInclude Include="Public\IDXWrapper.h" />
-    <ClInclude Include="Public\Material.h" />
-    <ClInclude Include="Public\PipelineDesc.h" />
+    <ClInclude Include="Public\GraphicPipelineDesc.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Public\IGraphicWrapper.h" />
+    <ClInclude Include="Public\Material.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Private\dllmain.cpp" />
     <ClCompile Include="Private\DX12Wrapper.cpp" />
     <ClCompile Include="Private\DXWrapper.cpp" />
     <ClCompile Include="Private\Graphic.cpp" />
+    <ClCompile Include="Private\GraphicPipeline.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Private\Material.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Private\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Private\Shader.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Private\Shape.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Private\Texture.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Data\Shaders\VertexColorShaderFrag.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="..\Data\Shaders\VertexColorShaderVert.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-    </FxCompile>
+    <ProjectReference Include="..\CommonLibrary\CommonLibrary.vcxproj">
+      <Project>{86117734-8ede-4d67-95e6-2c869bca769b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

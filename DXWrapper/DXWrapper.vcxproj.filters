@@ -8,23 +8,35 @@
     <Filter Include="必須ファイル">
       <UniqueIdentifier>{8b6e907f-e2fa-4c59-8d43-2781ab03ee67}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Main">
+    <Filter Include="ソース ファイル\_Interface">
+      <UniqueIdentifier>{ef4f9903-18cb-4124-92cc-62b2f9742aff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\_DllExport">
+      <UniqueIdentifier>{f711d84f-76c3-4ea2-873b-ea1026b8ddfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\DX12Wrapper">
       <UniqueIdentifier>{4a88bd12-1c43-45df-ad7d-5d0504ce3385}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\System">
-      <UniqueIdentifier>{b68a8171-c6ae-4cc3-a9ac-271b1a844642}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\GraphicPipeline">
+      <UniqueIdentifier>{754d2f53-e11f-4c28-bf7d-d1aee55fd72c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Graphic">
-      <UniqueIdentifier>{5fa9162c-f9f2-4356-8b55-624d587b0eb7}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\Shader">
+      <UniqueIdentifier>{48d82dfc-e514-401e-9694-11f276fd3fd7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="シェーダ">
-      <UniqueIdentifier>{75efe805-b76a-42fa-9867-6300168e8c3d}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\Texture">
+      <UniqueIdentifier>{9953b338-d6c3-41d7-830e-e3d64adb1c2d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\PipelineDesc">
-      <UniqueIdentifier>{9e462e47-7782-4015-9e95-0016e1834768}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\DefaultAsset">
+      <UniqueIdentifier>{8460dfa5-711e-4983-a629-ba9aa8eeb8ab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Material">
-      <UniqueIdentifier>{a917b7bb-c81f-4c88-8df6-025a68aa51eb}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\VertexData">
+      <UniqueIdentifier>{81c1cf63-33cd-4e62-aeb3-d998595e52f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Shape">
+      <UniqueIdentifier>{e263af4d-1f74-4ecf-b83a-8a0221a45231}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Materials">
+      <UniqueIdentifier>{d827f45a-b662-4e7d-a7f8-7ca5f8ac5256}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,20 +46,42 @@
     <ClInclude Include="Private\pch.h">
       <Filter>必須ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Public\DXWrapper.h">
-      <Filter>ソース ファイル\Main</Filter>
+    <ClInclude Include="Private\GraphicPipeline.h">
+      <Filter>ソース ファイル\GraphicPipeline</Filter>
     </ClInclude>
-    <ClInclude Include="Public\IDXWrapper.h">
-      <Filter>ソース ファイル\Main</Filter>
+    <ClInclude Include="Public\GraphicPipelineDesc.h">
+      <Filter>ソース ファイル\_Interface</Filter>
     </ClInclude>
     <ClInclude Include="Private\DX12Wrapper.h">
-      <Filter>ソース ファイル\System</Filter>
+      <Filter>ソース ファイル\DX12Wrapper</Filter>
     </ClInclude>
-    <ClInclude Include="Public\PipelineDesc.h">
-      <Filter>ソース ファイル\PipelineDesc</Filter>
+    <ClInclude Include="Public\DXWrapper.h">
+      <Filter>ソース ファイル\_DllExport</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\IGraphicWrapper.h">
+      <Filter>ソース ファイル\_Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\DXBase.h" />
+    <ClInclude Include="Private\Shader.h">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\InnerGraphicPipelineDesc.h">
+      <Filter>ソース ファイル\GraphicPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\Texture.h">
+      <Filter>ソース ファイル\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\DefaultAsset.h">
+      <Filter>ソース ファイル\DefaultAsset</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\Shape.h">
+      <Filter>ソース ファイル\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\AssetID.h">
+      <Filter>ソース ファイル\_Interface</Filter>
     </ClInclude>
     <ClInclude Include="Public\Material.h">
-      <Filter>ソース ファイル\Material</Filter>
+      <Filter>ソース ファイル\Materials</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -57,22 +91,29 @@
     <ClCompile Include="Private\pch.cpp">
       <Filter>必須ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Private\DX12Wrapper.cpp">
-      <Filter>ソース ファイル\System</Filter>
+    <ClCompile Include="Private\GraphicPipeline.cpp">
+      <Filter>ソース ファイル\GraphicPipeline</Filter>
     </ClCompile>
     <ClCompile Include="Private\Graphic.cpp">
-      <Filter>ソース ファイル\Graphic</Filter>
+      <Filter>ソース ファイル\DX12Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\DX12Wrapper.cpp">
+      <Filter>ソース ファイル\DX12Wrapper</Filter>
     </ClCompile>
     <ClCompile Include="Private\DXWrapper.cpp">
-      <Filter>ソース ファイル\Main</Filter>
+      <Filter>ソース ファイル\_DllExport</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\Data\Shaders\VertexColorShaderVert.hlsl">
-      <Filter>シェーダ</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Data\Shaders\VertexColorShaderFrag.hlsl">
-      <Filter>シェーダ</Filter>
-    </FxCompile>
+    <ClCompile Include="Private\Shader.cpp">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Texture.cpp">
+      <Filter>ソース ファイル\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Shape.cpp">
+      <Filter>ソース ファイル\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Material.cpp">
+      <Filter>ソース ファイル\Materials</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

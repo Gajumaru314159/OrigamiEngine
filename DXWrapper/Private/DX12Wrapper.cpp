@@ -2,12 +2,10 @@
 
 #include "DX12Wrapper.h"
 
-#include <d3d12.h>
 #pragma comment(lib, "d3d12.lib")
-#include <dxgi1_6.h>
 #pragma comment(lib, "dxgi.lib")
-#include <d3dx12.h>
 
+//#pragma warning(diable: 4099 )
 #ifdef _DEBUG
 #pragma comment(lib, "DirectXTex_x64_Debug.lib")
 #else
@@ -15,6 +13,11 @@
 #endif
 
 
+#include "InnerGraphicPipelineDesc.h"
+#include "DefaultAsset.h"
+
+#include "Shader.h"
+#include<DirectXMath.h>
 namespace
 {
 	LRESULT WindowProcedure(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -26,9 +29,10 @@ namespace
 		}
 		return DefWindowProc(hwnd, msg, wparam, lparam);
 	}
-}  // namespace
+}
 
-namespace OrigamiGraphic
+
+namespace og
 {
 	S32 DX12Wrapper::Init()
 	{
@@ -65,30 +69,189 @@ namespace OrigamiGraphic
 		{
 			return -1;
 		}
-		// レンダリングに使用する変換行列の定義
-		if (FAILED(CreateSceneView()))
-		{
-			return -1;
-		}
 		//フェンスの作成
 		if (FAILED(CreateFence()))
 		{
 			return -1;
 		}
 
-		// テクスチャロードテーブルの作成
-		CreateTextureLoaderTable();
+		ShowWindow(m_Hwnd, SW_SHOW);
 
 		// デフォルトアセットの作成
-		if (FAILED(CreateDefaultAssets()))
+		if (CreateDefaultAssets() == -1)
 		{
 			return -1;
 		}
 
-		// 描画パイプラインの初期化
 
-		ShowWindow(m_Hwnd, SW_SHOW);
+		Test();
 		return 0;
+	}
+
+
+	ID3D12PipelineState* _pipelinestate = nullptr;
+
+	ID3D12RootSignature* rootsignature = nullptr;
+	void DX12Wrapper::Test()
+	{
+
+
+		struct Vertex
+		{
+			DirectX::XMFLOAT3 pos;//XYZ座標
+			DirectX::XMFLOAT2 uv;//UV座標
+		};
+
+		Vertex vertices[] = {
+			{{-0.5f,-0.9f,0.0f},{0.0f,1.0f} },//左下
+			{{-0.5f,0.9f,0.0f} ,{0.0f,0.0f}},//左上
+			{{0.5f,-0.9f,0.0f} ,{1.0f,1.0f}},//右下
+			{{0.5f,0.9f,0.0f} ,{1.0f,0.0f}},//右上
+		};
+
+		D3D12_HEAP_PROPERTIES heapprop = {};
+		heapprop.Type = D3D12_HEAP_TYPE_UPLOAD;
+		heapprop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+		heapprop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+
+		D3D12_RESOURCE_DESC resdesc = {};
+		resdesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+		resdesc.Width = sizeof(vertices);
+		resdesc.Height = 1;
+		resdesc.DepthOrArraySize = 1;
+		resdesc.MipLevels = 1;
+		resdesc.Format = DXGI_FORMAT_UNKNOWN;
+		resdesc.SampleDesc.Count = 1;
+		resdesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+		resdesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+
+		//UPLOAD(確保は可能)
+		ID3D12Resource* vertBuff = nullptr;
+		m_Dev->CreateCommittedResource(
+			&heapprop,
+			D3D12_HEAP_FLAG_NONE,
+			&resdesc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&vertBuff));
+
+		Vertex* vertMap = nullptr;
+		auto result = vertBuff->Map(0, nullptr, (void**)&vertMap);
+
+		std::copy(std::begin(vertices), std::end(vertices), vertMap);
+
+		vertBuff->Unmap(0, nullptr);
+
+		D3D12_VERTEX_BUFFER_VIEW vbView = {};
+		vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();//バッファの仮想アドレス
+		vbView.SizeInBytes = resdesc.Width;//全バイト数
+		vbView.StrideInBytes = sizeof(F32) * 5;//1頂点あたりのバイト数
+
+		unsigned short indices[] = { 0,1,2, 2,1,3 };
+
+		ID3D12Resource* idxBuff = nullptr;
+		//設定は、バッファのサイズ以外頂点バッファの設定を使いまわして
+		//OKだと思います。
+		resdesc.Width = sizeof(indices);
+		m_Dev->CreateCommittedResource(
+			&heapprop,
+			D3D12_HEAP_FLAG_NONE,
+			&resdesc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&idxBuff));
+
+		//作ったバッファにインデックスデータをコピー
+		unsigned short* mappedIdx = nullptr;
+		idxBuff->Map(0, nullptr, (void**)&mappedIdx);
+		std::copy(std::begin(indices), std::end(indices), mappedIdx);
+		idxBuff->Unmap(0, nullptr);
+
+		//インデックスバッファビューを作成
+		D3D12_INDEX_BUFFER_VIEW ibView = {};
+		ibView.BufferLocation = idxBuff->GetGPUVirtualAddress();
+		ibView.Format = DXGI_FORMAT_R16_UINT;
+		ibView.SizeInBytes = sizeof(indices);
+
+		m_CmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_CmdList->IASetVertexBuffers(0, 1, &vbView);
+		m_CmdList->IASetIndexBuffer(&ibView);
+
+		D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
+		{ "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 },
+		{ "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 },
+		};
+
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC gpipeline = {};
+		gpipeline.pRootSignature = nullptr;
+		gpipeline.VS.pShaderBytecode = m_ShaderList[0]->GetShaderBolb()->GetBufferPointer();
+		gpipeline.VS.BytecodeLength = m_ShaderList[0]->GetShaderBolb()->GetBufferSize();
+		gpipeline.PS.pShaderBytecode = m_ShaderList[1]->GetShaderBolb()->GetBufferPointer();
+		gpipeline.PS.BytecodeLength = m_ShaderList[1]->GetShaderBolb()->GetBufferSize();
+
+		gpipeline.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;//中身は0xffffffff
+
+		//
+		gpipeline.BlendState.AlphaToCoverageEnable = false;
+		gpipeline.BlendState.IndependentBlendEnable = false;
+
+		D3D12_RENDER_TARGET_BLEND_DESC renderTargetBlendDesc = {};
+
+		//ひとまず加算や乗算やαブレンディングは使用しない
+		renderTargetBlendDesc.BlendEnable = false;
+		renderTargetBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+		//ひとまず論理演算は使用しない
+		renderTargetBlendDesc.LogicOpEnable = false;
+
+		gpipeline.BlendState.RenderTarget[0] = renderTargetBlendDesc;
+
+
+		gpipeline.RasterizerState.MultisampleEnable = false;//まだアンチェリは使わない
+		gpipeline.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;//カリングしない
+		gpipeline.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;//中身を塗りつぶす
+		gpipeline.RasterizerState.DepthClipEnable = true;//深度方向のクリッピングは有効に
+
+		//残り
+		gpipeline.RasterizerState.FrontCounterClockwise = false;
+		gpipeline.RasterizerState.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
+		gpipeline.RasterizerState.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
+		gpipeline.RasterizerState.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+		gpipeline.RasterizerState.AntialiasedLineEnable = false;
+		gpipeline.RasterizerState.ForcedSampleCount = 0;
+		gpipeline.RasterizerState.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+
+
+		gpipeline.DepthStencilState.DepthEnable = false;
+		gpipeline.DepthStencilState.StencilEnable = false;
+
+		gpipeline.InputLayout.pInputElementDescs = inputLayout;//レイアウト先頭アドレス
+		gpipeline.InputLayout.NumElements = _countof(inputLayout);//レイアウト配列数
+
+		gpipeline.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;//ストリップ時のカットなし
+		gpipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;//三角形で構成
+
+		gpipeline.NumRenderTargets = 1;//今は１つのみ
+		gpipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;//0～1に正規化されたRGBA
+
+		gpipeline.SampleDesc.Count = 1;//サンプリングは1ピクセルにつき１
+		gpipeline.SampleDesc.Quality = 0;//クオリティは最低
+
+
+		D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
+		rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+		ID3DBlob* rootSigBlob = nullptr;
+		ID3DBlob* errorBlob = nullptr;
+		D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &rootSigBlob, &errorBlob);
+		result = m_Dev->CreateRootSignature(0, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), IID_PPV_ARGS(&rootsignature));
+		rootSigBlob->Release();
+
+		gpipeline.pRootSignature = rootsignature;
+		result = m_Dev->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(&_pipelinestate));
+
+
 	}
 
 	S32 DX12Wrapper::SwapScreen()
@@ -140,17 +303,25 @@ namespace OrigamiGraphic
 		rtvH.ptr += (SIZE_T)bbIdx * m_Dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV) * bbIdx;
 
 		//深度を指定
-		/*auto dsvH = m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
-			m_CmdList->OMSetRenderTargets(1, &rtvH, false, &dsvH);
-			m_CmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);*/
+		//auto dsvH = m_DSVHeap->GetCPUDescriptorHandleForHeapStart();
+		//m_CmdList->OMSetRenderTargets(1, &rtvH, false, &dsvH);
+		m_CmdList->OMSetRenderTargets(1, &rtvH, false, nullptr);
+		//m_CmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-			//画面クリア
+		//画面クリア
 		float clearColor[] = { 0.2f, 0.0f, 0.0f, 1.0f };  //白色
 		m_CmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
 
 		//ビューポート、シザー矩形のセット
 		m_CmdList->RSSetViewports(1, m_Viewport.get());
 		m_CmdList->RSSetScissorRects(1, m_Scissorrect.get());
+
+
+
+
+
+		m_CmdList->SetPipelineState(_pipelinestate);
+		m_CmdList->SetGraphicsRootSignature(rootsignature);
 
 		return 0;
 	}
@@ -163,7 +334,7 @@ namespace OrigamiGraphic
 		WNDCLASSEX w = {};
 		w.cbSize = sizeof(WNDCLASSEX);
 		w.lpfnWndProc = (WNDPROC)WindowProcedure;
-		w.lpszClassName = TEXT("DX12Sample");
+		w.lpszClassName = L"DX12Sample";
 		w.hInstance = GetModuleHandle(nullptr);
 
 		RegisterClassEx(&w);
@@ -178,7 +349,7 @@ namespace OrigamiGraphic
 		// ウィンドウオブジェクトの生成
 		m_Hwnd = CreateWindow(
 			w.lpszClassName,       // クラス名
-			TEXT("DX12テスト"),    // ウィンドウタイトル
+			L"DX12テスト",    // ウィンドウタイトル
 			WS_OVERLAPPEDWINDOW,   // ウィンドウスタイル
 			CW_USEDEFAULT,         // X
 			CW_USEDEFAULT,         // Y
@@ -339,79 +510,101 @@ namespace OrigamiGraphic
 		return result;
 	}
 
-	HRESULT DX12Wrapper::CreateSceneView()
-	{
-		/*
-			DXGI_SWAP_CHAIN_DESC1 desc = {};
-			auto result = m_Swapchain->GetDesc1(&desc);
-
-			//定数バッファ作成
-			result = m_Dev->CreateCommittedResource(
-				&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-				D3D12_HEAP_FLAG_NONE,
-				&CD3DX12_RESOURCE_DESC::Buffer((sizeof(SceneData) + 0xff) & ~0xff),
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				nullptr,
-				IID_PPV_ARGS(m_SceneConstBuff.ReleaseAndGetAddressOf())
-			);
-
-			if (FAILED(result)) {
-				return result;
-			}
-
-			_mappedSceneData = nullptr;//マップ先を示すポインタ
-			result = _sceneConstBuff->Map(0, nullptr, (void**)&_mappedSceneData);//マップ
-
-			XMFLOAT3 eye(0, 15, -15);
-			XMFLOAT3 target(0, 15, 0);
-			XMFLOAT3 up(0, 1, 0);
-			_mappedSceneData->view = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
-			_mappedSceneData->proj = XMMatrixPerspectiveFovLH(XM_PIDIV4,//画角は45°
-				static_cast<float>(desc.Width) / static_cast<float>(desc.Height),//アス比
-				0.1f,//近い方
-				1000.0f//遠い方
-			);
-			_mappedSceneData->eye = eye;
-
-			D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
-			descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;//シェーダから見えるように
-			descHeapDesc.NodeMask = 0;//マスクは0
-			descHeapDesc.NumDescriptors = 1;//
-			descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;//デスクリプタヒープ種別
-			result = m_Dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(_sceneDescHeap.ReleaseAndGetAddressOf()));//生成
-
-			////デスクリプタの先頭ハンドルを取得しておく
-			auto heapHandle = _sceneDescHeap->GetCPUDescriptorHandleForHeapStart();
-
-			D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-			cbvDesc.BufferLocation = _sceneConstBuff->GetGPUVirtualAddress();
-			cbvDesc.SizeInBytes = _sceneConstBuff->GetDesc().Width;
-			//定数バッファビューの作成
-			m_Dev->CreateConstantBufferView(&cbvDesc, heapHandle);
-			return result;*/
-		return S_OK;
-	}
-
 	HRESULT DX12Wrapper::CreateFence()
 	{
 		m_FenceVal = 0;
 		return m_Dev->CreateFence(m_FenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_Fence.ReleaseAndGetAddressOf()));
 	}
 
-	HRESULT DX12Wrapper::CreateDefaultAssets()
+	S32 DX12Wrapper::CreateDefaultAssets()
 	{
-		m_whiteTexID = CreateTexture(4, 4, TextureFormat::RGBA8);
-		if (m_whiteTexID == -1)return E_FAIL;
+		//DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, 4, 4, ConvertTextureFormat(TextureFormat::RGBA8));
+		DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, "C:\\My\\Temp\\textest200x200.png");
+		if (!DefaultAsset::Instance()->whiteTex->IsValid())return -1;
 
-
-		PipelineDesc pipeline;
-		S32 id = CreateGraphicPipeline(pipeline);
-		if (id == -1)
 		{
+			String errorDest;
+			/*
+			String vssrc;
+			vssrc.append("\nstruct Output {float4 pos:SV_POSITION;float2 uv:TEXCOORD;};");
+			vssrc.append("\nOutput VSMain(float4 pos : POSITION ,float2 uv : TEXCOORD) {");
+			vssrc.append("\n	 Output o;");
+			vssrc.append("\n	 o.pos = pos;");
+			vssrc.append("\n	 o.uv = uv;");
+			vssrc.append("\n	 return o;");
+			vssrc.append("\n}");
+			String pssrc;
+			pssrc.append("\nTexture2D<float4> tex:register(t0);");
+			pssrc.append("\nSamplerState smp:register(s0);");
+			pssrc.append("\ncbuffer Data0 : register(b0) {matrix mat;};");
+			pssrc.append("\ncbuffer Data1 : register(b1) {float4 col;};");
+			pssrc.append("\nstruct Output {float4 pos:SV_POSITION;float2 uv:TEXCOORD;};");
+			pssrc.append("\nfloat4 PSMain(Output i) : SV_TARGET{");
+			pssrc.append("\n  return float4(1,0,0,1);//tex.Sample(smp, i.uv)*col;");
+			pssrc.append("\n}");*/
+			String vssrc = "struct Output {	float4 pos:POSITION;float4 svpos:SV_POSITION;};Output VSMain(float4 pos : POSITION) {	Output output;	output.pos = pos;output.svpos = pos;return output;}";
+			String pssrc = "struct Input {	float4 pos:POSITION;float4 svpos:SV_POSITION;};float4 PSMain(Input input ) : SV_TARGET{return float4((float2(0,1)+ input.pos.xy)*0.5f,1,1);}";
 
+			S32 vs = CreateShader(vssrc, ShaderType::VERTEX, errorDest);
+			S32 ps = CreateShader(pssrc, ShaderType::PIXEL, errorDest);
+			if (vs == -1 || ps == -1)
+			{
+				return -1;
+			}
+
+
+			GraphicPipelineDesc pipeline;
+			pipeline.vs = vs;
+			pipeline.ps = ps;
+			pipeline.numRenderTargets = 1;
+
+			S32 id = CreateGraphicPipeline(pipeline);
+			if (id == -1)
+			{
+				return -1;
+			}
 		}
+
+		m_Vertices[0 * 5 + 0] = -0.4f;
+		m_Vertices[0 * 5 + 1] = -0.7f;
+		m_Vertices[0 * 5 + 2] = 0.0f;
+		m_Vertices[0 * 5 + 3] = 0.0f;
+		m_Vertices[0 * 5 + 4] = 0.0f;
+
+		m_Vertices[0 * 5 + 0] = -0.4f;
+		m_Vertices[0 * 5 + 1] = 0.7f;
+		m_Vertices[0 * 5 + 2] = 0.0f;
+		m_Vertices[1 * 5 + 3] = 1.0f;
+		m_Vertices[1 * 5 + 4] = 0.0f;
+
+		m_Vertices[0 * 5 + 0] = 0.4f;
+		m_Vertices[0 * 5 + 1] = -0.7f;
+		m_Vertices[0 * 5 + 2] = 0.0f;
+		m_Vertices[2 * 5 + 3] = 0.0f;
+		m_Vertices[2 * 5 + 4] = 1.0f;
+
+		m_Vertices[0 * 5 + 0] = 0.4f;
+		m_Vertices[0 * 5 + 1] = 0.7f;
+		m_Vertices[0 * 5 + 2] = 0.0f;
+		m_Vertices[3 * 5 + 3] = 1.0f;
+		m_Vertices[3 * 5 + 4] = 1.0f;
+		/*
+		m_Vertices[0 * 5 + 3] = 0.0f;
+		m_Vertices[0 * 5 + 4] = 0.0f;
+		m_Vertices[1 * 5 + 3] = 1.0f;
+		m_Vertices[1 * 5 + 4] = 0.0f;
+		m_Vertices[2 * 5 + 3] = 0.0f;
+		m_Vertices[2 * 5 + 4] = 1.0f;
+		m_Vertices[3 * 5 + 3] = 1.0f;
+		m_Vertices[3 * 5 + 4] = 1.0f;
+		*/
+
+		m_TexVertID = CreateShape(sizeof(F32) * 5, sizeof(m_Vertices), (Byte*)m_Vertices);
+
+
+
+		m_CmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+		return 0;
 	}
-
-
-
-}  // namespace OrigamiGraphic
+}

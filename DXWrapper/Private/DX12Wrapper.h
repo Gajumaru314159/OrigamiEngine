@@ -1,60 +1,80 @@
 ﻿#pragma once
 
-#include "IDXWrapper.h"
+#include "IGraphicWrapper.h"
 
 #include <functional>
-
+#include <wrl.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <d3dx12.h>
 
-#include <DirectXTex.h>
-#ifdef _DEBUG
-#pragma comment(lib, "DirectXTex_x64_Debug.lib")
-#else
-#pragma comment(lib, "DirectXTex_x64_Release.lib")
-#endif
+#include "DefaultAsset.h"
 
-#include <wrl.h>
 
-#include "Material.h"
-
-namespace OrigamiGraphic
+namespace
 {
+	template <typename T>
+	using ComPtr = Microsoft::WRL::ComPtr<T>;
+}
+
+namespace og
+{
+	class Texture;
+	class Shader;
+	class GraphicPipeline;
+	class Material;
+	class Shape;
 
 
-	class DX12Wrapper : public IDXWrapper
+	class DX12Wrapper : public IGraphicWrapper
 	{
 	public:
+		~DX12Wrapper()
+		{
+			DefaultAsset::ResetSingleton();
+		}
+
 		#pragma region
-		// 関数の説明はIDXWrapperを参照
+		// IGraphicWrapperの仮想関数の実装
 
 		S32 Init() override;
-
 		S32 SwapScreen() override;
 
+		//===================================================================================//
+
+		S32 CreateTexture(const S32 width, const S32 height, const TextureFormat format)override;
 		S32 LoadGraph(const String& path) override;
 
-
+		//===================================================================================//
 
 		S32 LoadShader(const String& path, ShaderType type, String& errorDest) override;
+		S32 CreateShader(const String& path, ShaderType type, String& errorDest) override;
 		S32 DeleteShader(const S32 id)override;
 
+		//===================================================================================//
 
-		S32 CreateGraphicPipeline(const PipelineDesc& desc)override;
+		S32 CreateGraphicPipeline(const GraphicPipelineDesc& desc)override;
 		S32 DeleteGraphicPipeline(const S32 id) override;
+		S32 SetGraphicPipeline(const S32 id) override;
+		const HashMap<String, ShaderVariableDesc>& GetShaderParamList(const S32 graphicPipelineID)override;
+
+		//===================================================================================//
 
 
-
-		S32 CreateMaterial(const S32 id)override;
-		S32 DeleteMaterial(const S32 id) override;
-
+		S32 CreateMaterial(const S32 id, const S32 mask)override;
+		S32 DeleteMaterial(const S32 id)override;
 		S32 SetMaterial(const S32 id)override;
+		S32 LockMaterial(const S32 materialID)override;
 
-		S32 SetMaterialFloatParam(const String& name, const F32 value)override;
+		S32 SetShaderFloat4Param(const S32 id, const String& name, const Vector4& value)override;
+
+		//===================================================================================//
+
+		S32 CreateShape(const U32 stribeSize, const U32 dataSize, const Byte* data, const U32 indexNum = 0, const U32* indicis = nullptr) override;
 
 
-		S32 CreateTexture(S32 width, S32 height, TextureFormat format)override;
+		S32 DrawShape(const S32 id)override;
+
 		#pragma endregion
 	private:
 		// 初期化
@@ -63,25 +83,17 @@ namespace OrigamiGraphic
 		HRESULT InitializeCommand();
 		HRESULT CreateSwapChain(const HWND& hwnd);
 		HRESULT CreateFinalRenderTargets();
-		HRESULT CreateSceneView();
 		HRESULT CreateFence();
-		void CreateTextureLoaderTable();
-		HRESULT CreateDefaultAssets();
+		S32 CreateDefaultAssets();
 
-		bool IsCompiledShader(const String& path);
-		S32 GetShaderDataSize(ShaderParamType type);
-		S32 GetTextureFormatSize(const TextureFormat format)const;
 		DXGI_FORMAT ConvertTextureFormat(const TextureFormat format)const;
-
+		void Test();
 	private:
 		#pragma region
 		// ウィンドウ関係
 		HWND m_Hwnd;
 		LONG windowWidth;
 		LONG windowHeight;
-
-		template <typename T>
-		using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 		// DXGI関係
 		ComPtr<IDXGIFactory4> m_DxgiFactory = nullptr;  // DXGIインターフェイス
@@ -90,8 +102,9 @@ namespace OrigamiGraphic
 		// DirectX12関係
 		ComPtr<ID3D12Device> m_Dev = nullptr;  //デバイス
 		ComPtr<ID3D12CommandAllocator> m_CmdAllocator = nullptr;  //コマンドアロケータ
-		ComPtr<ID3D12GraphicsCommandList> m_CmdList = nullptr;  //コマンドリスト
 		ComPtr<ID3D12CommandQueue> m_CmdQueue = nullptr;  //コマンドキュー
+
+		ComPtr<ID3D12GraphicsCommandList> m_CmdList = nullptr;  //コマンドリスト
 
 		// 表示に関わるバッファ関係
 		ArrayList<ID3D12Resource*> m_BackBuffers;         //バックバッファ(2つ以上…スワップチェインが確保)
@@ -104,33 +117,18 @@ namespace OrigamiGraphic
 		UINT64 m_FenceVal = 0;
 
 
-		// テクスチャ読み込み関係
-		using LoadLambdaFunc = std::function<HRESULT(const String & path, DirectX::TexMetadata*, DirectX::ScratchImage&)>;
-		HashMap<String, LoadLambdaFunc> m_LoadLambdaTable;
-
-
-
-
 		// リソース管理関係
-		struct PipelineSet
-		{
-			PipelineDesc desc;
-			ComPtr<ID3D12PipelineState> pipelineState;
-			ComPtr<ID3D12RootSignature> rootSignature;
-			S32 referenceCount = 0;
-		};
 
-		ArrayList<ComPtr<ID3DBlob>> m_ShaderList;
-		ArrayList<PipelineSet> m_PipelineList;
+		ArrayList<SPtr<Shader>> m_ShaderList;
+		ArrayList<SPtr<GraphicPipeline>> m_PipelineList;
 		ArrayList<SPtr<Material>> m_MaterialList;
-		ArrayList<ComPtr<ID3D12Resource>> m_TextureList;
-
-		S32 m_CurrentMaterialID;
-
-		// デフォルトアセット
-		S32 m_whiteTexID;
+		ArrayList<SPtr<Texture>> m_TextureList;
+		ArrayList<SPtr<Shape>> m_ShapeList;
 
 
+		// 画像描画用頂点データ
+		float m_Vertices[4 * (3 + 2)];
+		S32 m_TexVertID;
 		#pragma endregion
 	};
-}  // namespace OrigamiGraphic
+}

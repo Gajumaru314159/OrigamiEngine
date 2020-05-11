@@ -135,9 +135,6 @@
     <ClInclude Include="Private\WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OrigamiAPI\OrigamiAPI.vcxproj">
-      <Project>{c5ed4c88-21a6-4ea7-bf2e-d5bd2441e0d8}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\TabDLLTest\TabDLLTest.vcxproj">
       <Project>{ac0f4160-fbcc-41a5-9dcb-f3b019ab91a5}</Project>
     </ProjectReference>

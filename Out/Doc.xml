@@ -1,0 +1,178 @@
+<?xml version="1.0"?><doc>
+<members>
+<member name="T:CommonLibrary.Vector2" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector2.h" line="5">
+@brief 2次元ベクトルのクラス。
+
+</member>
+<member name="M:CommonLibrary.Vector2.#ctor(System.Single,System.Single)" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector2.h" line="17">
+@brief 2次元ベクトルの作成
+
+</member>
+<member name="M:CommonLibrary.Vector2.#ctor" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector2.h" line="22">
+@brief 2次元ベクトルの作成
+@details 引数なしのコンストラクタではゼロベクトルで初期化される
+
+</member>
+<member name="M:CommonLibrary.Vector2.Length" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector2.h" line="127">
+@brief ベクトルの長さ。
+
+</member>
+<member name="M:CommonLibrary.Vector2.SquaredLength" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector2.h" line="135">
+@brief ベクトルの長さの二乗。
+
+</member>
+<member name="M:CommonLibrary.Vector2.Normalise" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector2.h" line="143">
+@brief ベクトルを正規化する。
+
+</member>
+<member name="M:CommonLibrary.Vector2.Dot(CommonLibrary.Vector2!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,CommonLibrary.Vector2!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector2.h" line="161">
+@brief 二つのベクトルの内積を計算する。
+
+</member>
+<member name="T:CommonLibrary.Rect" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Rect.h" line="10">
+@brief 矩形領域を表現するクラス。
+
+</member>
+<member name="T:CommonLibrary.Path" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Path.h" line="9">
+@brief ファイルまたはディレクトリのパス情報を格納する。
+
+</member>
+<member name="M:CommonLibrary.Path.#ctor(std.basic_string&lt;System.Char,std.char_traits{System.Char},std.allocator&lt;System.Char&gt;&gt;)" decl="true" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Path.h" line="15">
+@brief パスオブジェクトの生成。
+@param path パス文字列。
+
+</member>
+<member name="M:CommonLibrary.Path.Set(std.basic_string&lt;System.Char,std.char_traits{System.Char},std.allocator&lt;System.Char&gt;&gt;)" decl="true" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Path.h" line="21">
+@brief 既存のパスを破棄して新しくパスを割り当てる。
+@param path パス文字列。
+
+</member>
+<member name="M:CommonLibrary.Path.FileName" decl="true" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Path.h" line="27">
+@brief パスオブジェクトからファイル名を取得する。
+@return ファイル名またはディレクトリ名。
+
+</member>
+<member name="M:CommonLibrary.Path.Extension" decl="true" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Path.h" line="33">
+@brief パスオブジェクトからファイルの拡張子を取得する。
+@return ファイルの拡張子。ディレクトリや拡張子のないファイルの場合はから文字列を返す。
+
+</member>
+<member name="M:CommonLibrary.Path.HasExtention" decl="true" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Path.h" line="39">
+@brief パスオブジェクトが拡張子を含むかどうかを判定する。
+@return パスオブジェクトが拡張子を含むならtrueを返す。
+
+</member>
+<member name="M:CommonLibrary.Path.Fullpath" decl="true" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Path.h" line="45">
+@brief パスオブジェクトからフルパスを取得する。
+@return フルパス。
+
+</member>
+<member name="M:CommonLibrary.Path.Directory" decl="true" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Path.h" line="51">
+@brief ファイルを含んでいるディレクトリのパスを取得する。
+@return ディレクトリのパス。
+
+</member>
+<member name="T:CommonLibrary.Random" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Random.h" line="9">
+@brief 乱数生成のためのクラス。
+
+</member>
+<member name="M:CommonLibrary.Random.SetSeed(System.UInt32)" decl="true" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Random.h" line="15">
+@brief 乱数のシード値を変更する。
+@param seed シード値。
+
+</member>
+<member name="M:CommonLibrary.Random.GetU32" decl="true" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Random.h" line="21">
+@brief 0から2^32までの整数の乱数を生成する。
+@return  0から2^32までの整数の乱数。
+
+</member>
+<member name="M:CommonLibrary.Random.Range(System.Int32,System.Int32)" decl="true" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Random.h" line="27">
+@brief 整数の乱数を生成する。
+@details minimumからmaximumの間から乱数を生成する。
+@param minimum 乱数の最小値。
+@param maximum 乱数の最大値+1。
+@return minimumからmaximumの間の乱数。
+
+</member>
+<member name="M:CommonLibrary.Random.Range(System.Single,System.Single)" decl="true" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Random.h" line="37">
+@brief 小数の乱数を生成する。
+@details minimumからmaximumの間から乱数を生成する。
+@param minimum 乱数の最小値。
+@param maximum 乱数の最大値。
+@return minimumからmaximumの間の乱数。
+
+</member>
+<member name="T:CommonLibrary.Vector3" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector3.h" line="5">
+@brief 3次元ベクトルのクラス。
+
+</member>
+<member name="M:CommonLibrary.Vector3.#ctor(System.Single,System.Single,System.Single)" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector3.h" line="19">
+@brief 3次元ベクトルの作成
+
+</member>
+<member name="M:CommonLibrary.Vector3.#ctor" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector3.h" line="24">
+@brief 3次元ベクトルの作成
+@details 引数なしのコンストラクタではゼロベクトルで初期化される
+
+</member>
+<member name="M:CommonLibrary.Vector3.Length" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector3.h" line="134">
+@brief ベクトルの長さ。
+
+</member>
+<member name="M:CommonLibrary.Vector3.SquaredLength" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector3.h" line="142">
+@brief ベクトルの長さの二乗。
+
+</member>
+<member name="M:CommonLibrary.Vector3.Normalise" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector3.h" line="150">
+@brief ベクトルを正規化する。
+
+</member>
+<member name="M:CommonLibrary.Vector3.Dot(CommonLibrary.Vector3!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,CommonLibrary.Vector3!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector3.h" line="169">
+@brief 二つのベクトルの内積を計算する。
+
+</member>
+<member name="M:CommonLibrary.Vector3.Cross(CommonLibrary.Vector3!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced,CommonLibrary.Vector3!System.Runtime.CompilerServices.IsConst*!System.Runtime.CompilerServices.IsImplicitlyDereferenced)" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Vector3.h" line="178">
+@brief 二つのベクトルの外積を計算する。
+
+</member>
+<member name="T:CommonLibrary.Color" decl="false" source="C:\My\Productions\C++\OrigamiEngine\CommonLibrary\Public\Color.h" line="5">
+@brief 色を扱うクラス。
+
+</member>
+<member name="T:test.Clazz" decl="false" source="C:\My\Productions\C++\OrigamiEngine\DXWrapperTest\Source.cpp" line="13">
+<summary>
+クラス説明
+</summary>
+<remarks>Remark</remarks>
+</member>
+<member name="M:test.Clazz.#ctor" decl="false" source="C:\My\Productions\C++\OrigamiEngine\DXWrapperTest\Source.cpp" line="20">
+<summary>
+コンストラクタ
+</summary>
+</member>
+<member name="F:test.Clazz.publicMember" decl="false" source="C:\My\Productions\C++\OrigamiEngine\DXWrapperTest\Source.cpp" line="25">
+<summary>
+メンバ
+</summary>
+</member>
+<member name="M:test.Clazz.publicFunc(System.Int32,System.Single)" decl="true" source="C:\My\Productions\C++\OrigamiEngine\DXWrapperTest\Source.cpp" line="30">
+<summary>
+パブリック関数
+</summary>
+<param name="a">引数A</param>
+<param name="b">引数B</param>
+<returns>戻り値</returns>
+</member>
+<member name="F:test.Clazz.protectedMemder" decl="false" source="C:\My\Productions\C++\OrigamiEngine\DXWrapperTest\Source.cpp" line="38">
+<summary>
+プロテクテッドメンバ
+</summary>
+</member>
+<member name="M:test.Clazz.protectedFunc" decl="true" source="C:\My\Productions\C++\OrigamiEngine\DXWrapperTest\Source.cpp" line="42">
+<summary>
+プロテクテッド関数
+</summary>
+<returns>戻り値</returns>
+</member>
+</members>
+</doc>

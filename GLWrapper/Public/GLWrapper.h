@@ -1,8 +1,6 @@
-﻿#pragma once
+﻿#include "IGraphicWrapper.h"
 
-#include "IGraphicWrapper.h"
-
-#ifdef DXWRAPPER_EXPORTS
+#ifdef GLWRAPPER_EXPORTS
 #define DLL_OG __declspec(dllexport)
 #else
 #define DLL_OG __declspec(dllimport)

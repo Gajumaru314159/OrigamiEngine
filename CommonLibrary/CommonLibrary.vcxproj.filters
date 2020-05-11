@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="必須ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\Color">
+      <UniqueIdentifier>{c9eb0a9a-ef0e-4a25-be73-dc834734479a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Path">
+      <UniqueIdentifier>{9a88179c-66f7-41b5-b50e-1ef4201ea9fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Random">
+      <UniqueIdentifier>{48d8e5da-e87c-4d2b-8015-bc0008e47c9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Rect">
+      <UniqueIdentifier>{96bdabc6-3855-4b45-a27d-5557dd208169}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Vector">
+      <UniqueIdentifier>{987691c6-749e-441c-8d11-21385ac57081}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Singleton">
+      <UniqueIdentifier>{bfd78d13-dd75-4685-b1ad-00c1f5060729}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Check">
+      <UniqueIdentifier>{ab71c804-5a95-4bf1-98d9-89bf22e3022a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\String">
+      <UniqueIdentifier>{27e33da0-4f59-4b75-9995-743fc24d9e79}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>必須ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>必須ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\CommonLibrary.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Color.h">
+      <Filter>ソース ファイル\Color</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Path.h">
+      <Filter>ソース ファイル\Path</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Random.h">
+      <Filter>ソース ファイル\Random</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Rect.h">
+      <Filter>ソース ファイル\Rect</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Vector3.h">
+      <Filter>ソース ファイル\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Vector2.h">
+      <Filter>ソース ファイル\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Singleton.h">
+      <Filter>ソース ファイル\Singleton</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Vector4.h">
+      <Filter>ソース ファイル\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Check.h">
+      <Filter>ソース ファイル\Check</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Fwd.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\CustomString.h">
+      <Filter>ソース ファイル\String</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Number.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>必須ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>必須ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Color.cpp">
+      <Filter>ソース ファイル\Color</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Path.cpp">
+      <Filter>ソース ファイル\Path</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Random.cpp">
+      <Filter>ソース ファイル\Random</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Rect.cpp">
+      <Filter>ソース ファイル\Rect</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\CustomString.cpp">
+      <Filter>ソース ファイル\String</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
