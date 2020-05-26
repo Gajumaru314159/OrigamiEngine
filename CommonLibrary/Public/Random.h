@@ -5,41 +5,44 @@
 
 namespace CommonLibrary
 {
-	/**
-	* @brief 乱数生成のためのクラス。
-	*/
+	/// <summary>
+	/// 乱数生成のためのクラス
+	/// </summary>
 	class DLL Random
 	{
 	public:
-		/**
-		* @brief 乱数のシード値を変更する。
-		* @param seed シード値。
-		*/
+		/// <summary>
+		/// 乱数のシード値を変更する
+		/// </summary>
+		/// <param name="seed">シード値</param>
 		static void SetSeed(U32 seed);
 
-		/**
-		* @brief 0から2^32までの整数の乱数を生成する。
-		* @return  0から2^32までの整数の乱数。
-		*/
+		/// <summary>
+		/// 0から2^32までの整数の乱数を生成する
+		/// </summary>
+		/// <returns>生成された乱数</returns>
 		static U32 GetU32();
 
-		/**
-		* @brief 整数の乱数を生成する。
-		* @details minimumからmaximumの間から乱数を生成する。
-		* @param minimum 乱数の最小値。
-		* @param maximum 乱数の最大値+1。
-		* @return minimumからmaximumの間の乱数。
-		*/
+		/// <summary>
+		/// 整数の乱数を生成する
+		/// </summary>
+		/// <remarks>
+		/// minimumからmaximumの間から乱数を生成する
+		/// </remarks>
+		/// <param name="minimum">乱数の最小値</param>
+		/// <param name="maximum">乱数の最大値</param>
+		/// <returns>minimum以上maximum以下の乱数</returns>
 		static S32 Range(S32 minimum, S32 maximum);
 
-
-		/**
-		* @brief 小数の乱数を生成する。
-		* @details minimumからmaximumの間から乱数を生成する。
-		* @param minimum 乱数の最小値。
-		* @param maximum 乱数の最大値。
-		* @return minimumからmaximumの間の乱数。
-		*/
+		/// <summary>
+		/// 小数の乱数を生成する
+		/// </summary>
+		/// <remarks>
+		/// minimumからmaximumの間から乱数を生成する
+		/// </remarks>
+		/// <param name="minimum">乱数の最小値</param>
+		/// <param name="maximum">乱数の最大値</param>
+		/// <returns>minimum以上maximum以下の乱数</returns>
 		static F32 Range(F32 minimum, F32 maximum);
 	};
 }

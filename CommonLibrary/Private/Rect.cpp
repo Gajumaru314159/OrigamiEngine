@@ -9,5 +9,7 @@ namespace CommonLibrary
 	{
 	};
 
-	Rect::Rect() :Rect(0, 0, 10, 10) {};
+	Rect::Rect() :Rect(0, 0, 100, 100) {};
+
+	Rect::Rect(const Vector2& _position, const Vector2& _size) :position(_position), size(_size) {};
 }

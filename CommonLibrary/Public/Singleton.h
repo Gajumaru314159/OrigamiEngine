@@ -1,20 +1,21 @@
-/**
-* @file Singleton.h
-*/
 #pragma once
 
 namespace CommonLibrary
 {
-	/**
-	* @brief シングルトンパターンのテンプレート。
-	*/
+	/// <summary>
+	/// シングルトンパターンのテンプレート
+	/// </summary>
 	template <class T>
 	class Singleton
 	{
 	public:
-		/**
-		* @brief インスタンスの取得。
-		*/
+		/// <summary>
+		/// インスタンスの取得
+		/// </summary>
+		/// <remarks>
+		/// 唯一のインスタンスが生成されていない場合はアクセス時に生成される。
+		/// </remarks>
+		/// <returns>インスタンス</returns>
 		static T* Instance()
 		{
 			if (ms_Instance == nullptr)
@@ -24,9 +25,9 @@ namespace CommonLibrary
 			return ms_Instance;
 		}
 
-		/**
-		* @brief インスタンスの明示的削除。
-		*/
+		/// <summary>
+		/// インスタンスの明示的削除
+		/// </summary>
 		static void ResetSingleton()
 		{
 			if (ms_Instance == nullptr)return;
@@ -34,9 +35,10 @@ namespace CommonLibrary
 			ms_Instance = nullptr;
 		}
 
-		/**
-		* @brief インスタンスが適切に生成されているかを取得。
-		*/
+		/// <summary>
+		/// インスタンスが適切に生成されているかを取得
+		/// </summary>
+		/// <returns>すでにインスタンスが生成されている場合はtrueを返す</returns>
 		static bool Exist()
 		{
 			return ms_Instance != nullptr;

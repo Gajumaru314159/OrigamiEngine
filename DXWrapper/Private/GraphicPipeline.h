@@ -15,6 +15,8 @@ namespace
 struct ID3D12ShaderReflection;
 namespace og
 {
+	class Shader;
+
 	/// <summary>
 	/// 描画に使用する情報をひとまとめにする
 	/// </summary>
@@ -28,11 +30,11 @@ namespace og
 		ComPtr<ID3D12RootSignature> m_RootSignature;
 
 		// シェーダ参照
-		ComPtr<ID3DBlob> m_VS;
-		ComPtr<ID3DBlob> m_PS;
-		ComPtr<ID3DBlob> m_GS;
-		ComPtr<ID3DBlob> m_HS;
-		ComPtr<ID3DBlob> m_DS;
+		SPtr<Shader> m_VS;
+		SPtr<Shader> m_PS;
+		SPtr<Shader> m_GS;
+		SPtr<Shader> m_HS;
+		SPtr<Shader> m_DS;
 
 
 
@@ -89,10 +91,10 @@ namespace og
 		inline bool IsValid()const { return m_PipelineState != nullptr; }
 
 	private:
-		S32 ReflectShader(const ComPtr<ID3DBlob>& vsBolb);
-		S32 ReflectInputLayout(const ComPtr<ID3DBlob>& vsBolb);
+		S32 ReflectShader(const ComPtr<ID3DBlob>& vsInstance);
+		S32 ReflectInputLayout(const ComPtr<ID3DBlob>& vsInstance);
 		S32 ReflectConstantBuffer(const ComPtr<ID3D12ShaderReflection>& reflection);
 		S32 ReflectBoundingResource(const ComPtr<ID3D12ShaderReflection>& reflection);
-		S32 ReflectOutputLayout(const ComPtr<ID3DBlob>& vsBolb);
+		S32 ReflectOutputLayout(const ComPtr<ID3DBlob>& vsInstance);
 	};
 }

@@ -29,7 +29,7 @@ namespace og
 	{
 		auto texture = MSPtr<Texture>(m_Dev, width, height, ConvertTextureFormat(format));
 
-		if (!texture->IsValid())return -1;
+		if (texture->IsValid() == false)return -1;
 
 		m_TextureList.push_back(texture);
 		return (S32)m_TextureList.size() - 1;
@@ -41,7 +41,7 @@ namespace og
 	{
 		auto shader = Shader::LoadFromFile(path, type, errorDest);
 
-		if (!shader->IsValid())return -1;
+		if (shader->IsValid() == false)return -1;
 
 		m_ShaderList.push_back(std::move(shader));
 		return (S32)m_ShaderList.size() - 1;
@@ -49,9 +49,9 @@ namespace og
 
 	S32 DX12Wrapper::CreateShader(const String& src, ShaderType type, String& errorDest)
 	{
-		UPtr<Shader> shader = MUPtr<Shader>(src, type, errorDest);
-		if (!shader->IsValid())return -1;
-		m_ShaderList.push_back(std::move(shader));
+		auto shader = MSPtr<Shader>(src, type, errorDest);
+		if (shader->IsValid() == false)return -1;
+		m_ShaderList.push_back(shader);
 		return (S32)m_ShaderList.size() - 1;
 	}
 
@@ -72,13 +72,14 @@ namespace og
 		InnerGraphicPipelineDesc iDesc(desc);
 
 
-		#define CHECK_SHADER(stage) (!OUT_OF_RANGE(m_ShaderList, desc.##stage) &&m_ShaderList[desc.##stage])
+		//#define CHECK_SHADER(stage) (!OUT_OF_RANGE(m_ShaderList, desc.##stage) &&m_ShaderList[desc.##stage]!=nullptr)
+		#define CHECK_SHADER(stage) (!OUT_OF_RANGE(m_ShaderList, desc.##stage)&&m_ShaderList.at(desc.##stage)->IsValid())
 
-		if (CHECK_SHADER(vs))iDesc.vsBolb = m_ShaderList.at(desc.vs)->GetShaderBolb();
-		if (CHECK_SHADER(ps))iDesc.psBolb = m_ShaderList.at(desc.ps)->GetShaderBolb();
-		if (CHECK_SHADER(gs))iDesc.gsBolb = m_ShaderList.at(desc.gs)->GetShaderBolb();
-		if (CHECK_SHADER(hs))iDesc.hsBolb = m_ShaderList.at(desc.hs)->GetShaderBolb();
-		if (CHECK_SHADER(ds))iDesc.dsBolb = m_ShaderList.at(desc.ds)->GetShaderBolb();
+		if (CHECK_SHADER(vs))iDesc.vsInstance = m_ShaderList.at(desc.vs);
+		if (CHECK_SHADER(ps))iDesc.psInstance = m_ShaderList.at(desc.ps);
+		if (CHECK_SHADER(gs))iDesc.gsInstance = m_ShaderList.at(desc.gs);
+		if (CHECK_SHADER(hs))iDesc.hsInstance = m_ShaderList.at(desc.hs);
+		if (CHECK_SHADER(ds))iDesc.dsInstance = m_ShaderList.at(desc.ds);
 
 
 		auto gpipeline = MSPtr<GraphicPipeline>(m_Dev, iDesc);
@@ -132,10 +133,10 @@ namespace og
 		if (!m_PipelineList.at(id))return -1;
 
 		// シェーダーパラメータの作成
-		auto shaderParamSet = MUPtr<Material>(m_Dev, m_PipelineList.at(id), mask);
-		if (!shaderParamSet->IsValid())return -1;
+		auto material = MUPtr<Material>(m_Dev, m_PipelineList.at(id), mask);
+		if (material->IsValid() == false)return -1;
 
-		m_MaterialList.push_back(std::move(shaderParamSet));
+		m_MaterialList.push_back(std::move(material));
 		return (S32)m_MaterialList.size() - 1;
 	}
 
@@ -175,6 +176,15 @@ namespace og
 		auto& shaderParamSet = m_MaterialList[id];
 
 		shaderParamSet->SetFloat4Param(name, value);
+		return 0;
+	}
+
+	S32 DX12Wrapper::SetShaderMatrixParam(const S32 id, const String& name, const Matrix& value)
+	{
+		if (OUT_OF_RANGE(m_MaterialList, id))return -1;
+		auto& shaderParamSet = m_MaterialList[id];
+
+		shaderParamSet->SetMatrixParam(name, value);
 		return 0;
 	}
 

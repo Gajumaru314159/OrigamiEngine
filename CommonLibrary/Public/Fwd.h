@@ -30,10 +30,6 @@ using Byte = unsigned char;
 using F32 = float;
 using F64 = double;
 
-// 文字列型の再定義
-//using String = std::wstring;
-//using Char = char;
-
 // コンテナの再定義
 template<class Key, class T>
 using HashMap = std::unordered_map<Key, T>;

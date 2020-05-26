@@ -33,6 +33,9 @@
     <Filter Include="ソース ファイル\String">
       <UniqueIdentifier>{27e33da0-4f59-4b75-9995-743fc24d9e79}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Affine">
+      <UniqueIdentifier>{0aa6ae67-0563-4543-9a57-e29997fc9ec3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -80,6 +83,9 @@
     <ClInclude Include="Public\Number.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Public\Affine.h">
+      <Filter>ソース ファイル\Affine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -102,6 +108,12 @@
     </ClCompile>
     <ClCompile Include="Private\CustomString.cpp">
       <Filter>ソース ファイル\String</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Vector.cpp">
+      <Filter>ソース ファイル\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Affine.cpp">
+      <Filter>ソース ファイル\Affine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

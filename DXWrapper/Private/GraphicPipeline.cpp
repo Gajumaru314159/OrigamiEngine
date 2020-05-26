@@ -12,7 +12,6 @@
 
 
 #include "Shader.h"
-#include "ShaderParamSet.h"
 
 
 #define OUT_OF_RANGE(container,index) (index<0||container.size()<=index)
@@ -23,8 +22,10 @@ namespace og
 {
 	GraphicPipeline::GraphicPipeline(ComPtr<ID3D12Device>& device, const InnerGraphicPipelineDesc& desc)
 	{
+		if (CheckArgs(device, desc.vsInstance != nullptr, desc.psInstance != nullptr))return;
+
 		// 頂点レイアウトを取得
-		if (ReflectInputLayout(desc.vsBolb) == -1)return;
+		if (ReflectInputLayout(desc.vsInstance->GetShaderBolb()) == -1)return;
 
 		for (U32 i = 0; i < MAX_CONSTANT_BUFFER; i++)
 		{
@@ -34,12 +35,11 @@ namespace og
 
 
 		// 定数バッファの取得
-		ReflectShader(desc.vsBolb);
-		ReflectShader(desc.psBolb);
-		ReflectShader(desc.gsBolb);
-		ReflectShader(desc.dsBolb);
-		ReflectShader(desc.hsBolb);
-
+		if (desc.vsInstance != nullptr)ReflectShader(desc.vsInstance->GetShaderBolb()); else return;
+		if (desc.psInstance != nullptr)ReflectShader(desc.psInstance->GetShaderBolb()); else return;
+		if (desc.gsInstance != nullptr)ReflectShader(desc.gsInstance->GetShaderBolb());
+		if (desc.dsInstance != nullptr)ReflectShader(desc.dsInstance->GetShaderBolb());
+		if (desc.hsInstance != nullptr)ReflectShader(desc.hsInstance->GetShaderBolb());
 
 		// データとレジスタの結び付け用
 		// レジスタ毎の定数バッファ / テクスチャ
@@ -77,12 +77,12 @@ namespace og
 
 
 		// ルートシグネチャディスクリプタ
-		/*CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
+		CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
 		rootSignatureDesc.Init((UINT)descriptorRanges.size(), rootParams, 1, samplerDescs, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-		*/
 
-		D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
-		rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+		//D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
+		//rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 		// バイナリデータの作成
 		ComPtr<ID3DBlob> rootSigBlob = nullptr;
@@ -110,11 +110,11 @@ namespace og
 		// グラフィックパイプラインの定義
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineStateDesc = {};
 
-		if (desc.vsBolb)pipelineStateDesc.VS = CD3DX12_SHADER_BYTECODE(desc.vsBolb.Get());
-		if (desc.psBolb)pipelineStateDesc.PS = CD3DX12_SHADER_BYTECODE(desc.psBolb.Get());
-		if (desc.gsBolb)pipelineStateDesc.GS = CD3DX12_SHADER_BYTECODE(desc.gsBolb.Get());
-		if (desc.hsBolb)pipelineStateDesc.HS = CD3DX12_SHADER_BYTECODE(desc.hsBolb.Get());
-		if (desc.dsBolb)pipelineStateDesc.DS = CD3DX12_SHADER_BYTECODE(desc.dsBolb.Get());
+		if (desc.vsInstance)pipelineStateDesc.VS = CD3DX12_SHADER_BYTECODE(desc.vsInstance->GetShaderBolb().Get());
+		if (desc.psInstance)pipelineStateDesc.PS = CD3DX12_SHADER_BYTECODE(desc.psInstance->GetShaderBolb().Get());
+		if (desc.gsInstance)pipelineStateDesc.GS = CD3DX12_SHADER_BYTECODE(desc.gsInstance->GetShaderBolb().Get());
+		if (desc.hsInstance)pipelineStateDesc.HS = CD3DX12_SHADER_BYTECODE(desc.hsInstance->GetShaderBolb().Get());
+		if (desc.dsInstance)pipelineStateDesc.DS = CD3DX12_SHADER_BYTECODE(desc.dsInstance->GetShaderBolb().Get());
 
 		pipelineStateDesc.pRootSignature = rootSignature.Get();
 
@@ -124,7 +124,7 @@ namespace og
 
 		pipelineStateDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 		pipelineStateDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;					//カリングしない
-
+		// TODO 深度バッファ
 		pipelineStateDesc.DepthStencilState.DepthEnable = false;								//深度バッファを使うぞ
 		pipelineStateDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;	//全て書き込み
 		pipelineStateDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;			//小さい方を採用
@@ -145,142 +145,6 @@ namespace og
 		{
 			pipelineStateDesc.RTVFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;					//0～1に正規化されたRGBA
 		}
-
-		/*
-
-		// 必要なディスクリプタヒープの数を計算
-		for (S32 i = 0; i < GraphicPipelineDesc::MAX_CONSTANT_BUFFER; i++)
-		{
-			m_DescriptorHeapSize++;
-			if (m_ShaderDesc[i].paramMap.size() == 0 && m_ShaderDesc[i].textureMap.size() == 0)break;
-		}
-
-
-
-		// 設定できるディスクリプタの種類数( CBV / SRV )
-		const S32 TYPE_NUM = 2;
-		// ディスクリプタテーブルの数
-		const S32 descTblSize = GraphicPipelineDesc::MAX_CONSTANT_BUFFER * TYPE_NUM;
-
-
-		// ディスクリプタテーブル
-		CD3DX12_DESCRIPTOR_RANGE descRanges[descTblSize] = {};
-		// ルートパラメータ毎のディスクリプタテーブルの数
-		S32 descRangeNums[descTblSize] = {};
-
-		S32 numRootParameter = 0;
-
-		S32 registerIndexCBV = 0;
-		S32 registerIndexSRV = 0;
-
-		// ルートパラメーターごとのディスクリプタレンジの数を計算
-		for (S32 i = 0; i < GraphicPipelineDesc::MAX_CONSTANT_BUFFER; i++)
-		{
-			U32 texNum = (U32)m_ShaderDesc[i].textureMap.size();
-			U32 cbvSize = (U32)m_ShaderDesc[i].paramMap.size();
-
-			S32 index = i * TYPE_NUM;
-
-			if (cbvSize != 0)
-			{
-				descRanges[index++].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, registerIndexCBV);
-				registerIndexCBV += 1;
-			}
-
-			if (texNum != 0)
-			{
-				descRanges[index++].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, texNum, registerIndexSRV);
-				registerIndexSRV += texNum;
-			}
-
-			descRangeNums[i] = index - i * TYPE_NUM;
-			if (descRangeNums[i] == 0)break;
-
-			numRootParameter++;
-		}
-
-
-		//ルートパラメータ
-		CD3DX12_ROOT_PARAMETER rootParams[GraphicPipelineDesc::MAX_CONSTANT_BUFFER] = {};
-		for (S32 i = 0; i < numRootParameter; i++)
-		{
-			rootParams[i].InitAsDescriptorTable(descRangeNums[i], &descRanges[i * TYPE_NUM]);
-		}
-
-
-		// サンプラー
-		CD3DX12_STATIC_SAMPLER_DESC samplerDescs[1] = {};
-		samplerDescs[0].Init(0);
-
-
-		// ルートシグネチャディスクリプタ
-		CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
-		rootSignatureDesc.Init(numRootParameter, rootParams, 1, samplerDescs, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-
-
-		// バイナリデータの作成
-		ComPtr<ID3DBlob> rootSigBlob = nullptr;
-		ComPtr<ID3DBlob> errorBlob = nullptr;
-
-		auto result = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &rootSigBlob, &errorBlob);
-		if (FAILED(result))
-		{
-			return;
-		}
-
-		// ルートシグネチャの作成
-		ComPtr<ID3D12RootSignature> rootSignature;
-		result = device->CreateRootSignature(
-			0,
-			rootSigBlob->GetBufferPointer(),
-			rootSigBlob->GetBufferSize(),
-			IID_PPV_ARGS(rootSignature.ReleaseAndGetAddressOf()));
-		if (FAILED(result))
-		{
-			return;
-		}
-
-
-		D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineStateDesc = {};
-
-		// シェーダーの割り当て
-		if (desc.vsBolb)pipelineStateDesc.VS = CD3DX12_SHADER_BYTECODE(desc.vsBolb.Get());
-		if (desc.psBolb)pipelineStateDesc.PS = CD3DX12_SHADER_BYTECODE(desc.psBolb.Get());
-		if (desc.gsBolb)pipelineStateDesc.GS = CD3DX12_SHADER_BYTECODE(desc.gsBolb.Get());
-		if (desc.hsBolb)pipelineStateDesc.HS = CD3DX12_SHADER_BYTECODE(desc.hsBolb.Get());
-		if (desc.dsBolb)pipelineStateDesc.DS = CD3DX12_SHADER_BYTECODE(desc.dsBolb.Get());
-
-		pipelineStateDesc.pRootSignature = rootSignature.Get();
-
-		pipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
-
-		pipelineStateDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-
-		pipelineStateDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-		pipelineStateDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;					//カリングしない
-
-		pipelineStateDesc.DepthStencilState.DepthEnable = true;								//深度バッファを使うぞ
-		pipelineStateDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;	//全て書き込み
-		pipelineStateDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;			//小さい方を採用
-		pipelineStateDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
-		pipelineStateDesc.DepthStencilState.StencilEnable = false;
-
-		pipelineStateDesc.InputLayout.pInputElementDescs = m_InputLayout.data();			//レイアウト先頭アドレス
-		pipelineStateDesc.InputLayout.NumElements = (UINT)m_InputLayout.size();					//レイアウト配列数
-
-		pipelineStateDesc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;	//ストリップ時のカットなし
-		pipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;	//三角形で構成
-
-		pipelineStateDesc.SampleDesc.Count = 1;  //サンプリングは1ピクセルにつき１
-		pipelineStateDesc.SampleDesc.Quality = 0;  //クオリティは最低
-
-		pipelineStateDesc.NumRenderTargets = desc.numRenderTargets;							//レンダ―ターゲットの数
-		for (U32 i = 0; i < pipelineStateDesc.NumRenderTargets; i++)
-		{
-			pipelineStateDesc.RTVFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;					//0～1に正規化されたRGBA
-		}
-		*/
 
 
 		pipelineStateDesc.RasterizerState.FrontCounterClockwise = false;
@@ -304,40 +168,12 @@ namespace og
 		// リソースを参照に追加
 		m_PipelineState = pipelineState;
 		m_RootSignature = rootSignature;
-		m_VS = desc.vsBolb;
-		m_PS = desc.psBolb;
-		m_GS = desc.gsBolb;
-		m_HS = desc.hsBolb;
-		m_DS = desc.dsBolb;
+		m_VS = desc.vsInstance;
+		m_PS = desc.psInstance;
+		m_GS = desc.gsInstance;
+		m_HS = desc.hsInstance;
+		m_DS = desc.dsInstance;
 	}
-
-	/*
-	S32 GraphicPipeline::GetDataSize(const S32 index)const
-	{
-		if (index < 0 || m_DescriptorHeapSize <= index)return -1;
-		return m_ShaderDesc[index].dataSize;
-	}
-
-	S32 GraphicPipeline::GetTextureNum(const S32 index)const
-	{
-		if (index < 0 || m_DescriptorHeapSize <= index)return -1;
-		return (S32)m_ShaderDesc[index].textureMap.size();
-	}
-
-	S32 GraphicPipeline::GetDataOffset(const S32 index, const String& name)
-	{
-		if (index < 0 || m_DescriptorHeapSize <= index)return -1;
-		if (m_ShaderDesc[index].paramMap.count(name) == 0)return -1;
-		return m_ShaderDesc[index].paramMap[name].offset;
-	}
-
-	S32 GraphicPipeline::GetTextureIndex(const S32 index, const String& name)
-	{
-		if (index < 0 || m_DescriptorHeapSize <= index)return -1;
-		if (m_ShaderDesc[index].textureMap.count(name) == 0)return -1;
-		return m_ShaderDesc[index].textureMap[name];
-	}
-	*/
 
 
 
@@ -378,7 +214,7 @@ namespace og
 		if (!IsValid())return -1;
 		if (!commandList)return -1;
 		commandList->SetPipelineState(m_PipelineState.Get());
-		commandList->SetComputeRootSignature(m_RootSignature.Get());
+		commandList->SetGraphicsRootSignature(m_RootSignature.Get());
 		return 0;
 	}
 
@@ -399,12 +235,12 @@ namespace og
 		return 0;
 	}
 
-	S32 GraphicPipeline::ReflectInputLayout(const ComPtr<ID3DBlob>& vsBolb)
+	S32 GraphicPipeline::ReflectInputLayout(const ComPtr<ID3DBlob>& vsInstance)
 	{
-		if (CheckArgs(vsBolb))return -1;
+		if (CheckArgs(vsInstance))return -1;
 
 		ComPtr<ID3D12ShaderReflection> reflection;
-		D3DReflect(vsBolb->GetBufferPointer(), vsBolb->GetBufferSize(), IID_ID3D12ShaderReflection, (void**)reflection.ReleaseAndGetAddressOf());
+		D3DReflect(vsInstance->GetBufferPointer(), vsInstance->GetBufferSize(), IID_ID3D12ShaderReflection, (void**)reflection.ReleaseAndGetAddressOf());
 
 		if (!reflection)return -1;
 
@@ -450,6 +286,11 @@ namespace og
 				if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
 				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_SINT;
 				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			}
+
+			if (m_InputLayoutNames[i] == "POSITION")
+			{
+				elementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
 			}
 
 			//save element desc
@@ -527,8 +368,8 @@ namespace og
 					switch (typeDesc.Class)
 					{
 					case D3D_SVC_SCALAR:vdesc.type = ShaderParamType::FLOAT; break;
-					case D3D_SVC_VECTOR:break;
-					case D3D_SVC_MATRIX_COLUMNS: break;
+					case D3D_SVC_VECTOR:vdesc.type = ShaderParamType::FLOAT4; break;//TODO 確認が終わったらFLOAT1～FLOAT4の対応
+					case D3D_SVC_MATRIX_COLUMNS: vdesc.type = ShaderParamType::MATRIX; break;
 					}
 
 					break;
@@ -569,18 +410,21 @@ namespace og
 
 				m_Data[desc.Name] = vdesc;
 
-				m_TextureNum++;
+				if (m_TextureNum < vdesc.registerNum + 1)
+				{
+					m_TextureNum = vdesc.registerNum + 1;
+				}
 			}
 		}
 		return 0;
 	}
 
-	S32 GraphicPipeline::ReflectOutputLayout(const ComPtr<ID3DBlob>& vsBolb)
+	S32 GraphicPipeline::ReflectOutputLayout(const ComPtr<ID3DBlob>& vsInstance)
 	{
-		if (CheckArgs(vsBolb))return -1;
+		if (CheckArgs(vsInstance))return -1;
 
 		ComPtr<ID3D12ShaderReflection> reflection;
-		D3DReflect(vsBolb->GetBufferPointer(), vsBolb->GetBufferSize(), IID_ID3D12ShaderReflection, (void**)reflection.ReleaseAndGetAddressOf());
+		D3DReflect(vsInstance->GetBufferPointer(), vsInstance->GetBufferSize(), IID_ID3D12ShaderReflection, (void**)reflection.ReleaseAndGetAddressOf());
 
 		if (!reflection)return -1;
 

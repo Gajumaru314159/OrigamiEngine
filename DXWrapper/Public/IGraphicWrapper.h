@@ -170,7 +170,7 @@ namespace og
 
 		//virtual S32 SetShaderFloatParam(const S32 id, const String& name, const float value) = 0;
 		virtual S32 SetShaderFloat4Param(const S32 id, const String& name, const Vector4& value) = 0;
-		//virtual S32 SetShaderMatrixParam(const S32 id, const String& name, const float* value) = 0;
+		virtual S32 SetShaderMatrixParam(const S32 id, const String& name, const Matrix& value) = 0;
 		//virtual S32 SetShaderTexture2DParam(const S32 id, const String& name, const S32 value) = 0;
 
 		//===================================================================================//

@@ -26,11 +26,14 @@ namespace og
 		ComPtr<ID3D12Resource> m_Resource;
 		ComPtr<ID3D12DescriptorHeap> m_DescHeap;
 
+
 		// 定数バッファマップ領域
-		ArrayList<Byte> m_Data;
+		S32 m_DataSize;
+		Byte* m_Data;
 		ArrayList<S32> m_StartOffsets;
 
 		bool m_IsChanged;
+		bool m_IsLocked;
 		S32 m_DescriptorNum;
 
 	public:
@@ -44,9 +47,10 @@ namespace og
 		S32 SetTexture(const String& name, SPtr<Texture>& texture);
 
 		S32 SetFloat4Param(const String& name, const Vector4& value);
+		S32 SetMatrixParam(const String& name, const Matrix& value);
 
 
-		inline bool IsValid()const { return m_DescHeap == nullptr; };
+		inline bool IsValid()const { return m_GraphicPipeline != nullptr; };
 	private:
 		S32 CreateResource(ComPtr<ID3D12Device>& device, SPtr<GraphicPipeline>& gpipeline);
 		S32 CreateDescriptorHeap(ComPtr<ID3D12Device>& device);

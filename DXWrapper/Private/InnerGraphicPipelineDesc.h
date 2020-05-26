@@ -14,14 +14,15 @@ namespace
 
 namespace og
 {
+	class Shader;
 	struct InnerGraphicPipelineDesc :public GraphicPipelineDesc
 	{
 		InnerGraphicPipelineDesc(const GraphicPipelineDesc& desc) :GraphicPipelineDesc(desc) {}
 
-		ComPtr<ID3DBlob> vsBolb;
-		ComPtr<ID3DBlob> psBolb;
-		ComPtr<ID3DBlob> gsBolb;
-		ComPtr<ID3DBlob> hsBolb;
-		ComPtr<ID3DBlob> dsBolb;
+		SPtr<Shader> vsInstance;
+		SPtr<Shader> psInstance;
+		SPtr<Shader> gsInstance;
+		SPtr<Shader> hsInstance;
+		SPtr<Shader> dsInstance;
 	};
 }

@@ -27,11 +27,10 @@ namespace og
 {
 	Shader::Shader(const String& src, const ShaderType type, String& errorDest)
 	{
-		ID3DBlob* shaderBlob = nullptr;
-		ID3DBlob* errorBlob = nullptr;
+		ComPtr<ID3DBlob> errorBlob = nullptr;
 		auto result = D3DCompile(src.c_str(), src.size(), NULL, NULL, NULL,
 								 shaderEntryPoints[(U32)type], shaderTargets[(U32)type],
-								 D3DCOMPILE_PREFER_FLOW_CONTROL, 0, m_ShaderBolb.ReleaseAndGetAddressOf(), &errorBlob);
+								 D3DCOMPILE_PREFER_FLOW_CONTROL, 0, m_ShaderBolb.ReleaseAndGetAddressOf(), errorBlob.ReleaseAndGetAddressOf());
 
 		if (FAILED(result))
 		{

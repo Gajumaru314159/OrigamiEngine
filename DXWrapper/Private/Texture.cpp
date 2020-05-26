@@ -48,6 +48,7 @@ namespace og
 		auto img = scratchImg.GetImage(0, 0, 0);  //生データ抽出
 
 
+
 		//WriteToSubresourceで転送する用のヒープ設定
 		auto texHeapProp = CD3DX12_HEAP_PROPERTIES(D3D12_CPU_PAGE_PROPERTY_WRITE_BACK, D3D12_MEMORY_POOL_L0);
 		auto resDesc = CD3DX12_RESOURCE_DESC::Tex2D(
@@ -62,7 +63,7 @@ namespace og
 
 		result = device->CreateCommittedResource(
 			&texHeapProp,
-			D3D12_HEAP_FLAG_NONE,  //特に指定なし
+			D3D12_HEAP_FLAG_NONE,
 			&resDesc,
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 			nullptr,
@@ -127,19 +128,18 @@ namespace og
 		if (CheckArgs(device, !!m_Resource))return 0;
 
 		D3D12_SHADER_RESOURCE_VIEW_DESC texDesc = {};
-		texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		texDesc.Format = m_Resource->GetDesc().Format;
 		texDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		texDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		texDesc.Texture2D.MipLevels = 1;
 
-		texDesc.Format = m_Resource->GetDesc().Format;
 		device->CreateShaderResourceView(
 			m_Resource.Get(),
 			&texDesc,
 			handle
 		);
 
-		handle.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		//handle.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		return 0;
 	}
 

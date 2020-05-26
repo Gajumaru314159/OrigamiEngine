@@ -40,12 +40,14 @@ namespace CommonLibrary
 
 	S32 Random::Range(S32 minimum, S32 maximum)
 	{
-		return GetU32() % (maximum - minimum) + minimum;
+		if (maximum < minimum)return minimum;
+		return GetU32() % (maximum - minimum + 1) + minimum;
 	}
 
 	F32 Random::Range(F32 minimum, F32 maximum)
 	{
 		GetU32();
-		return ((x + 0.5f) / 4294967296.0f + w) / 4294967296.0f;
+		F32 result = ((x + 0.5f) / 4294967296.0f + w) / 4294967296.0f;
+		return minimum + result * (maximum - minimum);
 	}
 }

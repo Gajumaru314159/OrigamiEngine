@@ -40,7 +40,7 @@ namespace og
 		Shader(ComPtr<ID3DBlob>& bolb);
 
 
-		ComPtr<ID3DBlob> GetShaderBolb() { return m_ShaderBolb; }
+		const ComPtr<ID3DBlob>& GetShaderBolb() { return m_ShaderBolb; }
 
 
 		/// <summary>

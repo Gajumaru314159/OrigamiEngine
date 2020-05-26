@@ -1,32 +1,31 @@
 #pragma once
 
 #include "Fwd.h"
+#include "Affine.h"
 
 namespace CommonLibrary
 {
-	/**
-	* @brief 3次元ベクトルのクラス。
-	*/
-	class DLL Vector3
+	/// <summary>
+	/// 3次元ベクトルのクラス
+	/// </summary>
+	class Vector3
 	{
 	public:
-		//! @brief ベクトルのX値
+		/// <summary>ベクトルのx成分 </summary>
 		F32 x;
-		//! @brief ベクトルのY値
+		/// <summary>ベクトルのy成分 </summary>
 		F32 y;
-		//! @brief ベクトルのZ値
+		/// <summary>ベクトルのz成分 </summary>
 		F32 z;
 
 
-		/**
-		* @brief 3次元ベクトルの作成
-		*/
+		/// <summary>
+		/// 与えられたx,y,z成分から新しいベクトルを生成する
+		/// </summary>
+		/// <param name="_x">x成分</param>
+		/// <param name="_y">y成分</param>
+		/// <param name="_z">z成分</param>
 		Vector3(F32 _x, F32 _y, F32 _z) :x(_x), y(_y), z(_z) {}
-
-		/**
-		* @brief 3次元ベクトルの作成
-		* @details 引数なしのコンストラクタではゼロベクトルで初期化される
-		*/
 		Vector3() :Vector3(0, 0, 0) {}
 
 
@@ -133,25 +132,38 @@ namespace CommonLibrary
 			return *this;
 		}
 
-		/**
-		* @brief ベクトルの長さ。
-		*/
+
+		inline Vector3 operator* (const Affine& mat)const
+		{
+			return Vector3(
+				x * mat.m[0][0] + y * mat.m[0][1] + z * mat.m[0][2] + mat.m[0][3],
+				x * mat.m[1][0] + y * mat.m[1][1] + z * mat.m[1][2] + mat.m[1][3],
+				x * mat.m[2][0] + y * mat.m[2][1] + z * mat.m[2][2] + mat.m[2][3]);
+		}
+
+
+		/// <summary>
+		/// ベクトルの長さ
+		/// </summary>
+		/// <returns></returns>
 		inline float Length() const
 		{
 			return (float)sqrt(SquaredLength());
 		}
 
-		/**
-		* @brief ベクトルの長さの二乗。
-		*/
+		/// <summary>
+		/// ベクトルの長さの二乗
+		/// </summary>
+		/// <returns></returns>
 		inline float SquaredLength() const
 		{
 			return x * x + y * y + z * z;
 		}
 
-		/**
-		* @brief ベクトルを正規化する。
-		*/
+		/// <summary>
+		/// ベクトルを正規化する
+		/// </summary>
+		/// <returns></returns>
 		inline Vector3& Normalise()
 		{
 			float f = (float)sqrt(SquaredLength());
@@ -168,18 +180,24 @@ namespace CommonLibrary
 			return *this;
 		}
 
-		/**
-		* @brief 二つのベクトルの内積を計算する。
-		*/
+		/// <summary>
+		/// 二つのベクトルの内積を計算する
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns></returns>
 		static float Dot(const Vector3& a, const Vector3& b)
 		{
 			return a.x * b.x + a.y * b.y + a.z * b.z;
 		}
 
 
-		/**
-		* @brief 二つのベクトルの外積を計算する。
-		*/
+		/// <summary>
+		/// 二つのベクトルの外積を計算する
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns></returns>
 		static Vector3 Cross(const Vector3& a, const Vector3& b)
 		{
 			return Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);

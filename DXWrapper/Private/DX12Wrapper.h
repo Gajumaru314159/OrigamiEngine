@@ -67,6 +67,7 @@ namespace og
 		S32 LockMaterial(const S32 materialID)override;
 
 		S32 SetShaderFloat4Param(const S32 id, const String& name, const Vector4& value)override;
+		S32 SetShaderMatrixParam(const S32 id, const String& name, const Matrix& value)override;
 
 		//===================================================================================//
 
@@ -87,7 +88,6 @@ namespace og
 		S32 CreateDefaultAssets();
 
 		DXGI_FORMAT ConvertTextureFormat(const TextureFormat format)const;
-		void Test();
 	private:
 		#pragma region
 		// ウィンドウ関係
@@ -107,10 +107,13 @@ namespace og
 		ComPtr<ID3D12GraphicsCommandList> m_CmdList = nullptr;  //コマンドリスト
 
 		// 表示に関わるバッファ関係
-		ArrayList<ID3D12Resource*> m_BackBuffers;         //バックバッファ(2つ以上…スワップチェインが確保)
+		ArrayList<ComPtr<ID3D12Resource>> m_BackBuffers;         //バックバッファ(2つ以上…スワップチェインが確保)
 		ComPtr<ID3D12DescriptorHeap> m_RtvHeaps = nullptr;  //レンダーターゲット用デスクリプタヒープ
-		UPtr<D3D12_VIEWPORT> m_Viewport;         //ビューポート
-		UPtr<D3D12_RECT> m_Scissorrect;          //シザー矩形
+		D3D12_VIEWPORT m_Viewport;         //ビューポート
+		D3D12_RECT m_Scissorrect;          //シザー矩形
+
+
+		//ComPtr<ID3D12Resource> m_Depth;
 
 		// フェンス
 		ComPtr<ID3D12Fence> m_Fence = nullptr;
@@ -127,7 +130,7 @@ namespace og
 
 
 		// 画像描画用頂点データ
-		float m_Vertices[4 * (3 + 2)];
+		float m_Vertices[4 * (4 + 2)];
 		S32 m_TexVertID;
 		#pragma endregion
 	};

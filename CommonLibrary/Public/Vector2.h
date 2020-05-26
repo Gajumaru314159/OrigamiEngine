@@ -5,27 +5,24 @@
 
 namespace CommonLibrary
 {
-	/**
-	* @brief 2次元ベクトルのクラス。
-	*/
+	/// <summary>
+	/// 2次元ベクトルのクラス
+	/// </summary>
 	class DLL Vector2
 	{
 	public:
-		//! @brief ベクトルのX値
+		/// <summary>ベクトルのx成分 </summary>
 		F32 x;
-		//! @brief ベクトルのY値
+		/// <summary>ベクトルのy成分 </summary>
 		F32 y;
 
 
-		/**
-		* @brief 2次元ベクトルの作成
-		*/
+		/// <summary>
+		/// 与えられたx,y成分から新しいベクトルを生成する
+		/// </summary>
+		/// <param name="_x">x成分</param>
+		/// <param name="_y">y成分</param>
 		Vector2(F32 _x, F32 _y) :x(_x), y(_y) {}
-
-		/**
-		* @brief 2次元ベクトルの作成
-		* @details 引数なしのコンストラクタではゼロベクトルで初期化される
-		*/
 		Vector2() :Vector2(0, 0) {}
 
 
@@ -127,25 +124,28 @@ namespace CommonLibrary
 			return *this;
 		}
 
-		/**
-		* @brief ベクトルの長さ。
-		*/
+		/// <summary>
+		/// ベクトルの長さ
+		/// </summary>
+		/// <returns></returns>
 		inline float Length() const
 		{
 			return (float)sqrt(SquaredLength());
 		}
 
-		/**
-		* @brief ベクトルの長さの二乗。
-		*/
+		/// <summary>
+		/// ベクトルの長さの二乗
+		/// </summary>
+		/// <returns></returns>
 		inline float SquaredLength() const
 		{
 			return x * x + y * y;
 		}
 
-		/**
-		* @brief ベクトルを正規化する。
-		*/
+		/// <summary>
+		/// ベクトルを正規化する
+		/// </summary>
+		/// <returns></returns>
 		inline Vector2& Normalise()
 		{
 			float f = (float)sqrt(SquaredLength());
@@ -161,9 +161,12 @@ namespace CommonLibrary
 			return *this;
 		}
 
-		/**
-		* @brief 二つのベクトルの内積を計算する。
-		*/
+		/// <summary>
+		/// 二つのベクトルの内積を計算する
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns></returns>
 		static float Dot(const Vector2& a, const Vector2& b)
 		{
 			return a.x * b.x + a.y * b.y;

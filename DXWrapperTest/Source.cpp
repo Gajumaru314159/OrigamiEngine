@@ -1,6 +1,8 @@
 #include <iostream>
 #include <windows.h>
 
+#include <random>
+
 #include "DXWrapper.h"
 
 using namespace std;
@@ -76,12 +78,24 @@ int main()
 		*/
 
 		S32 mat = gapi->CreateMaterial(0, -1);
+
+		Matrix matrix;
+		matrix.m[0][0] = 2;
+		matrix.m[1][1] = -2;
+		matrix.m[2][2] = 2;
+		matrix.m[3][0] = -1;
+		matrix.m[3][1] = 1;
+		gapi->SetShaderMatrixParam(mat, TC("mat"), matrix);
+
 		while (gapi->SwapScreen() == 0)
 		{
+			Vector4 col(1, 1, 1, 1);
+			col.w = 1;
+			gapi->SetShaderFloat4Param(mat, TC("col"), col);
 			//mg->DrawRect(0, 0, 32, 32, Color(1, 1, 1));
 
-			//gapi->SetGraphicPipeline(0);
-			//gapi->SetMaterial(mat);
+			gapi->SetGraphicPipeline(0);
+			gapi->SetMaterial(mat);
 			gapi->DrawShape(0);
 		}
 	}

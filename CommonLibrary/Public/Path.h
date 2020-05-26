@@ -36,10 +36,10 @@ namespace CommonLibrary
 		/// <returns>ファイルの拡張子。ディレクトリや拡張子のないファイルの場合はから文字列を返す。</returns>
 		String Extension()const;
 
-		/**
-		* @brief パスオブジェクトが拡張子を含むかどうかを判定する。
-		* @return パスオブジェクトが拡張子を含むならtrueを返す。
-		*/
+		/// <summary>
+		/// パスオブジェクトが拡張子を含むかどうかを判定する
+		/// </summary>
+		/// <returns>パスオブジェクトが拡張子を含むならtrueを返す</returns>
 		bool HasExtention()const;
 
 		/// <summary>
@@ -60,6 +60,10 @@ namespace CommonLibrary
 		/// <returns></returns>
 		inline bool IsValid()const { return m_Path.size() != 0; };
 
+		/// <summary>
+		/// パスオブジェクトをString型に変換する
+		/// </summary>
+		/// <returns></returns>
 		const String& ToString() const { return m_Path; }
 	private:
 		String m_Path;
