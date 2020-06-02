@@ -105,6 +105,14 @@ namespace og
 			}
 		}
 
+
+		for (S32 i = 0; i < m_TextureListBuffer.size(); i++)
+		{
+			if (m_TextureListBuffer[i] != nullptr);
+			m_TextureList[i] = m_TextureListBuffer[i];
+			m_TextureListBuffer[i].reset();
+		}
+
 		// テクスチャ
 		for (auto& tex : m_TextureList)
 		{

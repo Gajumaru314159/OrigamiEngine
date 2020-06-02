@@ -106,7 +106,11 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="Public\Affine.h">
+    <ClInclude Include="Public\Mathf.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Public\Matrix.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -115,6 +119,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="Public\Path.h" />
+    <ClInclude Include="Public\Quaternion.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Public\Random.h" />
     <ClInclude Include="Public\Rect.h" />
     <ClInclude Include="Public\Singleton.h" />
@@ -136,7 +144,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Private\Color.cpp" />
-    <ClCompile Include="Private\Affine.cpp">
+    <ClCompile Include="Private\Matrix.cpp">
       <SubType>
       </SubType>
     </ClCompile>

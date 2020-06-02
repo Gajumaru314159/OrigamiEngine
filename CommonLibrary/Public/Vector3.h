@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Fwd.h"
-#include "Affine.h"
 
 namespace CommonLibrary
 {
@@ -133,13 +132,23 @@ namespace CommonLibrary
 		}
 
 
-		inline Vector3 operator* (const Affine& mat)const
-		{
-			return Vector3(
-				x * mat.m[0][0] + y * mat.m[0][1] + z * mat.m[0][2] + mat.m[0][3],
-				x * mat.m[1][0] + y * mat.m[1][1] + z * mat.m[1][2] + mat.m[1][3],
-				x * mat.m[2][0] + y * mat.m[2][1] + z * mat.m[2][2] + mat.m[2][3]);
-		}
+		//inline Vector3 operator* (const Matrix& mat)const
+		//{
+		//	return Vector3(
+		//		x * mat.m[0][0] + y * mat.m[1][0] + z * mat.m[2][0] + mat.m[3][0],
+		//		x * mat.m[0][1] + y * mat.m[1][1] + z * mat.m[2][1] + mat.m[3][1],
+		//		x * mat.m[0][2] + y * mat.m[1][2] + z * mat.m[2][2] + mat.m[3][2]);
+		//}
+
+		//inline Vector3 operator*= (const Matrix& mat)
+		//{
+		//	float nx = x * mat.m[0][0] + y * mat.m[1][0] + z * mat.m[2][0] + mat.m[3][0];
+		//	float ny = x * mat.m[0][1] + y * mat.m[1][1] + z * mat.m[2][1] + mat.m[3][1];
+		//	float nz = x * mat.m[0][2] + y * mat.m[1][2] + z * mat.m[2][2] + mat.m[3][2];
+		//	x = nx;
+		//	y = ny;
+		//	z = nx;
+		//}
 
 
 		/// <summary>

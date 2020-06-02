@@ -36,6 +36,15 @@
     <Filter Include="ソース ファイル\Affine">
       <UniqueIdentifier>{0aa6ae67-0563-4543-9a57-e29997fc9ec3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Math">
+      <UniqueIdentifier>{ffea8520-a3ca-492a-b22b-1759e2a8b1fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Matrix">
+      <UniqueIdentifier>{7b07136a-964e-4434-b87a-a544d233202a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Quaternion">
+      <UniqueIdentifier>{1a83c531-a5d2-43cb-9ee0-4fb4f6aba2e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -83,8 +92,14 @@
     <ClInclude Include="Public\Number.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Affine.h">
-      <Filter>ソース ファイル\Affine</Filter>
+    <ClInclude Include="Public\Matrix.h">
+      <Filter>ソース ファイル\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Mathf.h">
+      <Filter>ソース ファイル\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Quaternion.h">
+      <Filter>ソース ファイル\Quaternion</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -112,8 +127,8 @@
     <ClCompile Include="Private\Vector.cpp">
       <Filter>ソース ファイル\Vector</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Affine.cpp">
-      <Filter>ソース ファイル\Affine</Filter>
+    <ClCompile Include="Private\Matrix.cpp">
+      <Filter>ソース ファイル\Matrix</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

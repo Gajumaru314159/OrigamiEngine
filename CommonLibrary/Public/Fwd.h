@@ -6,6 +6,7 @@
 #define DLL __declspec(dllimport)
 #endif
 
+#ifdef _WIN64
 
 #include <memory>
 #include <unordered_map>
@@ -57,3 +58,5 @@ template<class T>
 using UPtr = std::unique_ptr<T>;
 template<class T>
 using WPtr = std::weak_ptr<T>;
+
+#endif

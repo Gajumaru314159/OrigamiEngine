@@ -142,7 +142,7 @@ namespace og
 		//m_CmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 		//画面クリア
-		float clearColor[] = { 0.2f, 0.0f, 0.0f, 1.0f };  //白色
+		float clearColor[] = { 1,1,1,1 };  //白色
 		m_CmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
 
 		//ビューポート、シザー矩形のセット
@@ -330,7 +330,7 @@ namespace og
 		}
 
 		m_Viewport = CD3DX12_VIEWPORT(m_BackBuffers[0].Get());
-		m_Scissorrect = CD3DX12_RECT(0, 0, m_Viewport.Width, m_Viewport.Height);
+		m_Scissorrect = CD3DX12_RECT(0, 0, (U32)m_Viewport.Width, (U32)m_Viewport.Height);
 
 		return result;
 	}
@@ -343,8 +343,8 @@ namespace og
 
 	S32 DX12Wrapper::CreateDefaultAssets()
 	{
-		//DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, 4, 4, ConvertTextureFormat(TextureFormat::RGBA8));
-		DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, "C:\\My\\Productions\\C++\\DX12\\DX12\\img\\textest.png");
+		DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, 4, 4, ConvertTextureFormat(TextureFormat::RGBA8));
+		//DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, "C:\\My\\Productions\\C++\\DX12\\DX12\\img\\textest.png");
 		if (!DefaultAsset::Instance()->whiteTex->IsValid())return -1;
 
 		{
@@ -356,7 +356,7 @@ namespace og
 			vssrc.append("\nstruct Output {float4 pos:SV_POSITION;float2 uv:TEXCOORD;};");
 			vssrc.append("\nOutput VSMain(float4 pos : POSITION ,float2 uv : TEXCOORD) {");
 			vssrc.append("\n	 Output o;");
-			vssrc.append("\n	 o.pos = mul(mat,pos);");
+			vssrc.append("\n	 o.pos = mul(transpose(mat),pos);");
 			vssrc.append("\n	 o.uv = uv;");
 			vssrc.append("\n	 return o;");
 			vssrc.append("\n}");

@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include"Fwd.h"
-
-#include "Vector3.h"
+#include "Matrix.h"
 
 namespace CommonLibrary
 {
@@ -17,7 +16,7 @@ namespace CommonLibrary
 		static const U32 COL;
 		static const U32 ROW;
 	public:
-		F32 m[3][4];
+		F32 m[4][3];
 
 
 		/// <summary>
@@ -26,10 +25,12 @@ namespace CommonLibrary
 		Affine();
 
 		Affine(
-			const F32 m00, const F32 m01, const F32 m02, const F32 m03,
-			const F32 m10, const F32 m11, const F32 m12, const F32 m13,
-			const F32 m20, const F32 m21, const F32 m22, const F32 m23
+			const F32 m00, const F32 m01, const F32 m02,
+			const F32 m10, const F32 m11, const F32 m12,
+			const F32 m20, const F32 m21, const F32 m22,
+			const F32 m30, const F32 m31, const F32 m32
 		);
+
 
 		/// <summary>
 		/// 行列の設定をまとめて行う
@@ -37,19 +38,20 @@ namespace CommonLibrary
 		/// <param name="m00"></param>
 		/// <param name="m01"></param>
 		/// <param name="m02"></param>
-		/// <param name="m03"></param>
 		/// <param name="m10"></param>
 		/// <param name="m11"></param>
 		/// <param name="m12"></param>
-		/// <param name="m13"></param>
 		/// <param name="m20"></param>
 		/// <param name="m21"></param>
 		/// <param name="m22"></param>
-		/// <param name="m23"></param>
+		/// <param name="m30"></param>
+		/// <param name="m31"></param>
+		/// <param name="m32"></param>
 		void Set(
-			const F32 m00, const F32 m01, const F32 m02, const F32 m03,
-			const F32 m10, const F32 m11, const F32 m12, const F32 m13,
-			const F32 m20, const F32 m21, const F32 m22, const F32 m23
+			const F32 m00, const F32 m01, const F32 m02,
+			const F32 m10, const F32 m11, const F32 m12,
+			const F32 m20, const F32 m21, const F32 m22,
+			const F32 m30, const F32 m31, const F32 m32
 		);
 
 		/// <summary>
@@ -63,6 +65,8 @@ namespace CommonLibrary
 		void RotateZ(const F32 angle);
 		void Scale(const F32 x, const F32 y, const F32 z);
 
+		Matrix ToMatrix()const;
+
 
 		inline Affine& operator = (const Affine& v)
 		{
@@ -71,11 +75,11 @@ namespace CommonLibrary
 			return *this;
 		}
 
-		inline bool operator == (const Affine& v) const;
+		bool operator == (const Affine& v) const;
 
-		inline bool operator != (const Affine& v) const;
+		bool operator != (const Affine& v) const;
 
-		inline Affine operator * (const Affine& o) const;
-		inline Affine operator *= (const Affine& o) const;
+		Affine operator * (const Affine& o) const;
+		//Affine operator *= (const Affine& o);
 	};
 }

@@ -189,6 +189,19 @@ namespace og
 	}
 
 
+	S32 DX12Wrapper::SetShaderTexture2DParam(const S32 id, const String& name, const S32 texture)
+	{
+		if (OUT_OF_RANGE(m_MaterialList, id))return -1;
+		if (OUT_OF_RANGE(m_TextureList, id))return -1;
+
+		auto& shaderParamSet = m_MaterialList[id];
+		auto& textureInstance = m_TextureList[texture];
+
+		shaderParamSet->SetTexture(name, textureInstance);
+		return 0;
+	}
+
+
 
 	S32 DX12Wrapper::CreateShape(const U32 stribeSize, const U32 dataSize, const Byte* data, const U32 indexNum, const U32* indicis)
 	{

@@ -18,9 +18,23 @@ namespace CommonLibrary
 		{
 			m_Path.replace(pos, len, TC("/"));
 		}
-		m_HasExtention = (0 < Extension().size());
 
-		// TODO •s³‚ÈƒpƒX‚Å‚ ‚ê‚Îm_Path‚ð‹ó•¶Žš‚É‚·‚é
+		bool invalid = false;
+		if (m_Path.find(TC("//")) != std::string::npos)invalid |= true;
+		if (m_Path.find(TC(":")) != std::string::npos)invalid |= true;
+		if (m_Path.find(TC("*")) != std::string::npos)invalid |= true;
+		if (m_Path.find(TC("?")) != std::string::npos)invalid |= true;
+		if (m_Path.find(TC("\"")) != std::string::npos)invalid |= true;
+		if (m_Path.find(TC("<")) != std::string::npos)invalid |= true;
+		if (m_Path.find(TC(">")) != std::string::npos)invalid |= true;
+		if (m_Path.find(TC("|")) != std::string::npos)invalid |= true;
+
+		if (invalid)
+		{
+			m_Path = TC("");
+		}
+
+		m_HasExtention = (0 < Extension().size());
 		return 0;
 	}
 
