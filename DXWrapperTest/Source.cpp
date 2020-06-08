@@ -1,11 +1,32 @@
 #include "DXWrapper.h"
 
+#include <windows.h>
+
 using namespace std;
+
+UPtr<og::IGraphicWrapper> gapi;
+HMODULE dll;
+bool LoadAPI()
+{
+	dll = LoadLibraryA("C:\\My\\Productions\\C++\\OrigamiEngine\\Out\\x64\\Debug\\DXWrapper.dll");
+	if (dll == NULL)return false;
+
+	FARPROC proc = GetProcAddress(dll, "CreateGraphicWrapper");
+	if (proc == NULL)return false;
+
+	typedef og::IGraphicWrapper* (*Func)();
+
+	Func func = reinterpret_cast<Func>(proc);
+	gapi = UPtr<og::IGraphicWrapper>(func());
+
+	return true;
+}
 
 int main()
 {
 	//•ªŠòƒeƒXƒg
-	auto gapi = UPtr<og::IGraphicWrapper>(og::CreateGraphicWrapper());
+	//gapi = UPtr<og::IGraphicWrapper>(og::CreateGraphicWrapper());
+	if (LoadAPI() == false)return 0;
 
 	if (!gapi)return 0;
 	if (gapi->Init() != 0)return 0;

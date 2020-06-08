@@ -2,7 +2,7 @@
 
 #include <memory>
 
-
+#include "IDeletable.h"
 #include "GraphicPipelineDesc.h"
 
 namespace og
@@ -42,14 +42,9 @@ namespace og
 	/// <summary>
 	/// DirectXやOpenGLのようなグラフィックAPIを共通の関数を通して扱えるようにするための抽象クラス
 	/// </summary>
-	class IGraphicWrapper
+	class IGraphicWrapper :public IDeletable
 	{
 	public:
-		/// <summary>
-		/// ライブラリ内で生成されたインスタンスをライブラリ内で適切に削除する。
-		/// </summary>
-		virtual void Delete() { delete this; };
-
 		/// <summary>
 		/// グラフィックライブラリの初期化
 		/// </summary>
@@ -193,17 +188,5 @@ namespace og
 		//===================================================================================//
 
 		virtual ~IGraphicWrapper() {};
-	};
-}
-
-namespace std
-{
-	template <>
-	struct default_delete<og::IGraphicWrapper>
-	{
-		void operator()(og::IGraphicWrapper* p) const
-		{
-			p->Delete();
-		}
 	};
 }
