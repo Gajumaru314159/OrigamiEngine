@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "IMaterial.h"
+
 #include <d3d12.h>
 #include <wrl.h>
 
@@ -14,7 +16,7 @@ namespace og
 	class GraphicPipeline;
 	class Texture;
 
-	class Material
+	class Material :public IMaterial
 	{
 	private:
 		// 依存関係
@@ -41,13 +43,13 @@ namespace og
 
 		S32 SetMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList);
 
-		S32 Lock();
+		S32 Lock()override;
 
 
-		S32 SetTexture(const String& name, SPtr<Texture>& texture);
+		S32 SetTexture(const String& name, SPtr<Texture>& texture)override;
 
-		S32 SetFloat4Param(const String& name, const Vector4& value);
-		S32 SetMatrixParam(const String& name, const Matrix& value);
+		S32 SetFloat4Param(const String& name, const Vector4& value)override;
+		S32 SetMatrixParam(const String& name, const Matrix& value)override;
 
 
 		inline bool IsValid()const { return m_GraphicPipeline != nullptr; };

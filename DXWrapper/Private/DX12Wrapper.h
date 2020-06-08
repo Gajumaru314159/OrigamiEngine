@@ -61,14 +61,7 @@ namespace og
 		//===================================================================================//
 
 
-		S32 CreateMaterial(const S32 id, const S32 mask)override;
-		S32 DeleteMaterial(const S32 id)override;
-		S32 SetMaterial(const S32 id)override;
-		S32 LockMaterial(const S32 materialID)override;
-
-		S32 SetShaderFloat4Param(const S32 id, const String& name, const Vector4& value)override;
-		S32 SetShaderMatrixParam(const S32 id, const String& name, const Matrix& value)override;
-		S32 SetShaderTexture2DParam(const S32 id, const String& name, const S32 texture)override;
+		SPtr<IMaterial> CreateMaterial(const S32 id, const S32 mask)override;
 
 		//===================================================================================//
 
