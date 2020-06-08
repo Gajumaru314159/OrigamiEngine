@@ -1,25 +1,18 @@
-﻿/**
-* @file
-*/
+﻿#pragma once
 
-#pragma once
-
-namespace og
+class IDeletable
 {
-	class Deletable
-	{
-	public:
-		virtual void Delete() { delete this; }
-	};
-}
+public:
+	virtual void Delete() { delete this; }
+};
 
 
 namespace std
 {
 	template <>
-	struct default_delete<og::Deletable>
+	struct default_delete<IDeletable>
 	{
-		void operator()(og::Deletable* p) const
+		void operator()(IDeletable* p) const
 		{
 			p->Delete();
 		}
