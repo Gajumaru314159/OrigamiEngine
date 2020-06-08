@@ -15,12 +15,16 @@ int main()
 	F32 t = 0;
 	while (gapi->SwapScreen() == 0)
 	{
-		Vector4 col(1, 1, 0.5 + Mathf::Sin(2 * t) * 0.5, 1);
+		Vector4 col(1, 1, 0.5f + Mathf::Sin(2 * t) * 0.5f, 1);
 		gapi->SetShaderFloat4Param(mat, TC("col"), col);
 
 		Matrix matrix;
-		F32 scale = Mathf::Sin(t);
+		F32 scale = 200.0f;
+		matrix.Rotate(0, 0, t);
 		matrix.Scale(scale, scale, scale);
+		matrix.Scale(1.0f / 1280, 1.0f / 720, 1);
+
+
 		gapi->SetShaderMatrixParam(mat, TC("mat"), matrix);
 
 		gapi->SetShaderTexture2DParam(mat, TC("tex"), img);

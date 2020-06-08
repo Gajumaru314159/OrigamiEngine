@@ -112,12 +112,19 @@ namespace CommonLibrary
 	}
 	void Matrix::Rotate(const F32 x, const F32 y, const F32 z)
 	{
-		const F32 sx = Mathf::Sin(x);
-		const F32 cx = Mathf::Cos(x);
-		const F32 sy = Mathf::Sin(y);
-		const F32 cy = Mathf::Cos(y);
-		const F32 sz = Mathf::Sin(z);
-		const F32 cz = Mathf::Cos(z);
+		const F32 sr = Mathf::Sin(x);
+		const F32 cr = Mathf::Cos(x);
+		const F32 sp = Mathf::Sin(y);
+		const F32 cp = Mathf::Cos(y);
+		const F32 sy = Mathf::Sin(z);
+		const F32 cy = Mathf::Cos(z);
+
+		Matrix mat(
+			cy * cp, sy * cp, -sp, 0,
+			cy * sp * sr - sy * cr, sy * sp * sr + cy * cr, sp * sr, 0,
+			cy * sp * cr + sy * sr, sy * sp * cr - cy * sr, cp * cr, 0,
+			0, 0, 0, 1);
+		(*this) *= mat;
 	}
 	void Matrix::Scale(const Vector3& scale)
 	{
@@ -242,7 +249,7 @@ namespace CommonLibrary
 			{
 				for (S32 k = 0; k < ROW; k++)
 				{
-					result.m[i][j] += m[i][k] * other.m[k][j];
+					result.m[i][j] += m[k][j] * other.m[i][k];
 				}
 			}
 		}
@@ -264,7 +271,7 @@ namespace CommonLibrary
 			{
 				for (S32 k = 0; k < ROW; k++)
 				{
-					result.m[i][j] += m[i][k] * other.m[k][j];
+					result.m[i][j] += m[k][j] * other.m[i][k];
 				}
 			}
 		}
