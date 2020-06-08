@@ -4,6 +4,8 @@ class IDeletable
 {
 public:
 	virtual void Delete() { delete this; }
+
+	virtual ~IDeletable() {};
 };
 
 

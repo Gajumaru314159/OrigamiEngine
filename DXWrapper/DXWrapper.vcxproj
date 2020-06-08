@@ -140,7 +140,15 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="Public\IDeletable.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Public\IGraphicWrapper.h" />
+    <ClInclude Include="Public\IMaterial.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Public\Material.h">
       <SubType>
       </SubType>
