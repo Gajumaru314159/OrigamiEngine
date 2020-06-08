@@ -4,6 +4,7 @@ using namespace std;
 
 int main()
 {
+	//•ªŠòƒeƒXƒg
 	auto gapi = UPtr<og::IGraphicWrapper>(og::CreateGraphicWrapper());
 
 	if (!gapi)return 0;
