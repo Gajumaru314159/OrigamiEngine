@@ -344,7 +344,7 @@ namespace og
 	S32 DX12Wrapper::CreateDefaultAssets()
 	{
 		//DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, 4, 4, ConvertTextureFormat(TextureFormat::RGBA8));
-		DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, Path("C:\\My\\Productions\\C++\\DX12\\DX12\\img\\textest.png"));
+		DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, Path(TC("C:\\My\\Temp\\test.png")));
 		if (!DefaultAsset::Instance()->whiteTex->IsValid())return -1;
 
 		{

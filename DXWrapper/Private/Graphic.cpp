@@ -139,7 +139,11 @@ namespace og
 
 	S32 DX12Wrapper::SetMaterial(SPtr<IMaterial> material)
 	{
+		if (CheckArgs(!!material))return -1;
 
+		auto ptr = dynamic_cast<Material*>(material.get());
+		ptr->SetMaterial(m_Dev, m_CmdList);
+		return 0;
 	}
 
 
