@@ -14,15 +14,15 @@ namespace
 namespace og
 {
 	class GraphicPipeline;
-	class Texture;
+	class ITexture;
 
 	class Material :public IMaterial
 	{
 	private:
 		// 依存関係
 		SPtr<GraphicPipeline> m_GraphicPipeline;
-		ArrayList<SPtr<Texture>> m_TextureList;
-		ArrayList<SPtr<Texture>> m_TextureListBuffer;
+		ArrayList<SPtr<ITexture>> m_TextureList;
+		ArrayList<SPtr<ITexture>> m_TextureListBuffer;
 
 		// メインリソース
 		ComPtr<ID3D12Resource> m_Resource;
@@ -46,7 +46,7 @@ namespace og
 		S32 Lock()override;
 
 
-		S32 SetTexture(const String& name, SPtr<Texture>& texture)override;
+		S32 SetTexture(const String& name, SPtr<ITexture>& texture)override;
 
 		S32 SetFloat4Param(const String& name, const Vector4& value)override;
 		S32 SetMatrixParam(const String& name, const Matrix& value)override;

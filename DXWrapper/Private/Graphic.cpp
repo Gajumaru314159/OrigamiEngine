@@ -14,25 +14,23 @@
 
 namespace og
 {
-	S32 DX12Wrapper::LoadGraph(const String& path)
+	SPtr<ITexture> DX12Wrapper::LoadTexture(const Path& path, const bool async)
 	{
 		auto texture = MSPtr<Texture>(m_Dev, path);
 
-		if (!texture->IsValid())return -1;
+		if (!texture->IsValid())return nullptr;
 
-		m_TextureList.push_back(texture);
-
-		return (int)m_TextureList.size() - 1;
+		return texture;
 	}
 
-	S32 DX12Wrapper::CreateTexture(const S32 width, const S32 height, const TextureFormat format)
+	SPtr<IRenderTexture> DX12Wrapper::CreateRenderTexture(const S32 width, const S32 height, const TextureFormat format)
 	{
-		auto texture = MSPtr<Texture>(m_Dev, width, height, ConvertTextureFormat(format));
+		return nullptr;
+		//auto texture = MSPtr<Texture>(m_Dev, width, height, ConvertTextureFormat(format));
 
-		if (texture->IsValid() == false)return -1;
+		//if (texture->IsValid() == false)return nullptr;
 
-		m_TextureList.push_back(texture);
-		return (S32)m_TextureList.size() - 1;
+		//return texture;
 	}
 
 
@@ -125,80 +123,23 @@ namespace og
 	}
 
 
-	S32 DX12Wrapper::CreateMaterial(const S32 id, const S32 mask)
+	SPtr<IMaterial> DX12Wrapper::CreateMaterial(const S32 id, const S32 mask)
 	{
-		if (OUT_OF_RANGE(m_PipelineList, id))return -1;
+		if (OUT_OF_RANGE(m_PipelineList, id))return nullptr;
 
 		// パイプラインが削除されていたら終了
-		if (!m_PipelineList.at(id))return -1;
+		if (!m_PipelineList.at(id))return nullptr;
 
 		// シェーダーパラメータの作成
 		auto material = MUPtr<Material>(m_Dev, m_PipelineList.at(id), mask);
-		if (material->IsValid() == false)return -1;
+		if (material->IsValid() == false)return nullptr;
 
-		m_MaterialList.push_back(std::move(material));
-		return (S32)m_MaterialList.size() - 1;
+		return material;
 	}
 
-	S32 DX12Wrapper::DeleteMaterial(const S32 id)
+	S32 DX12Wrapper::SetMaterial(SPtr<IMaterial> material)
 	{
-		if (OUT_OF_RANGE(m_MaterialList, id))return -1;
-		auto& material = m_MaterialList.at(id);
-		if (0 < material.use_count())return -1;
 
-		material.reset();
-		return 0;
-	}
-
-	S32 DX12Wrapper::SetMaterial(const S32 id)
-	{
-		if (OUT_OF_RANGE(m_MaterialList, id))return -1;
-		auto& shaderParamSet = m_MaterialList[id];
-		if (!shaderParamSet)return -1;
-
-		shaderParamSet->SetMaterial(m_Dev, m_CmdList);
-		return 0;
-	}
-
-
-	S32 DX12Wrapper::LockMaterial(const S32 materialID)
-	{
-		if (OUT_OF_RANGE(m_MaterialList, materialID))return -1;
-		auto& mat = m_MaterialList[materialID];
-		if (mat == nullptr)return -1;
-		mat->Lock();
-		return 0;
-	}
-
-	S32 DX12Wrapper::SetShaderFloat4Param(const S32 id, const String& name, const Vector4& value)
-	{
-		if (OUT_OF_RANGE(m_MaterialList, id))return -1;
-		auto& shaderParamSet = m_MaterialList[id];
-
-		shaderParamSet->SetFloat4Param(name, value);
-		return 0;
-	}
-
-	S32 DX12Wrapper::SetShaderMatrixParam(const S32 id, const String& name, const Matrix& value)
-	{
-		if (OUT_OF_RANGE(m_MaterialList, id))return -1;
-		auto& shaderParamSet = m_MaterialList[id];
-
-		shaderParamSet->SetMatrixParam(name, value);
-		return 0;
-	}
-
-
-	S32 DX12Wrapper::SetShaderTexture2DParam(const S32 id, const String& name, const S32 texture)
-	{
-		if (OUT_OF_RANGE(m_MaterialList, id))return -1;
-		if (OUT_OF_RANGE(m_TextureList, id))return -1;
-
-		auto& shaderParamSet = m_MaterialList[id];
-		auto& textureInstance = m_TextureList[texture];
-
-		shaderParamSet->SetTexture(name, textureInstance);
-		return 0;
 	}
 
 

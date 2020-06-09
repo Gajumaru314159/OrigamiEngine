@@ -19,11 +19,12 @@ namespace
 
 namespace og
 {
-	class Texture;
+	//class Texture;
 	class Shader;
 	class GraphicPipeline;
-	class Material;
+	//class Material;
 	class Shape;
+
 
 
 	class DX12Wrapper : public IGraphicWrapper
@@ -42,8 +43,8 @@ namespace og
 
 		//===================================================================================//
 
-		S32 CreateTexture(const S32 width, const S32 height, const TextureFormat format)override;
-		S32 LoadGraph(const String& path) override;
+		SPtr<IRenderTexture> CreateRenderTexture(const S32 width, const S32 height, const TextureFormat format)override;
+		SPtr<ITexture> LoadTexture(const Path& path, const bool async) override;
 
 		//===================================================================================//
 
@@ -62,6 +63,8 @@ namespace og
 
 
 		SPtr<IMaterial> CreateMaterial(const S32 id, const S32 mask)override;
+		S32 SetMaterial(SPtr<IMaterial> material) override;
+
 
 		//===================================================================================//
 
@@ -118,8 +121,8 @@ namespace og
 
 		ArrayList<SPtr<Shader>> m_ShaderList;
 		ArrayList<SPtr<GraphicPipeline>> m_PipelineList;
-		ArrayList<SPtr<Material>> m_MaterialList;
-		ArrayList<SPtr<Texture>> m_TextureList;
+		//ArrayList<SPtr<Material>> m_MaterialList;
+		//ArrayList<SPtr<Texture>> m_TextureList;
 		ArrayList<SPtr<Shape>> m_ShapeList;
 
 

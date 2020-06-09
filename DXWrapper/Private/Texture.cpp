@@ -8,42 +8,35 @@
 
 namespace og
 {
-	Texture::Texture(ComPtr<ID3D12Device>& device, const String& path)
+	Texture::Texture(ComPtr<ID3D12Device>& device, const Path& path) :m_Path(path)
 	{
-		auto extention = Path(path).Extension();
-		std::transform(extention.begin(), extention.end(), extention.begin(), ::tolower);
-		if (extention.size() == 0)return;
-
+		if (CheckArgs(device, path.IsValid()))return;
 
 		//テクスチャのロード
 		DirectX::TexMetadata metadata = {};
 		DirectX::ScratchImage scratchImg = {};
 
 
+		auto extention = m_Path.Extension();
 
-		// 読み込み
+		// 非対応の拡張子なら失敗
 		if (s_TextureFormatMap.count(extention) == 0)return;
 
 		//変換文字列格納バッファ
 		WCHAR	wStrW[1024];
-
 		size_t wLen = 0;
-
-		mbstowcs_s(&wLen, wStrW, 1024, path.c_str(), _TRUNCATE);
+		mbstowcs_s(&wLen, wStrW, 1024, path.ToString().c_str(), _TRUNCATE);
 
 
 		HRESULT result;
 		switch (s_TextureFormatMap[extention])
 		{
-		case TextureFormat::DDS:result = DirectX::LoadFromDDSFile(wStrW, DirectX::DDS_FLAGS_NONE, &metadata, scratchImg); break;
-		case TextureFormat::HDR:result = DirectX::LoadFromHDRFile(wStrW, &metadata, scratchImg); break;
-		case TextureFormat::TGA:result = DirectX::LoadFromTGAFile(wStrW, &metadata, scratchImg); break;
-		case TextureFormat::WIC:result = DirectX::LoadFromWICFile(wStrW, DirectX::WIC_FLAGS_NONE, &metadata, scratchImg); break;
+		case TextureFileFormat::DDS:result = DirectX::LoadFromDDSFile(wStrW, DirectX::DDS_FLAGS_NONE, &metadata, scratchImg); break;
+		case TextureFileFormat::HDR:result = DirectX::LoadFromHDRFile(wStrW, &metadata, scratchImg); break;
+		case TextureFileFormat::TGA:result = DirectX::LoadFromTGAFile(wStrW, &metadata, scratchImg); break;
+		case TextureFileFormat::WIC:result = DirectX::LoadFromWICFile(wStrW, DirectX::WIC_FLAGS_NONE, &metadata, scratchImg); break;
 		}
-		if (FAILED(result))
-		{
-			return;
-		}
+		if (FAILED(result))return;
 
 		auto img = scratchImg.GetImage(0, 0, 0);  //生データ抽出
 
@@ -69,24 +62,20 @@ namespace og
 			nullptr,
 			IID_PPV_ARGS(resource.ReleaseAndGetAddressOf()));
 
-		if (FAILED(result))
-		{
-			return;
-		}
+		if (FAILED(result))return;
+
 		result = resource->WriteToSubresource(0,
 											  nullptr,               //全領域へコピー
 											  img->pixels,           //元データアドレス
 											  (UINT)img->rowPitch,   //1ラインサイズ
 											  (UINT)img->slicePitch  //全サイズ
 		);
-		if (FAILED(result))
-		{
-			return;
-		}
+		if (FAILED(result))return;
 
 		m_Resource = resource;
 	}
 
+	/*
 	Texture::Texture(ComPtr<ID3D12Device>& device, const U32 width, const U32 height, const DXGI_FORMAT format)
 	{
 		if (CheckArgs(device))return;
@@ -120,7 +109,7 @@ namespace og
 		}
 		m_Resource = resource;
 	}
-
+	*/
 
 
 	S32 Texture::CreateShaderResourceView(ComPtr<ID3D12Device>& device, D3D12_CPU_DESCRIPTOR_HANDLE& handle)
@@ -139,9 +128,34 @@ namespace og
 			handle
 		);
 
-		//handle.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		handle.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		return 0;
 	}
+
+
+	Vector3 Texture::GetSize()
+	{
+		// TODO Vector3Intを作る
+		if (IsValid() == false)return Vector3();
+		auto desc = m_Resource->GetDesc();
+		return Vector3((F32)desc.Width, (F32)desc.Height, (F32)desc.DepthOrArraySize);
+	}
+
+	S32 Texture::GetDimension()
+	{
+		if (IsValid() == false)return 0;
+		auto desc = m_Resource->GetDesc();
+		return desc.Dimension;
+	}
+
+
+	bool Texture::IsLoaded()
+	{
+		// TODO 非同期のテクスチャ読み込み
+		return true;
+	}
+
+
 
 
 
@@ -163,17 +177,17 @@ namespace og
 		return 0;
 	}
 
-	HashMap<String, Texture::TextureFormat> Texture::s_TextureFormatMap =
+	HashMap<String, TextureFileFormat> Texture::s_TextureFormatMap =
 	{
-		{TC("dds")	,Texture::TextureFormat::DDS},
-		{TC("tga")	,Texture::TextureFormat::TGA},
-		{TC("tga")	,Texture::TextureFormat::HDR},
-		{TC("bmp")	,Texture::TextureFormat::WIC},
-		{TC("png")	,Texture::TextureFormat::WIC},
-		{TC("jpg")	,Texture::TextureFormat::WIC},
-		{TC("jpeg")	,Texture::TextureFormat::WIC},
-		{TC("png")	,Texture::TextureFormat::WIC},
-		{TC("tiff")	,Texture::TextureFormat::WIC}
+		{TC("dds")	,TextureFileFormat::DDS},
+		{TC("tga")	,TextureFileFormat::TGA},
+		{TC("tga")	,TextureFileFormat::HDR},
+		{TC("bmp")	,TextureFileFormat::WIC},
+		{TC("png")	,TextureFileFormat::WIC},
+		{TC("jpg")	,TextureFileFormat::WIC},
+		{TC("jpeg")	,TextureFileFormat::WIC},
+		{TC("png")	,TextureFileFormat::WIC},
+		{TC("tiff")	,TextureFileFormat::WIC}
 	};
 
 }

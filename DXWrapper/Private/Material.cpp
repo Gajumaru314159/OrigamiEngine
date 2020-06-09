@@ -53,6 +53,8 @@ namespace og
 		m_GraphicPipeline = gpipeline;
 	}
 
+
+
 	S32 Material::CreateResource(ComPtr<ID3D12Device>& device, SPtr<GraphicPipeline>& gpipeline)
 	{
 		if (m_DataSize == 0)return 0;
@@ -70,6 +72,8 @@ namespace og
 		if (FAILED(result))return -1;
 		return 0;
 	}
+
+
 
 	S32 Material::CreateDescriptorHeap(ComPtr<ID3D12Device>& device)
 	{
@@ -120,7 +124,9 @@ namespace og
 			{
 				tex = DefaultAsset::Instance()->whiteTex;
 			}
-			tex->CreateShaderResourceView(device, descHeapH);
+
+			auto ptr = dynamic_cast<Texture*>(tex.get());
+			ptr->CreateShaderResourceView(device, descHeapH);
 		}
 		return 0;
 	}
@@ -178,7 +184,7 @@ namespace og
 
 
 
-	S32 Material::SetTexture(const String& name, SPtr<Texture>& texture)
+	S32 Material::SetTexture(const String& name, SPtr<ITexture>& texture)
 	{
 		if (!IsValid())return -1;
 		if (CheckArgs(!!texture))return -1;

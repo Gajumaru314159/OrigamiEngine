@@ -3,9 +3,10 @@
 #include <memory>
 
 #include "IDeletable.h"
-#include "GraphicPipelineDesc.h"
-
+#include "ITexture.h"
+#include "IRenderTexture.h"
 #include "IMaterial.h"
+#include "GraphicPipelineDesc.h"
 
 namespace og
 {
@@ -73,7 +74,7 @@ namespace og
 		/// <param name="height">高さ</param>
 		/// <param name="format">生成する画像のピクセルフォーマット</param>
 		/// <returns>　－１　　　:　エラー\n－１以外　:　ID</returns>
-		virtual S32 CreateTexture(const S32 width, const S32 height, const TextureFormat format) = 0;
+		virtual SPtr<IRenderTexture> CreateRenderTexture(const S32 width, const S32 height, const TextureFormat format) = 0;
 		/// <summary>
 		/// 画像ファイルの読み込み
 		/// </summary>
@@ -82,7 +83,7 @@ namespace og
 		/// </remarks>
 		/// <param name="path">ファイルパス</param>
 		/// <returns>　－１　　　:　エラー\n－１以外　:　ID</returns>
-		virtual S32 LoadGraph(const String& path) = 0;
+		virtual SPtr<ITexture> LoadTexture(const Path& path, const bool async = false) = 0;
 
 		//===================================================================================//
 
@@ -158,6 +159,8 @@ namespace og
 		//===================================================================================//
 
 		virtual SPtr<IMaterial> CreateMaterial(const S32 id, const S32 mask) = 0;
+
+		virtual S32 SetMaterial(SPtr<IMaterial> material) = 0;
 
 		//===================================================================================//
 

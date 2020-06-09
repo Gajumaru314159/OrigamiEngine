@@ -33,7 +33,7 @@ int main()
 
 	{
 		auto mat = gapi->CreateMaterial(0, -1);
-		S32 img = gapi->LoadGraph(TC("C:\\My\\Temp\\test.png"));
+		auto tex = gapi->LoadTexture(Path(TC("C:\\My\\Temp\\test.png")));
 
 		F32 t = 0;
 		while (gapi->SwapScreen() == 0)
@@ -50,7 +50,7 @@ int main()
 
 			mat->SetMatrixParam(TC("mat"), matrix);
 
-			mat->SetTexture(TC("tex"), img);
+			mat->SetTexture(TC("tex"), tex);
 
 
 			gapi->SetGraphicPipeline(0);

@@ -149,6 +149,14 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="Public\IRenderTexture.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Public\ITextureBase.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Public\ITexture.h">
       <SubType>
       </SubType>
