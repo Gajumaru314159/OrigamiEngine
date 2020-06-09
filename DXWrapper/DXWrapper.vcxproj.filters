@@ -89,6 +89,9 @@
     <ClInclude Include="Public\IDeletable.h">
       <Filter>ソース ファイル\_Interface</Filter>
     </ClInclude>
+    <ClInclude Include="Public\ITexture.h">
+      <Filter>ソース ファイル\_Interface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Private\dllmain.cpp">
