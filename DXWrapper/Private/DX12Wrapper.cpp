@@ -343,8 +343,11 @@ namespace og
 
 	S32 DX12Wrapper::CreateDefaultAssets()
 	{
+		char cdir[255];
+		GetCurrentDirectoryA(255, cdir);
+
 		//DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, 4, 4, ConvertTextureFormat(TextureFormat::RGBA8));
-		DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, Path(TC("C:\\My\\Temp\\test.png")));
+		DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, Path(TC("test.png")));
 		if (!DefaultAsset::Instance()->whiteTex->IsValid())return -1;
 
 		{
@@ -389,37 +392,6 @@ namespace og
 				return -1;
 			}
 		}
-
-		m_Vertices[0 * 5 + 0] = 0.0f;
-		m_Vertices[0 * 5 + 1] = 0.0f;
-		m_Vertices[0 * 5 + 2] = 0.0f;
-		m_Vertices[0 * 5 + 3] = 0.0f;
-		m_Vertices[0 * 5 + 4] = 0.0f;
-
-		m_Vertices[1 * 5 + 0] = 1.0f;
-		m_Vertices[1 * 5 + 1] = 0.0f;
-		m_Vertices[1 * 5 + 2] = 0.0f;
-		m_Vertices[1 * 5 + 3] = 1.0f;
-		m_Vertices[1 * 5 + 4] = 0.0f;
-
-		m_Vertices[2 * 5 + 0] = 0.0f;
-		m_Vertices[2 * 5 + 1] = 1.0f;
-		m_Vertices[2 * 5 + 2] = 0.0f;
-		m_Vertices[2 * 5 + 3] = 0.0f;
-		m_Vertices[2 * 5 + 4] = 1.0f;
-
-		m_Vertices[3 * 5 + 0] = 1.0f;
-		m_Vertices[3 * 5 + 1] = 1.0f;
-		m_Vertices[3 * 5 + 2] = 0.0f;
-		m_Vertices[3 * 5 + 3] = 1.0f;
-		m_Vertices[3 * 5 + 4] = 1.0f;
-
-		U32 indices[6] = { 0,1,2,2,1,3 };
-		m_TexVertID = CreateShape(sizeof(F32) * 5, sizeof(F32) * 5 * 4, (Byte*)m_Vertices, 6, indices);
-
-
-
-
 		return 0;
 	}
 }

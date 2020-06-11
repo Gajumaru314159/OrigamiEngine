@@ -7,7 +7,6 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <d3dx12.h>
-
 #include "DefaultAsset.h"
 
 
@@ -68,10 +67,9 @@ namespace og
 
 		//===================================================================================//
 
-		S32 CreateShape(const U32 stribeSize, const U32 dataSize, const Byte* data, const U32 indexNum = 0, const U32* indicis = nullptr) override;
+		SPtr<IShape> CreateShape(const U32 stribeSize) override;
 
-
-		S32 DrawShape(const S32 id)override;
+		S32 DrawShape(SPtr<IShape> shape)override;
 
 		#pragma endregion
 	private:
@@ -125,10 +123,6 @@ namespace og
 		//ArrayList<SPtr<Texture>> m_TextureList;
 		ArrayList<SPtr<Shape>> m_ShapeList;
 
-
-		// 画像描画用頂点データ
-		float m_Vertices[4 * (4 + 2)];
-		S32 m_TexVertID;
 		#pragma endregion
 	};
 }

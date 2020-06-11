@@ -1,6 +1,5 @@
 ﻿#include "pch.h"
 #include "Texture.h"
-
 #include <d3dx12.h>
 #include <DirectXTex.h>
 #pragma comment(lib, "DirectXTex.lib")

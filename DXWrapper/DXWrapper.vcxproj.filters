@@ -38,6 +38,9 @@
     <Filter Include="ソース ファイル\Texture">
       <UniqueIdentifier>{9953b338-d6c3-41d7-830e-e3d64adb1c2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\RenderTexture">
+      <UniqueIdentifier>{2f9baf1f-b4f5-45d7-beb6-423d8096103e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Private\framework.h">
@@ -96,6 +99,12 @@
       <Filter>ソース ファイル\Texture</Filter>
     </ClInclude>
     <ClInclude Include="Public\IRenderTexture.h">
+      <Filter>ソース ファイル\_Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderTexture.h">
+      <Filter>ソース ファイル\RenderTexture</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\IShape.h">
       <Filter>ソース ファイル\_Interface</Filter>
     </ClInclude>
   </ItemGroup>

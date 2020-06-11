@@ -12,5 +12,7 @@ namespace og
 	public:
 		virtual Vector3 GetSize() = 0;
 		virtual S32 GetDimension() = 0;
+
+		//virtual ArrayList<Byte> GetPixels() = 0;
 	};
 }

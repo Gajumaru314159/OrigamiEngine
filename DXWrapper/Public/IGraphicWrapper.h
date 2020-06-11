@@ -6,6 +6,7 @@
 #include "ITexture.h"
 #include "IRenderTexture.h"
 #include "IMaterial.h"
+#include "IShape.h"
 #include "GraphicPipelineDesc.h"
 
 namespace og
@@ -164,19 +165,13 @@ namespace og
 
 		//===================================================================================//
 
-		virtual S32 CreateShape(const U32 stribeSize, const U32 dataSize, const Byte* data, const U32 indexNum = 0, const U32* indicis = nullptr) = 0;
+		virtual SPtr<IShape> CreateShape(const U32 stribeSize) = 0;
 
-		//virtual S32 SetVertexData(const S32 id, const Byte*) = 0;
-
-
-		//virtual S32 CreateIndexData(const S32* indces, const S32 indexNum) = 0;
-
-
+		virtual S32 DrawShape(SPtr<IShape> shape) = 0;
 
 
 		//===================================================================================//
 
-		virtual S32 DrawShape(const S32 id) = 0;
 
 
 		//===================================================================================//

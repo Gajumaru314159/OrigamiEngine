@@ -63,7 +63,7 @@
       <PreprocessorDefinitions>_DEBUG;DXWRAPPER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>Public;Private;C:\My\Productions\C++\lib\DirectXTex;../CommonLibrary/Public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Public;Private;../../lib/DirectXTex;../CommonLibrary/Public</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>CommonLibrary.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>
@@ -73,7 +73,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>C:\My\Productions\C++\lib\DirectXTex;$(SolutionDir)Common;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/DirectXTex;$(SolutionDir)Common;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
   </ItemDefinitionGroup>
@@ -153,6 +153,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="Public\IShape.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Public\ITextureBase.h">
       <SubType>
       </SubType>
@@ -162,6 +166,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="Public\Material.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Public\RenderTexture.h">
       <SubType>
       </SubType>
     </ClInclude>

@@ -148,29 +148,20 @@ namespace og
 
 
 
-	S32 DX12Wrapper::CreateShape(const U32 stribeSize, const U32 dataSize, const Byte* data, const U32 indexNum, const U32* indicis)
+	SPtr<IShape> DX12Wrapper::CreateShape(const U32 stribeSize)
 	{
-		auto shape = MSPtr<Shape>(m_Dev, stribeSize, dataSize, data, indexNum, indicis);
-
-		if (shape->IsValid() == false)return -1;
-
-		m_ShapeList.push_back(shape);
-
-		return (S32)m_ShapeList.size() - 1;
+		if (stribeSize <= 0)return nullptr;
+		auto shape = MSPtr<Shape>(stribeSize);
+		return shape;
 	}
 
 
-	S32 DX12Wrapper::DrawShape(const S32 id)
+	S32 DX12Wrapper::DrawShape(SPtr<IShape> shape)
 	{
-		if (OUT_OF_RANGE(m_ShapeList, id))return -1;
-		auto& shape = m_ShapeList.at(id);
-		if (shape == nullptr)return -1;
-		return shape->Draw(m_CmdList);
+		if (CheckArgs(!!shape))return -1;
+		auto ptr = dynamic_cast<Shape*>(shape.get());
+		return ptr->Draw(m_Dev,m_CmdList);
 	}
-
-
-
-
 
 	// ここからプライベート関数
 	DXGI_FORMAT DX12Wrapper::ConvertTextureFormat(const TextureFormat format)const
