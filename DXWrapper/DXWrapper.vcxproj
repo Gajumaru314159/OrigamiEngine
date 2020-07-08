@@ -109,6 +109,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="Private\DXHelper.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Private\framework.h" />
     <ClInclude Include="Private\GraphicPipeline.h">
       <SubType>
@@ -131,16 +135,16 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="Public\AssetID.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="Public\DXWrapper.h" />
     <ClInclude Include="Public\GraphicPipelineDesc.h">
       <SubType>
       </SubType>
     </ClInclude>
     <ClInclude Include="Public\IDeletable.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Public\IGraphicPipeline.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -190,6 +194,10 @@
     <ClCompile Include="Private\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Private\RenderTexture.cpp">
+      <SubType>
+      </SubType>
     </ClCompile>
     <ClCompile Include="Private\Shader.cpp">
       <SubType>

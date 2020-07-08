@@ -3,13 +3,7 @@
 #include "IMaterial.h"
 
 #include <d3d12.h>
-#include <wrl.h>
-
-namespace
-{
-	template <typename T>
-	using ComPtr = Microsoft::WRL::ComPtr<T>;
-}
+#include "DXHelper.h"
 
 namespace og
 {

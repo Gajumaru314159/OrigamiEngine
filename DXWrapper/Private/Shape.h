@@ -3,18 +3,11 @@
 #include "IShape.h"
 
 #include <d3d12.h>
-#include <wrl.h>
-
-
-namespace
-{
-	template <typename T>
-	using ComPtr = Microsoft::WRL::ComPtr<T>;
-}
+#include "DXHelper.h"
 
 namespace og
 {
-	class Shape:public IShape
+	class Shape :public IShape
 	{
 	private:
 		ComPtr<ID3D12Resource> m_VertexBuffer;
@@ -28,12 +21,14 @@ namespace og
 		ArrayList<Byte> m_Bytes;
 		ArrayList<U32> m_Indices;
 
+		ComPtr<ID3D12Device> m_device;
+
 		bool m_IsChanged;
 
 	public:
-		Shape(const U32 stribeSize);
+		Shape(ComPtr<ID3D12Device>& device, const U32 stribeSize);
 
-		S32 Draw(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList);
+		S32 Draw(ComPtr<ID3D12GraphicsCommandList>& commandList, const U32 count);
 
 		inline bool IsValid()const { return m_VertexBuffer != nullptr; }
 

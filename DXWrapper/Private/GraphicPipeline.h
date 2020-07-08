@@ -1,16 +1,10 @@
 ﻿#pragma once
-#include <wrl.h>
 
 #include <d3d12.h>
-
+#include "IGraphicPipeline.h"
 #include "InnerGraphicPipelineDesc.h"
 
-
-namespace
-{
-	template <typename T>
-	using ComPtr = Microsoft::WRL::ComPtr<T>;
-}
+#include "DXHelper.h"
 
 struct ID3D12ShaderReflection;
 namespace og
@@ -20,7 +14,7 @@ namespace og
 	/// <summary>
 	/// 描画に使用する情報をひとまとめにする
 	/// </summary>
-	class GraphicPipeline
+	class GraphicPipeline :public IGraphicPipeline
 	{
 	public:
 		static const S32 MAX_CONSTANT_BUFFER = 16;

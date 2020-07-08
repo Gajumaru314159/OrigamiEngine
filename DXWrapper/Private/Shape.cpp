@@ -5,21 +5,23 @@
 
 namespace og
 {
-	Shape::Shape(const U32 stribeSize):ms_StribeSize(stribeSize),m_IsChanged(false)
+	Shape::Shape(ComPtr<ID3D12Device>& device, const U32 stribeSize) :ms_StribeSize(stribeSize), m_IsChanged(false)
 	{
 		assert(0 < stribeSize);
+		m_device = device;
 	}
 
 
-	S32 Shape::Draw(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
+	S32 Shape::Draw(ComPtr<ID3D12GraphicsCommandList>& commandList, const U32 count)
 	{
-		if (CheckArgs(device,commandList))return -1;
+		if (CheckArgs(commandList))return -1;
 
-		if (m_IsChanged) {
-			CreateResource(device);
+		if (m_IsChanged)
+		{
+			CreateResource(m_device);
 		}
 
-		if (IsValid()==false) return -1;
+		if (IsValid() == false) return -1;
 
 
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -43,7 +45,7 @@ namespace og
 	{
 		if (bytes == nullptr)return -1;
 		U32 currentSize = (U32)m_Bytes.size();
-		U32 byteSize = size*ms_StribeSize;
+		U32 byteSize = size * ms_StribeSize;
 		m_Bytes.resize(currentSize + byteSize);
 		memcpy_s(m_Bytes.data() + currentSize, byteSize, bytes, byteSize);
 		m_IsChanged = true;
@@ -63,7 +65,7 @@ namespace og
 		if (indices == nullptr)return -1;
 		U32 currentSize = (U32)m_Indices.size();
 		m_Indices.resize(currentSize + count);
-		memcpy_s(m_Indices.data() + currentSize, sizeof(U32)*count, indices, sizeof(U32) * count);
+		memcpy_s(m_Indices.data() + currentSize, sizeof(U32) * count, indices, sizeof(U32) * count);
 		m_IsChanged = true;
 		return 0;
 	}

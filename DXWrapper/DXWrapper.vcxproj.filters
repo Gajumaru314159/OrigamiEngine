@@ -26,20 +26,23 @@
     <Filter Include="ソース ファイル\DefaultAsset">
       <UniqueIdentifier>{8460dfa5-711e-4983-a629-ba9aa8eeb8ab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\VertexData">
-      <UniqueIdentifier>{81c1cf63-33cd-4e62-aeb3-d998595e52f7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Shape">
       <UniqueIdentifier>{e263af4d-1f74-4ecf-b83a-8a0221a45231}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\Materials">
       <UniqueIdentifier>{d827f45a-b662-4e7d-a7f8-7ca5f8ac5256}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Texture">
+    <Filter Include="ソース ファイル\TextureBase">
       <UniqueIdentifier>{9953b338-d6c3-41d7-830e-e3d64adb1c2d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\RenderTexture">
+    <Filter Include="ソース ファイル\TextureBase\Texture">
+      <UniqueIdentifier>{a2056cc0-a4ae-4195-898d-057c89b1a682}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\TextureBase\RenderTexture">
       <UniqueIdentifier>{2f9baf1f-b4f5-45d7-beb6-423d8096103e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\_Helper">
+      <UniqueIdentifier>{7d4a5d88-d255-4eb1-8d73-4cbbf6a84063}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -51,9 +54,6 @@
     </ClInclude>
     <ClInclude Include="Private\GraphicPipeline.h">
       <Filter>ソース ファイル\GraphicPipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\GraphicPipelineDesc.h">
-      <Filter>ソース ファイル\_Interface</Filter>
     </ClInclude>
     <ClInclude Include="Private\DX12Wrapper.h">
       <Filter>ソース ファイル\DX12Wrapper</Filter>
@@ -77,35 +77,41 @@
     <ClInclude Include="Private\Shape.h">
       <Filter>ソース ファイル\Shape</Filter>
     </ClInclude>
-    <ClInclude Include="Public\AssetID.h">
-      <Filter>ソース ファイル\_Interface</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Material.h">
       <Filter>ソース ファイル\Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\IMaterial.h">
-      <Filter>ソース ファイル\_Interface</Filter>
     </ClInclude>
     <ClInclude Include="Public\IDeletable.h">
       <Filter>ソース ファイル\_Interface</Filter>
     </ClInclude>
-    <ClInclude Include="Public\ITextureBase.h">
-      <Filter>ソース ファイル\_Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\ITexture.h">
-      <Filter>ソース ファイル\_Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="Private\Texture.h">
-      <Filter>ソース ファイル\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\IRenderTexture.h">
-      <Filter>ソース ファイル\_Interface</Filter>
-    </ClInclude>
     <ClInclude Include="Public\RenderTexture.h">
-      <Filter>ソース ファイル\RenderTexture</Filter>
+      <Filter>ソース ファイル\TextureBase\RenderTexture</Filter>
     </ClInclude>
     <ClInclude Include="Public\IShape.h">
-      <Filter>ソース ファイル\_Interface</Filter>
+      <Filter>ソース ファイル\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\ITextureBase.h">
+      <Filter>ソース ファイル\TextureBase</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\ITexture.h">
+      <Filter>ソース ファイル\TextureBase\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\Texture.h">
+      <Filter>ソース ファイル\TextureBase\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\IRenderTexture.h">
+      <Filter>ソース ファイル\TextureBase\RenderTexture</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\IMaterial.h">
+      <Filter>ソース ファイル\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\GraphicPipelineDesc.h">
+      <Filter>ソース ファイル\GraphicPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\IGraphicPipeline.h">
+      <Filter>ソース ファイル\GraphicPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\DXHelper.h">
+      <Filter>ソース ファイル\_Helper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -137,7 +143,10 @@
       <Filter>ソース ファイル\Materials</Filter>
     </ClCompile>
     <ClCompile Include="Private\Texture.cpp">
-      <Filter>ソース ファイル\Texture</Filter>
+      <Filter>ソース ファイル\TextureBase\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RenderTexture.cpp">
+      <Filter>ソース ファイル\TextureBase\RenderTexture</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 #include "DX12Wrapper.h"
 
 #include "Texture.h"
+#include "RenderTexture.h"
 #include "Shader.h"
 #include "GraphicPipeline.h"
 #include "Material.h"
@@ -25,12 +26,9 @@ namespace og
 
 	SPtr<IRenderTexture> DX12Wrapper::CreateRenderTexture(const S32 width, const S32 height, const TextureFormat format)
 	{
-		return nullptr;
-		//auto texture = MSPtr<Texture>(m_Dev, width, height, ConvertTextureFormat(format));
-
-		//if (texture->IsValid() == false)return nullptr;
-
-		//return texture;
+		auto texture = MSPtr<RenderTexture>(m_Dev, ConvertTextureFormat(format), width, height);
+		if (texture->IsValid() == false)return nullptr;
+		return texture;
 	}
 
 
@@ -65,13 +63,11 @@ namespace og
 
 
 
-	S32 DX12Wrapper::CreateGraphicPipeline(const GraphicPipelineDesc& desc)
+	SPtr<IGraphicPipeline> DX12Wrapper::CreateGraphicPipeline(const GraphicPipelineDesc& desc)
 	{
 		InnerGraphicPipelineDesc iDesc(desc);
 
-
-		//#define CHECK_SHADER(stage) (!OUT_OF_RANGE(m_ShaderList, desc.##stage) &&m_ShaderList[desc.##stage]!=nullptr)
-		#define CHECK_SHADER(stage) (!OUT_OF_RANGE(m_ShaderList, desc.##stage)&&m_ShaderList.at(desc.##stage)->IsValid())
+#define CHECK_SHADER(stage) (!OUT_OF_RANGE(m_ShaderList, desc.##stage)&&m_ShaderList.at(desc.##stage)->IsValid())
 
 		if (CHECK_SHADER(vs))iDesc.vsInstance = m_ShaderList.at(desc.vs);
 		if (CHECK_SHADER(ps))iDesc.psInstance = m_ShaderList.at(desc.ps);
@@ -79,37 +75,12 @@ namespace og
 		if (CHECK_SHADER(hs))iDesc.hsInstance = m_ShaderList.at(desc.hs);
 		if (CHECK_SHADER(ds))iDesc.dsInstance = m_ShaderList.at(desc.ds);
 
-
 		auto gpipeline = MSPtr<GraphicPipeline>(m_Dev, iDesc);
-		if (!gpipeline->IsValid())
-		{
-			return -1;
-		}
+		if (gpipeline->IsValid() == false)return nullptr;
 
-		m_PipelineList.push_back(gpipeline);
-		return (S32)m_PipelineList.size() - 1;
+		return gpipeline;
 	}
 
-	S32 DX12Wrapper::DeleteGraphicPipeline(const S32 id)
-	{
-		if (OUT_OF_RANGE(m_PipelineList, id))return -1;
-		if (!m_PipelineList.at(id))return -1;
-
-		auto& pipeline = m_PipelineList.at(id);
-		if (0 < pipeline.use_count()) return -1;
-
-		pipeline.reset();
-		return 0;
-	}
-
-	S32 DX12Wrapper::SetGraphicPipeline(const S32 id)
-	{
-		if (OUT_OF_RANGE(m_PipelineList, id))return -1;
-		auto& gpipeline = m_PipelineList.at(id);
-		if (!gpipeline)return -1;
-		gpipeline->SetGraphicPipeline(m_CmdList);
-		return 0;
-	}
 
 	const HashMap<String, ShaderVariableDesc>& DX12Wrapper::GetShaderParamList(const S32 graphicPipelineID)
 	{
@@ -151,17 +122,17 @@ namespace og
 	SPtr<IShape> DX12Wrapper::CreateShape(const U32 stribeSize)
 	{
 		if (stribeSize <= 0)return nullptr;
-		auto shape = MSPtr<Shape>(stribeSize);
+		auto shape = MSPtr<Shape>(m_Dev, stribeSize);
 		return shape;
 	}
 
 
-	S32 DX12Wrapper::DrawShape(SPtr<IShape> shape)
-	{
-		if (CheckArgs(!!shape))return -1;
-		auto ptr = dynamic_cast<Shape*>(shape.get());
-		return ptr->Draw(m_Dev,m_CmdList);
-	}
+	//S32 DX12Wrapper::DrawShape(SPtr<IShape> shape)
+	//{
+	//	if (CheckArgs(!!shape))return -1;
+	//	auto ptr = dynamic_cast<Shape*>(shape.get());
+	//	return ptr->Draw(m_Dev, m_CmdList);
+	//}
 
 	// ここからプライベート関数
 	DXGI_FORMAT DX12Wrapper::ConvertTextureFormat(const TextureFormat format)const

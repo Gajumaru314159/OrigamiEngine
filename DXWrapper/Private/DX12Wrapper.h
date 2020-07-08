@@ -3,18 +3,12 @@
 #include "IGraphicWrapper.h"
 
 #include <functional>
-#include <wrl.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <d3dx12.h>
 #include "DefaultAsset.h"
+#include "DXHelper.h"
 
-
-namespace
-{
-	template <typename T>
-	using ComPtr = Microsoft::WRL::ComPtr<T>;
-}
 
 namespace og
 {
@@ -34,7 +28,7 @@ namespace og
 			DefaultAsset::ResetSingleton();
 		}
 
-		#pragma region
+#pragma region
 		// IGraphicWrapperの仮想関数の実装
 
 		S32 Init() override;
@@ -53,9 +47,8 @@ namespace og
 
 		//===================================================================================//
 
-		S32 CreateGraphicPipeline(const GraphicPipelineDesc& desc)override;
-		S32 DeleteGraphicPipeline(const S32 id) override;
-		S32 SetGraphicPipeline(const S32 id) override;
+		SPtr<IGraphicPipeline> CreateGraphicPipeline(const GraphicPipelineDesc& desc)override;
+
 		const HashMap<String, ShaderVariableDesc>& GetShaderParamList(const S32 graphicPipelineID)override;
 
 		//===================================================================================//
@@ -69,9 +62,9 @@ namespace og
 
 		SPtr<IShape> CreateShape(const U32 stribeSize) override;
 
-		S32 DrawShape(SPtr<IShape> shape)override;
+		//S32 DrawShape(SPtr<IShape> shape)override;
 
-		#pragma endregion
+#pragma endregion
 	private:
 		// 初期化
 		HRESULT CreateMainWindow();
@@ -84,7 +77,7 @@ namespace og
 
 		DXGI_FORMAT ConvertTextureFormat(const TextureFormat format)const;
 	private:
-		#pragma region
+#pragma region
 		// ウィンドウ関係
 		HWND m_Hwnd;
 		LONG windowWidth;
@@ -118,11 +111,7 @@ namespace og
 		// リソース管理関係
 
 		ArrayList<SPtr<Shader>> m_ShaderList;
-		ArrayList<SPtr<GraphicPipeline>> m_PipelineList;
-		//ArrayList<SPtr<Material>> m_MaterialList;
-		//ArrayList<SPtr<Texture>> m_TextureList;
-		ArrayList<SPtr<Shape>> m_ShapeList;
 
-		#pragma endregion
+#pragma endregion
 	};
 }

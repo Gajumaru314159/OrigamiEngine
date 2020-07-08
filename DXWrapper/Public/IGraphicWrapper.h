@@ -7,6 +7,7 @@
 #include "IRenderTexture.h"
 #include "IMaterial.h"
 #include "IShape.h"
+#include "IGraphicPipeline.h"
 #include "GraphicPipelineDesc.h"
 
 namespace og
@@ -130,24 +131,7 @@ namespace og
 		/// </remarks>
 		/// <param name="desc">グラフィックパイプラインの定義データ</param>
 		/// <returns>　－１　　　:　エラー\n－１以外　:　ID</returns>
-		virtual S32 CreateGraphicPipeline(const GraphicPipelineDesc& desc) = 0;
-
-		/// <summary>
-		/// グラフィックパイプラインの削除
-		/// </summary>
-		/// <remarks>
-		/// 指定したIDのグラフィックパイプラインをメモリから削除する。パイプラインを使用しているマテリアルが存在する場合は削除に失敗する。
-		/// </remarks>
-		/// <param name="id">グラフィックパイプラインID</param>
-		/// <returns>　－１　　　:　エラー\n－１以外　:　ID</returns>
-		virtual S32 DeleteGraphicPipeline(const S32 id) = 0;
-
-		/// <summary>
-		/// 描画パイプラインのセット
-		/// </summary>
-		/// <param name="id">使用するグラフィックパイプラインのID</param>
-		/// <returns>　－１　　　:　エラー\n－１以外　:　ID</returns>
-		virtual S32 SetGraphicPipeline(const S32 id) = 0;
+		virtual SPtr<IGraphicPipeline> CreateGraphicPipeline(const GraphicPipelineDesc& desc) = 0;
 
 		/// <summary>
 		/// グラフィックパイプラインに定義されているシェーダー変数のリストを取得
@@ -167,7 +151,7 @@ namespace og
 
 		virtual SPtr<IShape> CreateShape(const U32 stribeSize) = 0;
 
-		virtual S32 DrawShape(SPtr<IShape> shape) = 0;
+		//virtual S32 DrawShape(SPtr<IShape> shape) = 0;
 
 
 		//===================================================================================//
