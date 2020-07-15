@@ -33,9 +33,6 @@
     <Filter Include="ソース ファイル\String">
       <UniqueIdentifier>{27e33da0-4f59-4b75-9995-743fc24d9e79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Affine">
-      <UniqueIdentifier>{0aa6ae67-0563-4543-9a57-e29997fc9ec3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Math">
       <UniqueIdentifier>{ffea8520-a3ca-492a-b22b-1759e2a8b1fd}</UniqueIdentifier>
     </Filter>
@@ -129,6 +126,12 @@
     </ClCompile>
     <ClCompile Include="Private\Matrix.cpp">
       <Filter>ソース ファイル\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Quaternion.cpp">
+      <Filter>ソース ファイル\Quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Mathf.cpp">
+      <Filter>ソース ファイル\Math</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

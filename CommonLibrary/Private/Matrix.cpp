@@ -1,6 +1,9 @@
 ﻿#include "pch.h"
 #include "Matrix.h"
 #include "Mathf.h"
+#include "Vector3.h"
+#include "Vector4.h"
+#include "Quaternion.h"
 
 namespace CommonLibrary
 {
@@ -14,9 +17,9 @@ namespace CommonLibrary
 
 
 	Matrix::Matrix(const F32 m00, const F32 m01, const F32 m02, const F32 m03,
-				   const F32 m10, const F32 m11, const F32 m12, const F32 m13,
-				   const F32 m20, const F32 m21, const F32 m22, const F32 m23,
-				   const F32 m30, const F32 m31, const F32 m32, const F32 m33)
+		const F32 m10, const F32 m11, const F32 m12, const F32 m13,
+		const F32 m20, const F32 m21, const F32 m22, const F32 m23,
+		const F32 m30, const F32 m31, const F32 m32, const F32 m33)
 	{
 		Set(
 			m00, m01, m02, m03,
@@ -26,12 +29,12 @@ namespace CommonLibrary
 	}
 
 
-	Vector4 Matrix::GetColumn(const S32 index)
+	Vector4 Matrix::GetColumn(const S32 index)const
 	{
 		if (index < 0 || COL <= index)return Vector4();
 		return Vector4(m[index][0], m[index][1], m[index][2], m[index][3]);
 	}
-	Vector4 Matrix::GetRow(const S32 index)
+	Vector4 Matrix::GetRow(const S32 index)const
 	{
 		if (index < 0 || ROW <= index)return Vector4();
 		return Vector4(m[0][index], m[1][index], m[2][index], m[3][index]);
@@ -55,9 +58,9 @@ namespace CommonLibrary
 	}
 
 	void Matrix::Set(const F32 m00, const F32 m01, const F32 m02, const F32 m03,
-					 const F32 m10, const F32 m11, const F32 m12, const F32 m13,
-					 const F32 m20, const F32 m21, const F32 m22, const F32 m23,
-					 const F32 m30, const F32 m31, const F32 m32, const F32 m33)
+		const F32 m10, const F32 m11, const F32 m12, const F32 m13,
+		const F32 m20, const F32 m21, const F32 m22, const F32 m23,
+		const F32 m30, const F32 m31, const F32 m32, const F32 m33)
 	{
 		m[0][0] = m00;
 		m[0][1] = m01;
@@ -106,10 +109,12 @@ namespace CommonLibrary
 
 
 	}
-	void Matrix::Rotate(const Quaternion& pos)
-	{
 
+	void Matrix::Rotate(const Quaternion& quat)
+	{
+		(*this) *= quat.GetMatrix();
 	}
+
 	void Matrix::Rotate(const F32 x, const F32 y, const F32 z)
 	{
 		const F32 sr = Mathf::Sin(x);

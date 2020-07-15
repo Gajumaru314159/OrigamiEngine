@@ -1,11 +1,12 @@
 ﻿#pragma once
 #include "Fwd.h"
-#include "Vector3.h"
-#include "Vector4.h"
-#include "Quaternion.h"
 
 namespace CommonLibrary
 {
+	class Vector3;
+	class Vector4;
+	class Quaternion;
+
 	struct FrustumDesc
 	{
 		F32 left;
@@ -28,21 +29,21 @@ namespace CommonLibrary
 		Matrix();
 
 		Matrix(const F32 m00, const F32 m01, const F32 m02, const F32 m03,
-			   const F32 m10, const F32 m11, const F32 m12, const F32 m13,
-			   const F32 m20, const F32 m21, const F32 m22, const F32 m23,
-			   const F32 m30, const F32 m31, const F32 m32, const F32 m33);
+			const F32 m10, const F32 m11, const F32 m12, const F32 m13,
+			const F32 m20, const F32 m21, const F32 m22, const F32 m23,
+			const F32 m30, const F32 m31, const F32 m32, const F32 m33);
 
 
-		Vector4 GetColumn(const S32 index);
-		Vector4 GetRow(const S32 index);
+		Vector4 GetColumn(const S32 index)const;
+		Vector4 GetRow(const S32 index)const;
 
 		void SetColumn(const S32 index, const Vector4& column);
 		void SetRow(const S32 index, const Vector4& column);
 
 		void Set(const F32 m00, const F32 m01, const F32 m02, const F32 m03,
-				 const F32 m10, const F32 m11, const F32 m12, const F32 m13,
-				 const F32 m20, const F32 m21, const F32 m22, const F32 m23,
-				 const F32 m30, const F32 m31, const F32 m32, const F32 m33);
+			const F32 m10, const F32 m11, const F32 m12, const F32 m13,
+			const F32 m20, const F32 m21, const F32 m22, const F32 m23,
+			const F32 m30, const F32 m31, const F32 m32, const F32 m33);
 
 		void Translate(const F32 x, const F32 y, const F32 z);
 		void Translate(const Vector3& posisiton);

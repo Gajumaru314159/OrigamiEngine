@@ -180,8 +180,6 @@ namespace og
 		m_CmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
 
 
-
-		// TODO ビューポート設定
 		//ビューポート、シザー矩形のセット
 		m_CmdList->RSSetViewports(1, &m_Viewport);
 		m_CmdList->RSSetScissorRects(1, &m_Scissorrect);

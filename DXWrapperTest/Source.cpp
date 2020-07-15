@@ -40,7 +40,6 @@ int main()
 
 		String vssrc;
 		vssrc.append("\ncbuffer Data0 : register(b0) {matrix mat;};");
-		vssrc.append("\ncbuffer Data1 : register(b1) {float4 col;};");
 		vssrc.append("\nstruct Output {float4 pos:SV_POSITION;float2 uv:TEXCOORD;};");
 		vssrc.append("\nOutput VSMain(float4 pos : POSITION ,float2 uv : TEXCOORD) {");
 		vssrc.append("\n	 Output o;");
@@ -69,20 +68,24 @@ int main()
 
 
 		auto mat = gapi->CreateMaterial(gp, -1);
-		auto mat2 = gapi->CreateMaterial(gp, -1);
+		auto mat2 = gapi->CreateMaterial(gp, 1);
 		auto tex = gapi->LoadTexture(Path(TC("test.png")));
 
 		auto shape = gapi->CreateShape(sizeof(F32) * 5);
-		float m_Vertices[4 * 5] = {
+		float m_Vertices[8 * 5] = {
 			0.0f,1.0f,0.0f,0.0f,0.0f,
 			1.0f,1.0f,0.0f,1.0f,0.0f,
 			0.0f,0.0f,0.0f,0.0f,1.0f,
-			1.0f,0.0f,0.0f,1.0f,1.0f
+			1.0f,0.0f,0.0f,1.0f,1.0f,//
+			0.0f,1.0f,0.0f,0.0f,0.0f,
+			0.0f,1.0f,1.0f,1.0f,0.0f,
+			0.0f,0.0f,0.0f,0.0f,1.0f,
+			0.0f,0.0f,1.0f,1.0f,1.0f,//
 		};
 		shape->Vertex((Byte*)m_Vertices, 4);
 
-		U32 indices[6] = { 0,1,2,2,1,3 };
-		shape->Indices(indices, 6);
+		U32 indices[12] = { 0,1,2,2,1,3,3,4,5,5,3,4 };
+		shape->Indices(indices, 12);
 
 
 		auto rt = gapi->CreateRenderTexture(1280, 720, og::TextureFormat::RGBA8);
@@ -96,12 +99,10 @@ int main()
 
 			F32 scale = 400.0f;
 			Matrix matrix;
-			matrix.Rotate(0, 0, t);
+			matrix.Rotate(Quaternion(0, 0, Mathf::Radians(t)));
 			matrix.Scale(scale, scale, scale);
 			matrix.Scale(1.0f / 1280, 1.0f / 720, 1);
 
-
-			mat->SetFloat4Param(TC("col"), col);
 			mat->SetMatrixParam(TC("mat"), matrix);
 			mat->SetTexture(TC("tex"), tex);
 
@@ -122,9 +123,7 @@ int main()
 			matrix2.Scale(scale, scale, scale);
 			matrix2.Scale(1.0f / 1280, 1.0f / 720, 1);
 
-			mat2->SetFloat4Param(TC("col"), col);
-			mat2->SetMatrixParam(TC("mat"), matrix2);
-			mat2->SetTexture(TC("tex"), tex);
+			auto reds = mat2->SetMatrixParam(TC("mat"), matrix2);
 
 			rt->SetMaterial(mat2);
 			rt->DrawInstanced(shape);

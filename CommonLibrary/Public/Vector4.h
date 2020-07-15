@@ -1,9 +1,11 @@
 ﻿#pragma once
 
 #include "Fwd.h"
+#include "Matrix.h"
 
 namespace CommonLibrary
 {
+
 	/// <summary>
 	/// 3次元ベクトルのクラス
 	/// </summary>
@@ -30,8 +32,7 @@ namespace CommonLibrary
 		/// <param name="_z">z成分</param>
 		/// <param name="_w">z成分</param>
 		Vector4(const F32 _x, const F32 _y, const F32 _z, const F32 _w) :x(_x), y(_y), z(_z), w(_w)
-		{
-		}
+		{}
 
 
 		Vector4() :Vector4(0, 0, 0, 0)
@@ -147,6 +148,14 @@ namespace CommonLibrary
 
 			return *this;
 		}
+
+
+
+
+		Vector4 operator* (const Matrix& mat)const;
+
+		Vector4 operator*= (const Matrix& mat);
+
 
 		/// <summary>
 		/// ベクトルの長さ

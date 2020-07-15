@@ -3,11 +3,12 @@
 
 namespace CommonLibrary
 {
-	class Mathf
+	class DLL Mathf
 	{
 	public:
 		static const F32 PI;
 		static const F32 TWO_PI;
+		static const F32 HALF_PI;
 		static const F32 EPSILON;
 		static const F32 NAPIER;
 
@@ -45,9 +46,4 @@ namespace CommonLibrary
 
 
 	};
-
-	const F32 Mathf::PI = 3.14159265f;
-	const F32 Mathf::TWO_PI = Mathf::PI * 2.0f;
-	const F32 Mathf::EPSILON = FLT_EPSILON;
-	const F32 Mathf::NAPIER = 2.71828182846f;
 }

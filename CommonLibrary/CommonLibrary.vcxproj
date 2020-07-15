@@ -144,11 +144,19 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Private\Color.cpp" />
+    <ClCompile Include="Private\Mathf.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Private\Matrix.cpp">
       <SubType>
       </SubType>
     </ClCompile>
     <ClCompile Include="Private\Path.cpp" />
+    <ClCompile Include="Private\Quaternion.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Private\Random.cpp" />
     <ClCompile Include="Private\Rect.cpp" />
     <ClCompile Include="Private\CustomString.cpp">

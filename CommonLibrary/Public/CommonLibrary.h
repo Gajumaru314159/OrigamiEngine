@@ -23,7 +23,7 @@
 #include "Number.h"
 #include "Matrix.h"
 #include "Mathf.h"
-
+#include "Quaternion.h"
 
 
 #ifndef USE_COMMONLIBRARY_NAMESPACE

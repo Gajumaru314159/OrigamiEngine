@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Fwd.h"
+#include "Matrix.h"
 
 namespace CommonLibrary
 {
 	/// <summary>
 	/// 3次元ベクトルのクラス
 	/// </summary>
-	class Vector3
+	class DLL Vector3
 	{
 	public:
 		/// <summary>ベクトルのx成分 </summary>
@@ -132,23 +133,10 @@ namespace CommonLibrary
 		}
 
 
-		//inline Vector3 operator* (const Matrix& mat)const
-		//{
-		//	return Vector3(
-		//		x * mat.m[0][0] + y * mat.m[1][0] + z * mat.m[2][0] + mat.m[3][0],
-		//		x * mat.m[0][1] + y * mat.m[1][1] + z * mat.m[2][1] + mat.m[3][1],
-		//		x * mat.m[0][2] + y * mat.m[1][2] + z * mat.m[2][2] + mat.m[3][2]);
-		//}
 
-		//inline Vector3 operator*= (const Matrix& mat)
-		//{
-		//	float nx = x * mat.m[0][0] + y * mat.m[1][0] + z * mat.m[2][0] + mat.m[3][0];
-		//	float ny = x * mat.m[0][1] + y * mat.m[1][1] + z * mat.m[2][1] + mat.m[3][1];
-		//	float nz = x * mat.m[0][2] + y * mat.m[1][2] + z * mat.m[2][2] + mat.m[3][2];
-		//	x = nx;
-		//	y = ny;
-		//	z = nx;
-		//}
+		Vector3 operator* (const Matrix& mat)const;
+
+		Vector3 operator*= (const Matrix& mat);
 
 
 		/// <summary>
