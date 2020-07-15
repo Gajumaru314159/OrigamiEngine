@@ -2,7 +2,7 @@
 
 #include "DX12Wrapper.h"
 
-#include "Texture.h"
+#include "ImageTexture.h"
 #include "RenderTexture.h"
 #include "Shader.h"
 #include "GraphicPipeline.h"
@@ -17,7 +17,7 @@ namespace og
 {
 	SPtr<ITexture> DX12Wrapper::LoadTexture(const Path& path, const bool async)
 	{
-		auto texture = MSPtr<Texture>(m_Dev, path);
+		auto texture = MSPtr<ImageTexture>(path);
 
 		if (!texture->IsValid())return nullptr;
 
@@ -26,103 +26,56 @@ namespace og
 
 	SPtr<IRenderTexture> DX12Wrapper::CreateRenderTexture(const S32 width, const S32 height, const TextureFormat format)
 	{
-		auto texture = MSPtr<RenderTexture>(m_Dev, ConvertTextureFormat(format), width, height);
+		HRESULT result;
+		ComPtr<ID3D12GraphicsCommandList> commandList = nullptr;
+
+		auto texture = MSPtr<RenderTexture>(ConvertTextureFormat(format), width, height);
 		if (texture->IsValid() == false)return nullptr;
 		return texture;
 	}
 
 
 
-	S32 DX12Wrapper::LoadShader(const String& path, ShaderType type, String& errorDest)
+	SPtr<IShader> DX12Wrapper::LoadShader(const String& path, ShaderType type, String& errorDest)
 	{
 		auto shader = Shader::LoadFromFile(path, type, errorDest);
 
-		if (shader->IsValid() == false)return -1;
+		if (shader->IsValid() == false)return nullptr;
 
-		m_ShaderList.push_back(std::move(shader));
-		return (S32)m_ShaderList.size() - 1;
+		return shader;
 	}
 
-	S32 DX12Wrapper::CreateShader(const String& src, ShaderType type, String& errorDest)
+	SPtr<IShader>  DX12Wrapper::CreateShader(const String& src, ShaderType type, String& errorDest)
 	{
 		auto shader = MSPtr<Shader>(src, type, errorDest);
-		if (shader->IsValid() == false)return -1;
-		m_ShaderList.push_back(shader);
-		return (S32)m_ShaderList.size() - 1;
+		if (shader->IsValid() == false)return nullptr;
+		return shader;
 	}
-
-	S32 DX12Wrapper::DeleteShader(const S32 id)
-	{
-		if (OUT_OF_RANGE(m_ShaderList, id))return -1;
-		if (m_ShaderList.at(id) == nullptr)return -1;
-		auto& shader = m_ShaderList.at(id);
-		if (0 < shader.use_count())return -1;
-		shader.reset();
-		return 0;
-	}
-
-
 
 	SPtr<IGraphicPipeline> DX12Wrapper::CreateGraphicPipeline(const GraphicPipelineDesc& desc)
 	{
-		InnerGraphicPipelineDesc iDesc(desc);
-
-#define CHECK_SHADER(stage) (!OUT_OF_RANGE(m_ShaderList, desc.##stage)&&m_ShaderList.at(desc.##stage)->IsValid())
-
-		if (CHECK_SHADER(vs))iDesc.vsInstance = m_ShaderList.at(desc.vs);
-		if (CHECK_SHADER(ps))iDesc.psInstance = m_ShaderList.at(desc.ps);
-		if (CHECK_SHADER(gs))iDesc.gsInstance = m_ShaderList.at(desc.gs);
-		if (CHECK_SHADER(hs))iDesc.hsInstance = m_ShaderList.at(desc.hs);
-		if (CHECK_SHADER(ds))iDesc.dsInstance = m_ShaderList.at(desc.ds);
-
-		auto gpipeline = MSPtr<GraphicPipeline>(m_Dev, iDesc);
+		auto gpipeline = MSPtr<GraphicPipeline>(desc);
 		if (gpipeline->IsValid() == false)return nullptr;
 
 		return gpipeline;
 	}
 
 
-	const HashMap<String, ShaderVariableDesc>& DX12Wrapper::GetShaderParamList(const S32 graphicPipelineID)
+	SPtr<IMaterial> DX12Wrapper::CreateMaterial(const SPtr<IGraphicPipeline>& pipeline, const S32 mask)
 	{
-		static const HashMap<String, ShaderVariableDesc> emptyMap;
-		if (OUT_OF_RANGE(m_PipelineList, graphicPipelineID))return emptyMap;
-
-		auto& pipeline = m_PipelineList[graphicPipelineID];
-		if (!pipeline)return emptyMap;
-
-		return pipeline->GetShaderParamList();
-	}
-
-
-	SPtr<IMaterial> DX12Wrapper::CreateMaterial(const S32 id, const S32 mask)
-	{
-		if (OUT_OF_RANGE(m_PipelineList, id))return nullptr;
-
-		// パイプラインが削除されていたら終了
-		if (!m_PipelineList.at(id))return nullptr;
+		if (CheckArgs(!!pipeline))return nullptr;
 
 		// シェーダーパラメータの作成
-		auto material = MUPtr<Material>(m_Dev, m_PipelineList.at(id), mask);
+		auto material = MUPtr<Material>(pipeline, mask);
 		if (material->IsValid() == false)return nullptr;
 
 		return material;
 	}
 
-	S32 DX12Wrapper::SetMaterial(SPtr<IMaterial> material)
-	{
-		if (CheckArgs(!!material))return -1;
-
-		auto ptr = dynamic_cast<Material*>(material.get());
-		ptr->SetMaterial(m_Dev, m_CmdList);
-		return 0;
-	}
-
-
-
 	SPtr<IShape> DX12Wrapper::CreateShape(const U32 stribeSize)
 	{
 		if (stribeSize <= 0)return nullptr;
-		auto shape = MSPtr<Shape>(m_Dev, stribeSize);
+		auto shape = MSPtr<Shape>(stribeSize);
 		return shape;
 	}
 

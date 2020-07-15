@@ -36,45 +36,100 @@ int main()
 	if (gapi->Init() != 0)return 0;
 
 	{
-		auto rt = gapi->CreateRenderTexture(1280, 720, og::TextureFormat::RGBA8);
+		String errorDest;
 
-		auto mat = gapi->CreateMaterial(0, -1);
-		auto tex = gapi->LoadTexture(Path(TC("C:\\My\\Temp\\test.png")));
+		String vssrc;
+		vssrc.append("\ncbuffer Data0 : register(b0) {matrix mat;};");
+		vssrc.append("\ncbuffer Data1 : register(b1) {float4 col;};");
+		vssrc.append("\nstruct Output {float4 pos:SV_POSITION;float2 uv:TEXCOORD;};");
+		vssrc.append("\nOutput VSMain(float4 pos : POSITION ,float2 uv : TEXCOORD) {");
+		vssrc.append("\n	 Output o;");
+		vssrc.append("\n	 o.pos = mul(transpose(mat),pos);");
+		vssrc.append("\n	 o.uv = pos.xy;");
+		vssrc.append("\n	 return o;");
+		vssrc.append("\n}");
+		String pssrc;
+		pssrc.append("\nTexture2D<float4> tex:register(t0);");
+		pssrc.append("\nSamplerState smp:register(s0);");
+		pssrc.append("\ncbuffer Data0 : register(b0) {matrix mat;};");
+		pssrc.append("\ncbuffer Data1 : register(b1) {float4 col;};");
+		pssrc.append("\nstruct Output {float4 pos:SV_POSITION;float2 uv:TEXCOORD;};");
+		pssrc.append("\nfloat4 PSMain(Output i) : SV_TARGET{");
+		pssrc.append("\n  return tex.Sample(smp,i.uv);");
+		pssrc.append("\n}");
+
+		og::GraphicPipelineDesc desc;
+
+		desc.vs = gapi->CreateShader(vssrc, og::ShaderType::VERTEX, errorDest);
+		desc.ps = gapi->CreateShader(pssrc, og::ShaderType::PIXEL, errorDest);
+		desc.numRenderTargets = 1;
+		auto gp = gapi->CreateGraphicPipeline(desc);
+
+
+
+
+		auto mat = gapi->CreateMaterial(gp, -1);
+		auto mat2 = gapi->CreateMaterial(gp, -1);
+		auto tex = gapi->LoadTexture(Path(TC("test.png")));
 
 		auto shape = gapi->CreateShape(sizeof(F32) * 5);
 		float m_Vertices[4 * 5] = {
-			0.0f,0.0f,0.0f,0.0f,0.0f,
-			1.0f,0.0f,0.0f,1.0f,0.0f,
-			0.0f,1.0f,0.0f,0.0f,1.0f,
-			1.0f,1.0f,0.0f,1.0f,1.0f
+			0.0f,1.0f,0.0f,0.0f,0.0f,
+			1.0f,1.0f,0.0f,1.0f,0.0f,
+			0.0f,0.0f,0.0f,0.0f,1.0f,
+			1.0f,0.0f,0.0f,1.0f,1.0f
 		};
 		shape->Vertex((Byte*)m_Vertices, 4);
 
 		U32 indices[6] = { 0,1,2,2,1,3 };
 		shape->Indices(indices, 6);
 
+
+		auto rt = gapi->CreateRenderTexture(1280, 720, og::TextureFormat::RGBA8);
+
+
+
 		F32 t = 0;
 		while (gapi->SwapScreen(rt) == 0)
 		{
 			Vector4 col(1, 1, 0.5f + Mathf::Sin(2 * t) * 0.5f, 1);
-			mat->SetFloat4Param(TC("col"), col);
 
+			F32 scale = 400.0f;
 			Matrix matrix;
-			F32 scale = 200.0f;
 			matrix.Rotate(0, 0, t);
 			matrix.Scale(scale, scale, scale);
 			matrix.Scale(1.0f / 1280, 1.0f / 720, 1);
 
 
+			mat->SetFloat4Param(TC("col"), col);
 			mat->SetMatrixParam(TC("mat"), matrix);
-
 			mat->SetTexture(TC("tex"), tex);
 
 
-			rt->SetGraphicPipeline(0);
-			rt->SetMaterial(mat);
 
+			rt->BeginDraw();
+
+			rt->SetGraphicPipeline(gp);
+
+			rt->SetMaterial(mat);
 			rt->DrawInstanced(shape);
+
+
+
+
+			Matrix matrix2;
+			matrix2.Rotate(0, 0, -t);
+			matrix2.Scale(scale, scale, scale);
+			matrix2.Scale(1.0f / 1280, 1.0f / 720, 1);
+
+			mat2->SetFloat4Param(TC("col"), col);
+			mat2->SetMatrixParam(TC("mat"), matrix2);
+			mat2->SetTexture(TC("tex"), tex);
+
+			rt->SetMaterial(mat2);
+			rt->DrawInstanced(shape);
+
+			rt->EndDraw();
 
 			t += 0.02f;
 		}

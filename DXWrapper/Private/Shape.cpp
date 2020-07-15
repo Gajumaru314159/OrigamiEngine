@@ -3,12 +3,13 @@
 
 #include <cassert>
 
+#include "DX12Wrapper.h"
+
 namespace og
 {
-	Shape::Shape(ComPtr<ID3D12Device>& device, const U32 stribeSize) :ms_StribeSize(stribeSize), m_IsChanged(false)
+	Shape::Shape(const U32 stribeSize) :ms_StribeSize(stribeSize), m_IsChanged(false)
 	{
 		assert(0 < stribeSize);
-		m_device = device;
 	}
 
 
@@ -18,7 +19,8 @@ namespace og
 
 		if (m_IsChanged)
 		{
-			CreateResource(m_device);
+			CreateResource();
+			m_IsChanged = false;
 		}
 
 		if (IsValid() == false) return -1;
@@ -30,12 +32,15 @@ namespace og
 		if (m_IndexBuffer)
 		{
 			commandList->IASetIndexBuffer(&m_IndexBufferView);
-			commandList->DrawIndexedInstanced((UINT)m_Indices.size(), 1, 0, 0, 0);
+			commandList->DrawIndexedInstanced((UINT)m_Indices.size(), count, 0, 0, 0);
 		}
 		else
 		{
 			commandList->DrawInstanced((UINT)m_Indices.size(), 1, 0, 0);
 		}
+
+
+
 		return 0;
 	}
 
@@ -85,7 +90,7 @@ namespace og
 
 
 
-	S32 Shape::CreateResource(ComPtr<ID3D12Device>& device)
+	S32 Shape::CreateResource()
 	{
 		D3D12_HEAP_PROPERTIES heapprop = {};
 		heapprop.Type = D3D12_HEAP_TYPE_UPLOAD;
@@ -104,14 +109,16 @@ namespace og
 		resdesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
 
+		ComPtr<ID3D12Resource> vertexBuffer;
+
 		//UPLOAD(確保は可能)
-		auto result = device->CreateCommittedResource(
+		auto result = DX12Wrapper::ms_Device->CreateCommittedResource(
 			&heapprop,
 			D3D12_HEAP_FLAG_NONE,
 			&resdesc,
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr,
-			IID_PPV_ARGS(m_VertexBuffer.ReleaseAndGetAddressOf()));
+			IID_PPV_ARGS(vertexBuffer.ReleaseAndGetAddressOf()));
 
 		if (FAILED(result))
 		{
@@ -120,21 +127,25 @@ namespace og
 
 
 		Byte* vertMap = nullptr;
-		result = m_VertexBuffer->Map(0, nullptr, (void**)&vertMap);
+		result = vertexBuffer->Map(0, nullptr, (void**)&vertMap);
 
 		memcpy_s(vertMap, m_Bytes.size(), m_Bytes.data(), m_Bytes.size());
 
-		m_VertexBuffer->Unmap(0, nullptr);
+		vertexBuffer->Unmap(0, nullptr);
 
-		m_VertexBufferView.BufferLocation = m_VertexBuffer->GetGPUVirtualAddress();//バッファの仮想アドレス
+		m_VertexBufferView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();//バッファの仮想アドレス
 		m_VertexBufferView.SizeInBytes = (UINT)m_Bytes.size();//全バイト数
 		m_VertexBufferView.StrideInBytes = ms_StribeSize;//1頂点あたりのバイト数
 
-		if (m_Indices.empty())return -1;
+		if (m_Indices.empty())
+		{
+			m_VertexBuffer = vertexBuffer;
+			return 0;
+		}
 		// インデックス指定がある場合
 
 		resdesc.Width = sizeof(U32) * m_Indices.size();
-		result = device->CreateCommittedResource(
+		result = DX12Wrapper::ms_Device->CreateCommittedResource(
 			&heapprop,
 			D3D12_HEAP_FLAG_NONE,
 			&resdesc,
@@ -153,6 +164,9 @@ namespace og
 		m_IndexBufferView.BufferLocation = m_IndexBuffer->GetGPUVirtualAddress();
 		m_IndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		m_IndexBufferView.SizeInBytes = sizeof(U32) * (U32)m_Indices.size();
+
+
+		m_VertexBuffer = vertexBuffer;
 		return 0;
 	}
 }

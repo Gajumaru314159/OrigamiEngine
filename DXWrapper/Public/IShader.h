@@ -3,8 +3,7 @@
 
 namespace og
 {
-	class IGraphicPipeline :public IDeletable
+	class IShader :public IDeletable
 	{
-	public:
 	};
 }

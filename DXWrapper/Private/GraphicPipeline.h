@@ -2,15 +2,13 @@
 
 #include <d3d12.h>
 #include "IGraphicPipeline.h"
-#include "InnerGraphicPipelineDesc.h"
+#include "GraphicPipelineDesc.h"
 
 #include "DXHelper.h"
 
 struct ID3D12ShaderReflection;
 namespace og
 {
-	class Shader;
-
 	/// <summary>
 	/// 描画に使用する情報をひとまとめにする
 	/// </summary>
@@ -24,11 +22,11 @@ namespace og
 		ComPtr<ID3D12RootSignature> m_RootSignature;
 
 		// シェーダ参照
-		SPtr<Shader> m_VS;
-		SPtr<Shader> m_PS;
-		SPtr<Shader> m_GS;
-		SPtr<Shader> m_HS;
-		SPtr<Shader> m_DS;
+		SPtr<IShader> m_IVS;
+		SPtr<IShader> m_IPS;
+		SPtr<IShader> m_IGS;
+		SPtr<IShader> m_IHS;
+		SPtr<IShader> m_IDS;
 
 
 
@@ -41,7 +39,7 @@ namespace og
 		S32 m_TextureNum;
 
 	public:
-		GraphicPipeline(ComPtr<ID3D12Device>& device, const InnerGraphicPipelineDesc& desc);
+		GraphicPipeline(const GraphicPipelineDesc& desc);
 
 		/// <summary>
 		/// コマンドリストにこのグラフィックパイプラインを設定する

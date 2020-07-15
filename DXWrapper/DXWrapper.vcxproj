@@ -118,16 +118,18 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="Private\InnerGraphicPipelineDesc.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
+    <ClInclude Include="Private\Material.h" />
     <ClInclude Include="Private\pch.h" />
+    <ClInclude Include="Private\RenderTexture.h" />
     <ClInclude Include="Private\Shader.h">
       <SubType>
       </SubType>
     </ClInclude>
     <ClInclude Include="Private\Shape.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Private\ImageTexture.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -157,23 +159,19 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="Public\IShader.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Public\IShape.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="Public\ITextureBase.h">
+    <ClInclude Include="Public\IImageTexture.h">
       <SubType>
       </SubType>
     </ClInclude>
     <ClInclude Include="Public\ITexture.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="Public\Material.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="Public\RenderTexture.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -204,6 +202,10 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="Private\Shape.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Private\ImageTexture.cpp">
       <SubType>
       </SubType>
     </ClCompile>

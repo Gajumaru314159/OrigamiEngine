@@ -21,14 +21,12 @@ namespace og
 		ArrayList<Byte> m_Bytes;
 		ArrayList<U32> m_Indices;
 
-		ComPtr<ID3D12Device> m_device;
-
 		bool m_IsChanged;
 
 	public:
-		Shape(ComPtr<ID3D12Device>& device, const U32 stribeSize);
+		Shape(const U32 stribeSize);
 
-		S32 Draw(ComPtr<ID3D12GraphicsCommandList>& commandList, const U32 count);
+		S32 Draw(ComPtr<ID3D12GraphicsCommandList>& commandList, const U32 count = 1);
 
 		inline bool IsValid()const { return m_VertexBuffer != nullptr; }
 
@@ -41,7 +39,7 @@ namespace og
 		S32 GetVertexCount()override;
 		S32 GetIndexCount()override;
 	private:
-		S32 CreateResource(ComPtr<ID3D12Device>& device);
+		S32 CreateResource();
 
 	};
 }

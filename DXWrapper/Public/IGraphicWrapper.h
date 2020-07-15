@@ -6,6 +6,7 @@
 #include "ITexture.h"
 #include "IRenderTexture.h"
 #include "IMaterial.h"
+#include "IShader.h"
 #include "IShape.h"
 #include "IGraphicPipeline.h"
 #include "GraphicPipelineDesc.h"
@@ -63,7 +64,7 @@ namespace og
 		/// フリップ関数。裏画面を表画面に反映する。
 		/// </summary>
 		/// <returns>　０：成功\n－１：エラー</returns>
-		virtual S32 SwapScreen() = 0;
+		virtual S32 SwapScreen(SPtr<IRenderTexture>& renderTarget) = 0;
 
 
 		//===================================================================================//
@@ -97,7 +98,7 @@ namespace og
 		/// <param name="type">シェーダの種類</param>
 		/// <param name="errorDest">エラーログ</param>
 		/// <returns>　－１　　　:　エラー\n－１以外　:　ID</returns>
-		virtual S32 LoadShader(const String& path, ShaderType type, String& errorDest) = 0;
+		virtual SPtr<IShader> LoadShader(const String& path, ShaderType type, String& errorDest) = 0;
 
 		/// <summary>
 		/// 文字列からシェーダを作成
@@ -109,17 +110,7 @@ namespace og
 		/// <param name="type">シェーダの種類</param>
 		/// <param name="errorDest">エラーログ</param>
 		/// <returns>　－１　　　:　エラー\n－１以外　:　ID</returns>
-		virtual S32 CreateShader(const String& src, ShaderType type, String& errorDest) = 0;
-
-		/// <summary>
-		/// シェーダオブジェクトの削除
-		/// </summary>
-		/// <remarks>
-		/// 指定したIDのシェーダをメモリから削除する。シェーダを使用しているパイプラインが存在する場合は削除に失敗する。
-		/// </remarks>
-		/// <param name="id">シェーダID</param>
-		/// <returns>　－１　　　:　エラー\n－１以外　:　ID</returns>
-		virtual S32 DeleteShader(const S32 id) = 0;
+		virtual SPtr<IShader> CreateShader(const String& src, ShaderType type, String& errorDest) = 0;
 
 		//===================================================================================//
 
@@ -133,19 +124,9 @@ namespace og
 		/// <returns>　－１　　　:　エラー\n－１以外　:　ID</returns>
 		virtual SPtr<IGraphicPipeline> CreateGraphicPipeline(const GraphicPipelineDesc& desc) = 0;
 
-		/// <summary>
-		/// グラフィックパイプラインに定義されているシェーダー変数のリストを取得
-		/// </summary>
-		/// <param name="graphicPipelineID">グラフィックパイプラインID</param>
-		/// <param name="dest">リストの出力先</param>
-		/// <returns>－１　:　エラー\n　０　:　成功</returns>
-		virtual const HashMap<String, ShaderVariableDesc>& GetShaderParamList(const S32 graphicPipelineID) = 0;
-
 		//===================================================================================//
 
-		virtual SPtr<IMaterial> CreateMaterial(const S32 id, const S32 mask) = 0;
-
-		virtual S32 SetMaterial(SPtr<IMaterial> material) = 0;
+		virtual SPtr<IMaterial> CreateMaterial(const SPtr<IGraphicPipeline>& pipeline, const S32 mask = -1) = 0;
 
 		//===================================================================================//
 

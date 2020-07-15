@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "IShader.h"
 
 namespace og
 {
@@ -48,11 +49,11 @@ namespace og
 	struct GraphicPipelineDesc
 	{
 		// シェーダID
-		S32 vs = -1;
-		S32 ps = -1;
-		S32 gs = -1;
-		S32 hs = -1;
-		S32 ds = -1;
+		SPtr<IShader> vs = nullptr;
+		SPtr<IShader> ps = nullptr;
+		SPtr<IShader> gs = nullptr;
+		SPtr<IShader> hs = nullptr;
+		SPtr<IShader> ds = nullptr;
 
 		// その他
 		bool alphaToCoverageEnable = false;

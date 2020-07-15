@@ -3,6 +3,8 @@
 
 #include <d3dx12.h>
 
+#include  "DX12Wrapper.h"
+
 #include "GraphicPipeline.h"
 #include "Texture.h"
 #include "DefaultAsset.h"
@@ -11,9 +13,12 @@
 
 namespace og
 {
-	Material::Material(ComPtr<ID3D12Device>& device, SPtr<GraphicPipeline>& gpipeline, const S32 mask)
+	Material::Material(const SPtr<IGraphicPipeline>& gpipeline, const S32 mask)
 	{
-		if (CheckArgs(device, !!gpipeline))return;
+		if (CheckArgs(!!gpipeline))return;
+
+		auto pipelinePtr = reinterpret_cast<GraphicPipeline*>(gpipeline.get());
+
 		m_IsChanged = true;
 		m_IsLocked = false;
 		m_DescriptorNum = 0;
@@ -22,7 +27,7 @@ namespace og
 		S32 bufferSize = 0;
 		for (U32 i = 0; i < 32; i++)
 		{
-			S32 monoBufferSize = gpipeline->GetConstantBufferSize(i);
+			S32 monoBufferSize = pipelinePtr->GetConstantBufferSize(i);
 			if (monoBufferSize <= 0 || (mask & (1 << i)) == 0)
 			{
 				m_StartOffsets.push_back(-1);
@@ -38,28 +43,30 @@ namespace og
 
 
 		// テクスチャの枚数
-		const S32 texNum = gpipeline->GetTextureNum();
+		const S32 texNum = pipelinePtr->GetTextureNum();
 
 		// テクスチャ領域の確保
-		m_TextureList.resize(texNum);
-		m_TextureListBuffer.resize(texNum);
+		m_ITextureList.resize(texNum);
+		m_ITextureListBuffer.resize(texNum);
 
-
-		if (CreateResource(device, gpipeline) == -1)
-		{
-			return;
-		}
 
 		m_GraphicPipeline = gpipeline;
+
+
+		if (CreateResource() == -1)
+		{
+			m_GraphicPipeline.reset();
+			return;
+		}
 	}
 
 
 
-	S32 Material::CreateResource(ComPtr<ID3D12Device>& device, SPtr<GraphicPipeline>& gpipeline)
+	S32 Material::CreateResource()
 	{
 		if (m_DataSize == 0)return 0;
 
-		auto result = device->CreateCommittedResource(
+		auto result = DX12Wrapper::ms_Device->CreateCommittedResource(
 			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
 			D3D12_HEAP_FLAG_NONE,
 			&CD3DX12_RESOURCE_DESC::Buffer(m_DataSize),
@@ -75,22 +82,22 @@ namespace og
 
 
 
-	S32 Material::CreateDescriptorHeap(ComPtr<ID3D12Device>& device)
+	S32 Material::CreateDescriptorHeap()
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
 		descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 		descHeapDesc.NodeMask = 0;
-		descHeapDesc.NumDescriptors = m_DescriptorNum + (UINT)m_TextureList.size();//定数バッファ + テクスチャ
+		descHeapDesc.NumDescriptors = m_DescriptorNum + (UINT)m_ITextureList.size();//定数バッファ + テクスチャ
 		descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;//デスクリプタヒープ種別
 
 
 		if (descHeapDesc.NumDescriptors == 0)return 0;
 
-		auto result = device->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(m_DescHeap.ReleaseAndGetAddressOf()));//生成
+		auto result = DX12Wrapper::ms_Device->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(m_DescHeap.ReleaseAndGetAddressOf()));//生成
 		if (FAILED(result))return -1;
 
 		auto descHeapH = m_DescHeap->GetCPUDescriptorHandleForHeapStart();
-		auto incSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		auto incSize = DX12Wrapper::ms_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		// 定数
 		if (m_Resource != nullptr)
 		{
@@ -101,24 +108,24 @@ namespace og
 			{
 				if (m_StartOffsets[i] == -1)continue;
 
-				cbvDesc.SizeInBytes = m_GraphicPipeline->GetConstantBufferSize(i);
+				cbvDesc.SizeInBytes = reinterpret_cast<GraphicPipeline*>(m_GraphicPipeline.get())->GetConstantBufferSize(i);
 
-				device->CreateConstantBufferView(&cbvDesc, descHeapH);
+				DX12Wrapper::ms_Device->CreateConstantBufferView(&cbvDesc, descHeapH);
 				descHeapH.ptr += incSize;
 				cbvDesc.BufferLocation += cbvDesc.SizeInBytes;
 			}
 		}
 
 
-		for (S32 i = 0; i < m_TextureListBuffer.size(); i++)
+		for (S32 i = 0; i < m_ITextureListBuffer.size(); i++)
 		{
-			if (m_TextureListBuffer[i] == nullptr)continue;
-			m_TextureList[i] = m_TextureListBuffer[i];
-			m_TextureListBuffer[i].reset();
+			if (m_ITextureListBuffer[i] == nullptr)continue;
+			m_ITextureList[i] = m_ITextureListBuffer[i];
+			m_ITextureListBuffer[i].reset();
 		}
 
 		// テクスチャ
-		for (auto& tex : m_TextureList)
+		for (auto& tex : m_ITextureList)
 		{
 			if (tex == nullptr)
 			{
@@ -126,21 +133,21 @@ namespace og
 			}
 
 			auto ptr = dynamic_cast<Texture*>(tex.get());
-			ptr->CreateShaderResourceView(device, descHeapH);
+			ptr->CreateShaderResourceView(descHeapH);
 		}
 		return 0;
 	}
 
 
-	S32 Material::SetMaterial(ComPtr<ID3D12Device>& device, ComPtr<ID3D12GraphicsCommandList>& commandList)
+	S32 Material::SetMaterial(ComPtr<ID3D12GraphicsCommandList>& commandList)
 	{
 		if (!IsValid())return -1;
-		if (CheckArgs(device, commandList))return -1;
+		if (CheckArgs(commandList))return -1;
 
 		// 変更があればでスクリプタヒープの再生成
 		if (m_IsChanged)
 		{
-			CreateDescriptorHeap(device);
+			CreateDescriptorHeap();
 			m_IsChanged = false;
 		}
 
@@ -153,7 +160,7 @@ namespace og
 
 		auto heap = m_DescHeap->GetGPUDescriptorHandleForHeapStart();
 
-		auto incSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		auto incSize = DX12Wrapper::ms_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 
 		// 定数バッファ
@@ -168,7 +175,7 @@ namespace og
 		}
 
 		// テクスチャの指定
-		if (m_TextureList.size() != 0)
+		if (m_ITextureList.size() != 0)
 		{
 			commandList->SetGraphicsRootDescriptorTable(rootParamIndex, heap);
 		}
@@ -184,13 +191,13 @@ namespace og
 
 
 
-	S32 Material::SetTexture(const String& name, SPtr<ITexture>& texture)
+	S32 Material::SetTexture(const String& name, const SPtr<ITexture>& texture)
 	{
 		if (!IsValid())return -1;
 		if (CheckArgs(!!texture))return -1;
 		if (m_IsLocked)return -1;
 
-		auto varData = m_GraphicPipeline->GetVariableData(name);
+		auto varData = reinterpret_cast<GraphicPipeline*>(m_GraphicPipeline.get())->GetVariableData(name);
 
 		if (varData.type != ShaderParamType::TEXTURE2D &&
 			varData.type != ShaderParamType::TEXTURE3D)
@@ -198,7 +205,7 @@ namespace og
 			return -1;
 		}
 
-		m_TextureListBuffer[varData.registerNum] = texture;
+		m_ITextureListBuffer[varData.registerNum] = texture;
 		m_IsChanged = true;
 		return 0;
 	}
@@ -208,7 +215,7 @@ namespace og
 		if (!IsValid())return -1;
 		if (m_IsLocked)return -1;
 
-		auto varData = m_GraphicPipeline->GetVariableData(name);
+		auto varData = reinterpret_cast<GraphicPipeline*>(m_GraphicPipeline.get())->GetVariableData(name);
 
 		if (varData.type != ShaderParamType::FLOAT4)return -1;
 
@@ -223,7 +230,7 @@ namespace og
 		if (!IsValid())return -1;
 		if (m_IsLocked)return -1;
 
-		auto varData = m_GraphicPipeline->GetVariableData(name);
+		auto varData = reinterpret_cast<GraphicPipeline*>(m_GraphicPipeline.get())->GetVariableData(name);
 
 		if (varData.type != ShaderParamType::MATRIX)return -1;
 

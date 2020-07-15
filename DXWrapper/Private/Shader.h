@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "IShader.h"
 #include "GraphicPipelineDesc.h"
 
 #include <d3d12.h>
@@ -10,7 +11,7 @@
 
 namespace og
 {
-	class Shader
+	class Shader :public IShader
 	{
 	private:
 		ComPtr<ID3DBlob> m_ShaderBolb;

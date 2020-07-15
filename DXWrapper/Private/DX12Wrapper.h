@@ -6,33 +6,30 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <d3dx12.h>
+
 #include "DefaultAsset.h"
 #include "DXHelper.h"
 
 
 namespace og
 {
-	//class Texture;
-	class Shader;
-	class GraphicPipeline;
-	//class Material;
-	class Shape;
-
-
-
-	class DX12Wrapper : public IGraphicWrapper
+	class DX12Wrapper : public IGraphicWrapper, public Singleton<DX12Wrapper>
 	{
+		friend class Singleton<DX12Wrapper>;
 	public:
 		~DX12Wrapper()
 		{
 			DefaultAsset::ResetSingleton();
+			ms_Device->Release();
+			ms_Device = nullptr;
+
 		}
 
 #pragma region
 		// IGraphicWrapperの仮想関数の実装
 
 		S32 Init() override;
-		S32 SwapScreen() override;
+		S32 SwapScreen(SPtr<IRenderTexture>& renderTarget) override;
 
 		//===================================================================================//
 
@@ -41,22 +38,16 @@ namespace og
 
 		//===================================================================================//
 
-		S32 LoadShader(const String& path, ShaderType type, String& errorDest) override;
-		S32 CreateShader(const String& path, ShaderType type, String& errorDest) override;
-		S32 DeleteShader(const S32 id)override;
+		SPtr<IShader> LoadShader(const String& path, ShaderType type, String& errorDest) override;
+		SPtr<IShader> CreateShader(const String& path, ShaderType type, String& errorDest) override;
 
 		//===================================================================================//
 
 		SPtr<IGraphicPipeline> CreateGraphicPipeline(const GraphicPipelineDesc& desc)override;
 
-		const HashMap<String, ShaderVariableDesc>& GetShaderParamList(const S32 graphicPipelineID)override;
-
 		//===================================================================================//
 
-
-		SPtr<IMaterial> CreateMaterial(const S32 id, const S32 mask)override;
-		S32 SetMaterial(SPtr<IMaterial> material) override;
-
+		SPtr<IMaterial> CreateMaterial(const SPtr<IGraphicPipeline>& pipeline, const S32 mask = -1)override;
 
 		//===================================================================================//
 
@@ -88,10 +79,9 @@ namespace og
 		ComPtr<IDXGISwapChain4> m_Swapchain = nullptr;  // スワップチェイン
 
 		// DirectX12関係
-		ComPtr<ID3D12Device> m_Dev = nullptr;  //デバイス
+		//ComPtr<ID3D12Device> m_Dev = nullptr;  //デバイス
 		ComPtr<ID3D12CommandAllocator> m_CmdAllocator = nullptr;  //コマンドアロケータ
 		ComPtr<ID3D12CommandQueue> m_CmdQueue = nullptr;  //コマンドキュー
-
 		ComPtr<ID3D12GraphicsCommandList> m_CmdList = nullptr;  //コマンドリスト
 
 		// 表示に関わるバッファ関係
@@ -100,17 +90,18 @@ namespace og
 		D3D12_VIEWPORT m_Viewport;         //ビューポート
 		D3D12_RECT m_Scissorrect;          //シザー矩形
 
-
-		//ComPtr<ID3D12Resource> m_Depth;
-
 		// フェンス
 		ComPtr<ID3D12Fence> m_Fence = nullptr;
 		UINT64 m_FenceVal = 0;
 
 
-		// リソース管理関係
-
-		ArrayList<SPtr<Shader>> m_ShaderList;
+		// 描画用リソース
+		SPtr<IGraphicPipeline> m_graphicPipeline;
+		SPtr<IShape> m_shape;
+		SPtr<IMaterial> m_material;
+	public:
+		static ID3D12Device* ms_Device;
+		static ArrayList<IRenderTexture*> ms_RenderTextureQueue;
 
 #pragma endregion
 	};

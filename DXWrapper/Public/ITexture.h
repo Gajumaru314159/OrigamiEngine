@@ -1,21 +1,11 @@
 ﻿#pragma once
-#include "ITextureBase.h"
+#include "IDeletable.h"
 namespace og
 {
-	/// <summary>
-	/// 読み込み専用のテクスチャ
-	/// </summary>
-	/// <remarks>
-	/// 動的に生成するテクスチャはIRenderTextureを使用してください
-	/// </remarks>
-	class ITexture : public ITextureBase
+	class ITexture :public IDeletable
 	{
 	public:
-		static SPtr<ITexture> whiteTexture;
-		static SPtr<ITexture> blackTexture;
-		static SPtr<ITexture> normalTexture;
-
-
-		virtual bool IsLoaded() = 0;
+		virtual Vector3 GetSize() = 0;
+		virtual S32 GetDimension() = 0;
 	};
 }
