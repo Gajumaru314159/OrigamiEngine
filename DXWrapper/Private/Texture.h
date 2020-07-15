@@ -1,39 +1,24 @@
 ﻿#pragma once
+#include "ITexture.h"
 
 #include <d3d12.h>
-#include <wrl.h>
-
-namespace
-{
-	template <typename T>
-	using ComPtr = Microsoft::WRL::ComPtr<T>;
-}
+#include "DXHelper.h"
 
 namespace og
 {
-	class Texture
+	class Texture :public ITexture
 	{
-	private:
+	protected:
 		ComPtr<ID3D12Resource> m_Resource;
+		ComPtr<ID3D12DescriptorHeap> m_SRVHeap;
 	public:
-		Texture(ComPtr<ID3D12Device>& device, const String& path);
-		Texture(ComPtr<ID3D12Device>& device, const U32 width, const U32 height, const DXGI_FORMAT format);
 
-
-		S32 CreateShaderResourceView(ComPtr<ID3D12Device>& device, D3D12_CPU_DESCRIPTOR_HANDLE& handle);
+		S32 CreateShaderResourceView(D3D12_CPU_DESCRIPTOR_HANDLE& handle);
 
 		inline bool IsValid()const { return m_Resource != nullptr; }
 
-	public:
-		static S32 GetTextureFormatSize(const DXGI_FORMAT format);
-	private:
-		enum class TextureFormat
-		{
-			DDS,
-			HDR,
-			TGA,
-			WIC
-		};
-		static HashMap<String, TextureFormat> s_TextureFormatMap;
+
+		virtual Vector3 GetSize()override;
+		virtual S32 GetDimension()override;
 	};
 }

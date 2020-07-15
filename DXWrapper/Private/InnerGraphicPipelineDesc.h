@@ -1,15 +1,8 @@
 ﻿#pragma once
 
-#include<wrl.h>
-
 #include "GraphicPipelineDesc.h"
 
-
-namespace
-{
-	template <typename T>
-	using ComPtr = Microsoft::WRL::ComPtr<T>;
-}
+#include "DXHelper.h"
 
 
 namespace og

@@ -3,14 +3,11 @@
 #include "GraphicPipeline.h"
 
 #include <d3dx12.h>
-
-
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
-
-
+#include "DX12Wrapper.h"
 #include "Shader.h"
 
 
@@ -20,12 +17,19 @@
 
 namespace og
 {
-	GraphicPipeline::GraphicPipeline(ComPtr<ID3D12Device>& device, const InnerGraphicPipelineDesc& desc)
+	GraphicPipeline::GraphicPipeline(const GraphicPipelineDesc& desc)
 	{
-		if (CheckArgs(device, desc.vsInstance != nullptr, desc.psInstance != nullptr))return;
+		auto vs = reinterpret_cast<Shader*>(desc.vs.get());
+		auto ps = reinterpret_cast<Shader*>(desc.ps.get());
+		auto gs = reinterpret_cast<Shader*>(desc.gs.get());
+		auto ds = reinterpret_cast<Shader*>(desc.ds.get());
+		auto hs = reinterpret_cast<Shader*>(desc.hs.get());
+
+
+		if (CheckArgs(vs != nullptr, ps != nullptr))return;
 
 		// 頂点レイアウトを取得
-		if (ReflectInputLayout(desc.vsInstance->GetShaderBolb()) == -1)return;
+		if (ReflectInputLayout(vs->GetShaderBolb()) == -1)return;
 
 		for (U32 i = 0; i < MAX_CONSTANT_BUFFER; i++)
 		{
@@ -35,11 +39,11 @@ namespace og
 
 
 		// 定数バッファの取得
-		if (desc.vsInstance != nullptr)ReflectShader(desc.vsInstance->GetShaderBolb()); else return;
-		if (desc.psInstance != nullptr)ReflectShader(desc.psInstance->GetShaderBolb()); else return;
-		if (desc.gsInstance != nullptr)ReflectShader(desc.gsInstance->GetShaderBolb());
-		if (desc.dsInstance != nullptr)ReflectShader(desc.dsInstance->GetShaderBolb());
-		if (desc.hsInstance != nullptr)ReflectShader(desc.hsInstance->GetShaderBolb());
+		if (desc.vs != nullptr)ReflectShader(vs->GetShaderBolb()); else return;
+		if (desc.ps != nullptr)ReflectShader(ps->GetShaderBolb()); else return;
+		if (desc.gs != nullptr)ReflectShader(gs->GetShaderBolb());
+		if (desc.ds != nullptr)ReflectShader(ds->GetShaderBolb());
+		if (desc.hs != nullptr)ReflectShader(hs->GetShaderBolb());
 
 		// データとレジスタの結び付け用
 		// レジスタ毎の定数バッファ / テクスチャ
@@ -96,7 +100,7 @@ namespace og
 
 		// ルートシグネチャの作成
 		ComPtr<ID3D12RootSignature> rootSignature;
-		result = device->CreateRootSignature(
+		result = DX12Wrapper::ms_Device->CreateRootSignature(
 			0,
 			rootSigBlob->GetBufferPointer(),
 			rootSigBlob->GetBufferSize(),
@@ -110,11 +114,11 @@ namespace og
 		// グラフィックパイプラインの定義
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineStateDesc = {};
 
-		if (desc.vsInstance)pipelineStateDesc.VS = CD3DX12_SHADER_BYTECODE(desc.vsInstance->GetShaderBolb().Get());
-		if (desc.psInstance)pipelineStateDesc.PS = CD3DX12_SHADER_BYTECODE(desc.psInstance->GetShaderBolb().Get());
-		if (desc.gsInstance)pipelineStateDesc.GS = CD3DX12_SHADER_BYTECODE(desc.gsInstance->GetShaderBolb().Get());
-		if (desc.hsInstance)pipelineStateDesc.HS = CD3DX12_SHADER_BYTECODE(desc.hsInstance->GetShaderBolb().Get());
-		if (desc.dsInstance)pipelineStateDesc.DS = CD3DX12_SHADER_BYTECODE(desc.dsInstance->GetShaderBolb().Get());
+		if (vs)pipelineStateDesc.VS = CD3DX12_SHADER_BYTECODE(vs->GetShaderBolb().Get());
+		if (ps)pipelineStateDesc.PS = CD3DX12_SHADER_BYTECODE(ps->GetShaderBolb().Get());
+		if (gs)pipelineStateDesc.GS = CD3DX12_SHADER_BYTECODE(gs->GetShaderBolb().Get());
+		if (hs)pipelineStateDesc.HS = CD3DX12_SHADER_BYTECODE(hs->GetShaderBolb().Get());
+		if (ds)pipelineStateDesc.DS = CD3DX12_SHADER_BYTECODE(ds->GetShaderBolb().Get());
 
 		pipelineStateDesc.pRootSignature = rootSignature.Get();
 
@@ -158,7 +162,7 @@ namespace og
 
 		// グラフィックパイプラインの生成
 		ComPtr<ID3D12PipelineState> pipelineState;
-		result = device->CreateGraphicsPipelineState(&pipelineStateDesc, IID_PPV_ARGS(pipelineState.ReleaseAndGetAddressOf()));
+		result = DX12Wrapper::ms_Device->CreateGraphicsPipelineState(&pipelineStateDesc, IID_PPV_ARGS(pipelineState.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return;
@@ -168,11 +172,11 @@ namespace og
 		// リソースを参照に追加
 		m_PipelineState = pipelineState;
 		m_RootSignature = rootSignature;
-		m_VS = desc.vsInstance;
-		m_PS = desc.psInstance;
-		m_GS = desc.gsInstance;
-		m_HS = desc.hsInstance;
-		m_DS = desc.dsInstance;
+		m_IVS = desc.vs;
+		m_IPS = desc.ps;
+		m_IGS = desc.gs;
+		m_IHS = desc.hs;
+		m_IDS = desc.ds;
 	}
 
 

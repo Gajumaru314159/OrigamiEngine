@@ -1,22 +1,17 @@
 ﻿#pragma once
 
+#include "IShader.h"
 #include "GraphicPipelineDesc.h"
 
 #include <d3d12.h>
-#include <wrl.h>
 
 #include "IGraphicWrapper.h"
-
-namespace
-{
-	template <typename T>
-	using ComPtr = Microsoft::WRL::ComPtr<T>;
-}
+#include "DXHelper.h"
 
 
 namespace og
 {
-	class Shader
+	class Shader :public IShader
 	{
 	private:
 		ComPtr<ID3DBlob> m_ShaderBolb;

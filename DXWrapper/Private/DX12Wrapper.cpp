@@ -17,6 +17,12 @@
 #include "DefaultAsset.h"
 
 #include "Shader.h"
+#include "GraphicPipeline.h"
+#include "RenderTexture.h"
+#include "Material.h"
+#include "Shape.h"
+#include "ImageTexture.h"
+
 #include<DirectXMath.h>
 namespace
 {
@@ -34,6 +40,10 @@ namespace
 
 namespace og
 {
+	ID3D12Device* DX12Wrapper::ms_Device = nullptr;
+	ArrayList<IRenderTexture*> DX12Wrapper::ms_RenderTextureQueue;
+
+
 	S32 DX12Wrapper::Init()
 	{
 		//======================================//
@@ -87,20 +97,48 @@ namespace og
 		return 0;
 	}
 
-	S32 DX12Wrapper::SwapScreen()
+	S32 DX12Wrapper::SwapScreen(SPtr<IRenderTexture>& renderTarget)
 	{
+		// レンダー結果をバックバッファに書き込み
+		static void** preRenderTarget = nullptr;
+		if (preRenderTarget != (void**)renderTarget.get())
+		{
+			m_material->SetTexture(TC("tex"), renderTarget);
+		}
+
+		auto pipelinePtr = reinterpret_cast<GraphicPipeline*>(m_graphicPipeline.get());
+		pipelinePtr->SetGraphicPipeline(m_CmdList);
+
+		auto materialPtr = reinterpret_cast<Material*>(m_material.get());
+		materialPtr->SetMaterial(m_CmdList);
+
+		auto shapePtr = reinterpret_cast<Shape*>(m_shape.get());
+		shapePtr->Draw(m_CmdList);
+
+
+
+		// スワップのためにリソースバリアを設定
 		auto bbIdx = m_Swapchain->GetCurrentBackBufferIndex();
 		m_CmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_BackBuffers[bbIdx].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
-		//命令のクローズ
+
 		m_CmdList->Close();
 
-		//コマンドリストの実行
-		ID3D12CommandList* cmdlists[] = { m_CmdList.Get() };
-		m_CmdQueue->ExecuteCommandLists(1, cmdlists);
-		////待ち
-		m_CmdQueue->Signal(m_Fence.Get(), ++m_FenceVal);
 
+		// コマンドリストの実行
+		static ArrayList< ID3D12CommandList*> cmdlists;
+		for (auto rt : ms_RenderTextureQueue)
+		{
+			RenderTexture* ptr = reinterpret_cast<RenderTexture*>(rt);
+			cmdlists.push_back(ptr->GetCommandList());
+		}
+		cmdlists.push_back(m_CmdList.Get());
+		m_CmdQueue->ExecuteCommandLists(cmdlists.size(), cmdlists.data());
+		cmdlists.clear();
+
+
+		// 描画待ち
+		m_CmdQueue->Signal(m_Fence.Get(), ++m_FenceVal);
 		if (m_Fence->GetCompletedValue() < m_FenceVal)
 		{
 			auto event = CreateEvent(nullptr, false, false, nullptr);
@@ -108,8 +146,20 @@ namespace og
 			WaitForSingleObject(event, INFINITE);
 			CloseHandle(event);
 		}
-		m_CmdAllocator->Reset();                          //キューをクリア
-		m_CmdList->Reset(m_CmdAllocator.Get(), nullptr);  //再びコマンドリストをためる準備
+
+
+		m_CmdAllocator->Reset();
+		m_CmdList->Reset(m_CmdAllocator.Get(), nullptr);
+		for (auto rt : ms_RenderTextureQueue)
+		{
+			auto ptr = reinterpret_cast<RenderTexture*>(rt);
+			ptr->ResetCommand();
+		}
+		ms_RenderTextureQueue.clear();
+
+
+
+
 
 		m_Swapchain->Present(1, 0);
 
@@ -133,16 +183,12 @@ namespace og
 
 		//レンダーターゲットを指定
 		auto rtvH = m_RtvHeaps->GetCPUDescriptorHandleForHeapStart();
-		rtvH.ptr += (SIZE_T)bbIdx * m_Dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV) * bbIdx;
+		rtvH.ptr += (SIZE_T)bbIdx * ms_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV) * bbIdx;
 
-		//深度を指定
-		//auto dsvH = m_DSVHeap->GetCPUDescriptorHandleForHeapStart();
-		//m_CmdList->OMSetRenderTargets(1, &rtvH, false, &dsvH);
 		m_CmdList->OMSetRenderTargets(1, &rtvH, false, nullptr);
-		//m_CmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 		//画面クリア
-		float clearColor[] = { 1,1,1,1 };  //白色
+		float clearColor[] = { 0,0,0,1 };  //白色
 		m_CmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
 
 		//ビューポート、シザー矩形のセット
@@ -233,7 +279,7 @@ namespace og
 		result = S_FALSE;
 		for (auto level : levels)
 		{
-			if (SUCCEEDED(D3D12CreateDevice(selectedAdapter, level, IID_PPV_ARGS(m_Dev.ReleaseAndGetAddressOf()))))
+			if (SUCCEEDED(D3D12CreateDevice(selectedAdapter, level, IID_PPV_ARGS(&ms_Device))))
 			{
 				featureLevel = level;
 				result = S_OK;
@@ -245,16 +291,17 @@ namespace og
 
 	HRESULT DX12Wrapper::InitializeCommand()
 	{
-		auto result = m_Dev->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_CmdAllocator.ReleaseAndGetAddressOf()));
+		auto result = ms_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_CmdAllocator.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return result;
 		}
-		result = m_Dev->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_CmdAllocator.Get(), nullptr, IID_PPV_ARGS(m_CmdList.ReleaseAndGetAddressOf()));
+		result = ms_Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_CmdAllocator.Get(), nullptr, IID_PPV_ARGS(m_CmdList.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return result;
 		}
+
 
 		D3D12_COMMAND_QUEUE_DESC cmdQueueDesc = {};
 		cmdQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;       // コマンドリストと合わせる
@@ -262,7 +309,7 @@ namespace og
 		cmdQueueDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;  // コマンドキューの優先度
 		cmdQueueDesc.NodeMask = 0;                                    // GPUが1つの時は0、複数の時は識別用のbitを指定
 
-		result = m_Dev->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(m_CmdQueue.ReleaseAndGetAddressOf()));  //コマンドキュー生成
+		result = ms_Device->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(m_CmdQueue.ReleaseAndGetAddressOf()));  //コマンドキュー生成
 
 		return result;
 	}
@@ -304,7 +351,7 @@ namespace og
 		heapDesc.NumDescriptors = 2;                                // ディスクリプタの数。表と裏バッファの２つ。
 		heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;  // ビューの情報をシェーダから参照する必要があるか
 
-		auto result = m_Dev->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_RtvHeaps.ReleaseAndGetAddressOf()));
+		auto result = ms_Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_RtvHeaps.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return result;
@@ -325,9 +372,11 @@ namespace og
 		for (U32 i = 0; i < swcDesc.BufferCount; ++i)
 		{
 			result = m_Swapchain->GetBuffer(i, IID_PPV_ARGS(m_BackBuffers[i].ReleaseAndGetAddressOf()));
-			m_Dev->CreateRenderTargetView(m_BackBuffers[i].Get(), &rtvDesc, handle);
-			handle.ptr += m_Dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+			ms_Device->CreateRenderTargetView(m_BackBuffers[i].Get(), &rtvDesc, handle);
+			handle.ptr += ms_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 		}
+
+
 
 		m_Viewport = CD3DX12_VIEWPORT(m_BackBuffers[0].Get());
 		m_Scissorrect = CD3DX12_RECT(0, 0, (U32)m_Viewport.Width, (U32)m_Viewport.Height);
@@ -338,88 +387,78 @@ namespace og
 	HRESULT DX12Wrapper::CreateFence()
 	{
 		m_FenceVal = 0;
-		return m_Dev->CreateFence(m_FenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_Fence.ReleaseAndGetAddressOf()));
+		return ms_Device->CreateFence(m_FenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_Fence.ReleaseAndGetAddressOf()));
 	}
 
 	S32 DX12Wrapper::CreateDefaultAssets()
 	{
-		DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, 4, 4, ConvertTextureFormat(TextureFormat::RGBA8));
-		//DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, "C:\\My\\Productions\\C++\\DX12\\DX12\\img\\textest.png");
+		char cdir[255];
+		GetCurrentDirectoryA(255, cdir);
+
+		//DefaultAsset::Instance()->whiteTex = MSPtr<Texture>(m_Dev, 4, 4, ConvertTextureFormat(TextureFormat::RGBA8));
+		DefaultAsset::Instance()->whiteTex = MSPtr<ImageTexture>(Path(TC("white.png")));
 		if (!DefaultAsset::Instance()->whiteTex->IsValid())return -1;
 
 		{
 			String errorDest;
 
 			String vssrc;
-			vssrc.append("\ncbuffer Data0 : register(b0) {matrix mat;};");
-			vssrc.append("\ncbuffer Data1 : register(b1) {float4 col;};");
 			vssrc.append("\nstruct Output {float4 pos:SV_POSITION;float2 uv:TEXCOORD;};");
 			vssrc.append("\nOutput VSMain(float4 pos : POSITION ,float2 uv : TEXCOORD) {");
-			vssrc.append("\n	 Output o;");
-			vssrc.append("\n	 o.pos = mul(transpose(mat),pos);");
-			vssrc.append("\n	 o.uv = uv;");
-			vssrc.append("\n	 return o;");
+			vssrc.append("\n    Output o;");
+			vssrc.append("\n    o.pos = pos;");
+			vssrc.append("\n    o.uv = uv;");
+			vssrc.append("\n    return o;");
 			vssrc.append("\n}");
 			String pssrc;
 			pssrc.append("\nTexture2D<float4> tex:register(t0);");
 			pssrc.append("\nSamplerState smp:register(s0);");
-			pssrc.append("\ncbuffer Data0 : register(b0) {matrix mat;};");
-			pssrc.append("\ncbuffer Data1 : register(b1) {float4 col;};");
 			pssrc.append("\nstruct Output {float4 pos:SV_POSITION;float2 uv:TEXCOORD;};");
 			pssrc.append("\nfloat4 PSMain(Output i) : SV_TARGET{");
-			pssrc.append("\n  return float4(tex.Sample(smp,i.uv))*col;");
+			pssrc.append("\n    return float4(tex.Sample(smp,i.uv));");
 			pssrc.append("\n}");
 
-			S32 vs = CreateShader(vssrc, ShaderType::VERTEX, errorDest);
-			S32 ps = CreateShader(pssrc, ShaderType::PIXEL, errorDest);
-			if (vs == -1 || ps == -1)
+			auto vs = CreateShader(vssrc, ShaderType::VERTEX, errorDest);
+			auto ps = CreateShader(pssrc, ShaderType::PIXEL, errorDest);
+			if (vs == nullptr || ps == nullptr)
 			{
 				return -1;
 			}
 
-
+			// 描画用パイプラインの作成
 			GraphicPipelineDesc pipeline;
 			pipeline.vs = vs;
 			pipeline.ps = ps;
 			pipeline.numRenderTargets = 1;
 
-			S32 id = CreateGraphicPipeline(pipeline);
-			if (id == -1)
+			m_graphicPipeline = CreateGraphicPipeline(pipeline);
+			if (m_graphicPipeline == nullptr)
+			{
+				return -1;
+			}
+
+
+			m_material = CreateMaterial(m_graphicPipeline);
+
+
+			// 描画用シェイプの作成
+			m_shape = CreateShape(sizeof(F32) * 5);
+			float m_Vertices[6 * 5] = {
+				-1.0f,1.0f,0.0f,0.0f,0.0f,
+				1.0f,1.0f,0.0f,1.0f,0.0f,
+				-1.0f,-1.0f,0.0f,0.0f,1.0f,
+				1.0f,-1.0f,0.0f,1.0f,1.0f
+			};
+			m_shape->Vertex((Byte*)m_Vertices, 4);
+
+			U32 indices[6] = { 0,1,2,2,1,3 };
+			m_shape->Indices(indices, 6);
+
+			if (m_shape == nullptr)
 			{
 				return -1;
 			}
 		}
-
-		m_Vertices[0 * 5 + 0] = 0.0f;
-		m_Vertices[0 * 5 + 1] = 0.0f;
-		m_Vertices[0 * 5 + 2] = 0.0f;
-		m_Vertices[0 * 5 + 3] = 0.0f;
-		m_Vertices[0 * 5 + 4] = 0.0f;
-
-		m_Vertices[1 * 5 + 0] = 1.0f;
-		m_Vertices[1 * 5 + 1] = 0.0f;
-		m_Vertices[1 * 5 + 2] = 0.0f;
-		m_Vertices[1 * 5 + 3] = 1.0f;
-		m_Vertices[1 * 5 + 4] = 0.0f;
-
-		m_Vertices[2 * 5 + 0] = 0.0f;
-		m_Vertices[2 * 5 + 1] = 1.0f;
-		m_Vertices[2 * 5 + 2] = 0.0f;
-		m_Vertices[2 * 5 + 3] = 0.0f;
-		m_Vertices[2 * 5 + 4] = 1.0f;
-
-		m_Vertices[3 * 5 + 0] = 1.0f;
-		m_Vertices[3 * 5 + 1] = 1.0f;
-		m_Vertices[3 * 5 + 2] = 0.0f;
-		m_Vertices[3 * 5 + 3] = 1.0f;
-		m_Vertices[3 * 5 + 4] = 1.0f;
-
-		U32 indices[6] = { 0,1,2,2,1,3 };
-		m_TexVertID = CreateShape(sizeof(F32) * 5, sizeof(F32) * 5 * 4, (Byte*)m_Vertices, 6, indices);
-
-
-
-
 		return 0;
 	}
 }

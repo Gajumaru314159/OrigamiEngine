@@ -63,7 +63,7 @@
       <PreprocessorDefinitions>_DEBUG;DXWRAPPER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>Public;Private;C:\My\Productions\C++\lib\DirectXTex;../CommonLibrary/Public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Public;Private;../../lib/DirectXTex;../CommonLibrary/Public</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>CommonLibrary.h</ForcedIncludeFiles>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>
@@ -73,7 +73,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>C:\My\Productions\C++\lib\DirectXTex;$(SolutionDir)Common;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/DirectXTex;$(SolutionDir)Common;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
   </ItemDefinitionGroup>
@@ -109,16 +109,18 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="Private\DXHelper.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Private\framework.h" />
     <ClInclude Include="Private\GraphicPipeline.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="Private\InnerGraphicPipelineDesc.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
+    <ClInclude Include="Private\Material.h" />
     <ClInclude Include="Private\pch.h" />
+    <ClInclude Include="Private\RenderTexture.h" />
     <ClInclude Include="Private\Shader.h">
       <SubType>
       </SubType>
@@ -127,11 +129,11 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="Private\Texture.h">
+    <ClInclude Include="Private\ImageTexture.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="Public\AssetID.h">
+    <ClInclude Include="Private\Texture.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -144,12 +146,32 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="Public\IGraphicPipeline.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Public\IGraphicWrapper.h" />
     <ClInclude Include="Public\IMaterial.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="Public\Material.h">
+    <ClInclude Include="Public\IRenderTexture.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Public\IShader.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Public\IShape.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Public\IImageTexture.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Public\ITexture.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -171,11 +193,19 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Private\RenderTexture.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Private\Shader.cpp">
       <SubType>
       </SubType>
     </ClCompile>
     <ClCompile Include="Private\Shape.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Private\ImageTexture.cpp">
       <SubType>
       </SubType>
     </ClCompile>

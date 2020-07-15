@@ -12,16 +12,16 @@ namespace CommonLibrary
 	{
 		m_Path = path;
 
-		std::size_t pos;
-		auto len = 2;
-		while (pos = m_Path.find(TC("\\")) != std::string::npos)
+		std::size_t pos = 0;
+		auto len = 1;
+		while ((pos = m_Path.find(TC("\\"), pos)) != std::string::npos)
 		{
 			m_Path.replace(pos, len, TC("/"));
 		}
 
 		bool invalid = false;
 		if (m_Path.find(TC("//")) != std::string::npos)invalid |= true;
-		if (m_Path.find(TC(":")) != std::string::npos)invalid |= true;
+		if (m_Path.find(TC(":"), 2) != std::string::npos)invalid |= true;
 		if (m_Path.find(TC("*")) != std::string::npos)invalid |= true;
 		if (m_Path.find(TC("?")) != std::string::npos)invalid |= true;
 		if (m_Path.find(TC("\"")) != std::string::npos)invalid |= true;

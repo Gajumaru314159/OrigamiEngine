@@ -1,14 +1,97 @@
 ﻿#include "pch.h"
 #include "Shape.h"
 
+#include <cassert>
+
+#include "DX12Wrapper.h"
+
 namespace og
 {
-	Shape::Shape(ComPtr<ID3D12Device>& device, const U32 stribeSize, const U32 dataSize, const Byte* data, const U32 indexNum, const U32* indicis)
+	Shape::Shape(const U32 stribeSize) :ms_StribeSize(stribeSize), m_IsChanged(false)
 	{
-		if (stribeSize == 0)return;
-		if (dataSize % stribeSize != 0)return;
+		assert(0 < stribeSize);
+	}
 
 
+	S32 Shape::Draw(ComPtr<ID3D12GraphicsCommandList>& commandList, const U32 count)
+	{
+		if (CheckArgs(commandList))return -1;
+
+		if (m_IsChanged)
+		{
+			CreateResource();
+			m_IsChanged = false;
+		}
+
+		if (IsValid() == false) return -1;
+
+
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		commandList->IASetVertexBuffers(0, 1, &m_VertexBufferView);
+		if (m_IndexBuffer)
+		{
+			commandList->IASetIndexBuffer(&m_IndexBufferView);
+			commandList->DrawIndexedInstanced((UINT)m_Indices.size(), count, 0, 0, 0);
+		}
+		else
+		{
+			commandList->DrawInstanced((UINT)m_Indices.size(), 1, 0, 0);
+		}
+
+
+
+		return 0;
+	}
+
+
+
+	S32 Shape::Vertex(const Byte* bytes, const U32 size)
+	{
+		if (bytes == nullptr)return -1;
+		U32 currentSize = (U32)m_Bytes.size();
+		U32 byteSize = size * ms_StribeSize;
+		m_Bytes.resize(currentSize + byteSize);
+		memcpy_s(m_Bytes.data() + currentSize, byteSize, bytes, byteSize);
+		m_IsChanged = true;
+		return 0;
+	}
+
+	S32 Shape::Indices(const U32 index1, const U32 index2, const U32 index3)
+	{
+		m_Indices.push_back(index1);
+		m_Indices.push_back(index2);
+		m_Indices.push_back(index3);
+		m_IsChanged = true;
+		return 0;
+	}
+	S32 Shape::Indices(const U32* indices, const U32 count)
+	{
+		if (indices == nullptr)return -1;
+		U32 currentSize = (U32)m_Indices.size();
+		m_Indices.resize(currentSize + count);
+		memcpy_s(m_Indices.data() + currentSize, sizeof(U32) * count, indices, sizeof(U32) * count);
+		m_IsChanged = true;
+		return 0;
+	}
+
+	S32 Shape::GetStribeSize()
+	{
+		return ms_StribeSize;
+	}
+	S32 Shape::GetVertexCount()
+	{
+		return (S32)(m_Bytes.size() / ms_StribeSize);
+	}
+	S32 Shape::GetIndexCount()
+	{
+		return (S32)m_Indices.size();
+	}
+
+
+
+	S32 Shape::CreateResource()
+	{
 		D3D12_HEAP_PROPERTIES heapprop = {};
 		heapprop.Type = D3D12_HEAP_TYPE_UPLOAD;
 		heapprop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
@@ -16,7 +99,7 @@ namespace og
 
 		D3D12_RESOURCE_DESC resdesc = {};
 		resdesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-		resdesc.Width = dataSize;
+		resdesc.Width = m_Bytes.size();
 		resdesc.Height = 1;
 		resdesc.DepthOrArraySize = 1;
 		resdesc.MipLevels = 1;
@@ -26,42 +109,43 @@ namespace og
 		resdesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
 
+		ComPtr<ID3D12Resource> vertexBuffer;
+
 		//UPLOAD(確保は可能)
-		auto result = device->CreateCommittedResource(
+		auto result = DX12Wrapper::ms_Device->CreateCommittedResource(
 			&heapprop,
 			D3D12_HEAP_FLAG_NONE,
 			&resdesc,
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr,
-			IID_PPV_ARGS(m_VertexBuffer.ReleaseAndGetAddressOf()));
+			IID_PPV_ARGS(vertexBuffer.ReleaseAndGetAddressOf()));
 
 		if (FAILED(result))
 		{
-			return;
+			return -1;
 		}
 
 
 		Byte* vertMap = nullptr;
-		result = m_VertexBuffer->Map(0, nullptr, (void**)&vertMap);
+		result = vertexBuffer->Map(0, nullptr, (void**)&vertMap);
 
-		memcpy_s(vertMap, dataSize, data, dataSize);
+		memcpy_s(vertMap, m_Bytes.size(), m_Bytes.data(), m_Bytes.size());
 
-		m_VertexBuffer->Unmap(0, nullptr);
+		vertexBuffer->Unmap(0, nullptr);
 
-		m_VertexBufferView.BufferLocation = m_VertexBuffer->GetGPUVirtualAddress();//バッファの仮想アドレス
-		m_VertexBufferView.SizeInBytes = dataSize;//全バイト数
-		m_VertexBufferView.StrideInBytes = stribeSize;//1頂点あたりのバイト数
+		m_VertexBufferView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();//バッファの仮想アドレス
+		m_VertexBufferView.SizeInBytes = (UINT)m_Bytes.size();//全バイト数
+		m_VertexBufferView.StrideInBytes = ms_StribeSize;//1頂点あたりのバイト数
 
-		m_IndexNum = dataSize / stribeSize;
-
-
-
-
-		if (indexNum == 0 || indicis == nullptr)return;
+		if (m_Indices.empty())
+		{
+			m_VertexBuffer = vertexBuffer;
+			return 0;
+		}
 		// インデックス指定がある場合
 
-		resdesc.Width = sizeof(U32) * indexNum;
-		result = device->CreateCommittedResource(
+		resdesc.Width = sizeof(U32) * m_Indices.size();
+		result = DX12Wrapper::ms_Device->CreateCommittedResource(
 			&heapprop,
 			D3D12_HEAP_FLAG_NONE,
 			&resdesc,
@@ -72,36 +156,17 @@ namespace og
 		//作ったバッファにインデックスデータをコピー
 		U32* mappedIdx = nullptr;
 		m_IndexBuffer->Map(0, nullptr, (void**)&mappedIdx);
-		memcpy_s(mappedIdx, sizeof(U32) * indexNum, indicis, sizeof(U32) * indexNum);
+		memcpy_s(mappedIdx, sizeof(U32) * m_Indices.size(), m_Indices.data(), sizeof(U32) * m_Indices.size());
 
 		m_IndexBuffer->Unmap(0, nullptr);
 
 		//インデックスバッファビューを作成
 		m_IndexBufferView.BufferLocation = m_IndexBuffer->GetGPUVirtualAddress();
 		m_IndexBufferView.Format = DXGI_FORMAT_R32_UINT;
-		m_IndexBufferView.SizeInBytes = sizeof(U32) * indexNum;
-
-		m_IndexNum = indexNum;
-	}
+		m_IndexBufferView.SizeInBytes = sizeof(U32) * (U32)m_Indices.size();
 
 
-	S32 Shape::Draw(ComPtr<ID3D12GraphicsCommandList>& commandList)const
-	{
-		if (CheckArgs(commandList))return -1;
-		if (!IsValid())return -1;
-
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		if (m_VertexBuffer)commandList->IASetVertexBuffers(0, 1, &m_VertexBufferView);
-		if (m_IndexBuffer)
-		{
-			commandList->IASetIndexBuffer(&m_IndexBufferView);
-			commandList->DrawIndexedInstanced(m_IndexNum, 1, 0, 0, 0);
-		}
-		else
-		{
-			commandList->DrawInstanced(m_IndexNum, 1, 0, 0);
-		}
+		m_VertexBuffer = vertexBuffer;
 		return 0;
 	}
 }

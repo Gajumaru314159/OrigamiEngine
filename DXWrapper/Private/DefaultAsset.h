@@ -4,11 +4,7 @@
 #include <wrl.h>
 #include <Texture.h>
 
-namespace
-{
-	template <typename T>
-	using ComPtr = Microsoft::WRL::ComPtr<T>;
-}
+#include "DXHelper.h"
 
 namespace og
 {
