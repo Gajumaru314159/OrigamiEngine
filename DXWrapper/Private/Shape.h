@@ -10,25 +10,25 @@ namespace og
 	class Shape :public IShape
 	{
 	private:
-		ComPtr<ID3D12Resource> m_VertexBuffer;
-		ComPtr<ID3D12Resource> m_IndexBuffer;
+		ComPtr<ID3D12Resource> m_vertexBuffer;
+		ComPtr<ID3D12Resource> m_indexBuffer;
 
-		D3D12_VERTEX_BUFFER_VIEW m_VertexBufferView;
-		D3D12_INDEX_BUFFER_VIEW m_IndexBufferView;
+		D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+		D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
 
-		const U32 ms_StribeSize;
+		const U32 ms_stribeSize;
 
-		ArrayList<Byte> m_Bytes;
-		ArrayList<U32> m_Indices;
+		ArrayList<Byte> m_data;
+		ArrayList<U32> m_indices;
 
-		bool m_IsChanged;
+		bool m_isChanged;
 
 	public:
 		Shape(const U32 stribeSize);
 
 		S32 Draw(ComPtr<ID3D12GraphicsCommandList>& commandList, const U32 count = 1);
 
-		inline bool IsValid()const { return m_VertexBuffer != nullptr; }
+		inline bool IsValid()const { return m_vertexBuffer != nullptr; }
 
 
 		S32 Vertex(const Byte* bytes, const U32 size)override;

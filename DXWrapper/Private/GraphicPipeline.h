@@ -18,33 +18,33 @@ namespace og
 		static const S32 MAX_REGISTER = 32;
 	private:
 		// メインリソース
-		ComPtr<ID3D12PipelineState> m_PipelineState;
-		ComPtr<ID3D12RootSignature> m_RootSignature;
+		ComPtr<ID3D12PipelineState> m_pipelineState;
+		ComPtr<ID3D12RootSignature> m_rootSignature;
 
 		// シェーダ参照
-		SPtr<IShader> m_IVS;
-		SPtr<IShader> m_IPS;
-		SPtr<IShader> m_IGS;
-		SPtr<IShader> m_IHS;
-		SPtr<IShader> m_IDS;
+		SPtr<IShader> m_vs;
+		SPtr<IShader> m_ps;
+		SPtr<IShader> m_gs;
+		SPtr<IShader> m_hs;
+		SPtr<IShader> m_ds;
 
 
 
 		// 頂点レイアウトの定義
-		ArrayList<String> m_InputLayoutNames;
-		ArrayList<D3D12_INPUT_ELEMENT_DESC> m_InputLayout;
+		ArrayList<String> m_inputLayoutNames;
+		ArrayList<D3D12_INPUT_ELEMENT_DESC> m_inputLayout;
 
 		// 変数定義マップ
-		HashMap<String, ShaderVariableDesc> m_Data;
+		HashMap<String, ShaderVariableDesc> m_varMap;
 
 		// 定数バッファのレジスタごとのサイズ
-		U32 m_ConstantBufferSizes[MAX_REGISTER];
+		U32 m_cBufDataSizes[MAX_REGISTER];
 		// テクスチャのレジスタごとの枚数
-		U32 m_TextureNums[MAX_REGISTER];
+		U32 m_texNums[MAX_REGISTER];
 
 
-		S32 m_CRootParamIndices[MAX_REGISTER];
-		S32 m_TRootParamIndices[MAX_REGISTER];
+		S32 m_cBufIndices[MAX_REGISTER];
+		S32 m_texIndices[MAX_REGISTER];
 
 	public:
 		GraphicPipeline(const GraphicPipelineDesc& desc);
@@ -54,24 +54,35 @@ namespace og
 		/// コマンドリストにこのグラフィックパイプラインを設定する
 		/// </summary>
 		/// <param name="commandList">グラフィックコマンドリスト</param>
-		/// <returns></returns>
+		/// <returns>　０：成功\n－１：失敗</returns>
 		S32 SetGraphicPipeline(ComPtr<ID3D12GraphicsCommandList>& commandList)const;
 
 		/// <summary>
 		/// 指定したレジスタの定数バッファのサイズを取得
 		/// </summary>
-		/// <param name="index">レジスタ番号</param>
-		/// <returns></returns>
+		/// <param name="resister">レジスタ番号</param>
+		/// <returns>定数バッファのサイズ</returns>
 		S32 GetConstantBufferSize(const U32 resister)const;
 
 		/// <summary>
 		/// 指定したレジスタのテクスチャの枚数を取得
 		/// </summary>
-		///  <param name="index">レジスタ番号</param>
+		///  <param name="resister">レジスタ番号</param>
 		/// <returns>枚数</returns>
 		S32 GetTextureNum(const U32 resister)const;
 
+		/// <summary>
+		/// 指定した定数バッファのレジスタがディスクリプタヒープの何番目に割り当てられているかを取得
+		/// </summary>
+		/// <param name="resister"></param>
+		/// <returns>－１以外：インデックス\n　　－１：指定したレジスタがマテリアルに含まれていない</returns>
 		S32 GetConstantBufferIndex(const U32 resister)const;
+
+		/// <summary>
+		/// 指定したテクスチャのレジスタがディスクリプタヒープの何番目に割り当てられているかを取得
+		/// </summary>
+		/// <param name="resister"></param>
+		/// <returns>－１以外：インデックス\n　　－１：指定したレジスタがマテリアルに含まれていない</returns>
 		S32 GetTextureIndex(const U32 resister)const;
 
 		/// <summary>
@@ -93,7 +104,7 @@ namespace og
 		/// インスタンスの生成に成功しているか
 		/// </summary>
 		/// <returns></returns>
-		inline bool IsValid()const { return m_PipelineState != nullptr; }
+		inline bool IsValid()const { return m_pipelineState != nullptr; }
 
 	private:
 		S32 ReflectShader(const ComPtr<ID3DBlob>& vsInstance);

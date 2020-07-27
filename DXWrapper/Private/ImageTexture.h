@@ -21,7 +21,7 @@ namespace og
 	class ImageTexture :public Texture, public IImageTexture
 	{
 	private:
-		Path m_Path;
+		Path m_path;
 	public:
 		ImageTexture(const Path& path);
 

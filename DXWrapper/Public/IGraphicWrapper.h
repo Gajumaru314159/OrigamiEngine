@@ -126,13 +126,21 @@ namespace og
 
 		//===================================================================================//
 
+		/// <summary>
+		/// グラフィックパイプラインからマテリアルを作成する
+		/// </summary>
+		/// <remarks>
+		/// ビットマスクでマテリアルに含めるレジスタを指定することで、アフィン行列、テクスチャ、色など個別に設定できるマテリアルを作成できる。
+		/// </remarks>
+		/// <param name="pipeline">作成元のグラフィックパイプライン</param>
+		/// <param name="cBufferMask">定数バッファのどのレジスタをマテリアルに含めるかをビットマスクで指定する</param>
+		/// <param name="texMask">テクスチャのどのレジスタをマテリアルに含めるかをビットマスクで指定する</param>
+		/// <returns>新しいマテリアル</returns>
 		virtual SPtr<IMaterial> CreateMaterial(const SPtr<IGraphicPipeline>& pipeline, const S32 cBufferMask = -1,const S32 texMask=-1) = 0;
 
 		//===================================================================================//
 
 		virtual SPtr<IShape> CreateShape(const U32 stribeSize) = 0;
-
-		//virtual S32 DrawShape(SPtr<IShape> shape) = 0;
 
 
 		//===================================================================================//

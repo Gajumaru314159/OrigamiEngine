@@ -14,26 +14,26 @@ namespace og
 	{
 	private:
 		// 依存関係
-		SPtr<IGraphicPipeline> m_GraphicPipeline;
-		ArrayList<SPtr<ITexture>> m_ITextureList;
-		ArrayList<SPtr<ITexture>> m_ITextureListBuffer;
+		SPtr<IGraphicPipeline> m_graphicPipeline;
+		ArrayList<SPtr<ITexture>> m_textureList;
+		ArrayList<SPtr<ITexture>> m_textureListBuffer;
 
 		// メインリソース
-		ComPtr<ID3D12Resource> m_Resource;
-		ComPtr<ID3D12DescriptorHeap> m_DescHeap;
+		ComPtr<ID3D12Resource> m_resource;
+		ComPtr<ID3D12DescriptorHeap> m_descHeap;
 
 
 		ArrayList<S32> m_resisterIndices;
 
 
 		// 定数バッファマップ領域
-		S32 m_DataSize;
-		Byte* m_Data;
-		ArrayList<S32> m_StartOffsets;
-		ArrayList<S32> m_TextureNums;
+		S32 m_dataSize;
+		Byte* m_data;
+		ArrayList<S32> m_startOffsets;
+		ArrayList<S32> m_textureNums;
 
-		bool m_IsChanged;
-		bool m_IsLocked;
+		bool m_isChanged;
+		bool m_isLocked;
 
 		const S32 m_cBufferMask;
 		const S32 m_texMask;
@@ -52,7 +52,7 @@ namespace og
 		S32 SetMatrixParam(const String& name, const Matrix& value)override;
 
 
-		inline bool IsValid()const { return m_GraphicPipeline != nullptr; };
+		inline bool IsValid()const { return m_graphicPipeline != nullptr; };
 	private:
 		S32 CreateResource();
 		S32 CreateDescriptorHeap();

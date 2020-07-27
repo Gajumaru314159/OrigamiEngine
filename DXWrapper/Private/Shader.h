@@ -14,10 +14,10 @@ namespace og
 	class Shader :public IShader
 	{
 	private:
-		ComPtr<ID3DBlob> m_ShaderBolb;
+		ComPtr<ID3DBlob> m_shaderBolb;
 
-		ArrayList<D3D12_INPUT_ELEMENT_DESC> m_InputLayoutDesc;
-		ArrayList<D3D12_INPUT_ELEMENT_DESC> m_TextureDesc;
+		ArrayList<D3D12_INPUT_ELEMENT_DESC> m_inputLayoutDesc;
+		ArrayList<D3D12_INPUT_ELEMENT_DESC> m_textureDesc;
 
 	public:
 
@@ -35,7 +35,7 @@ namespace og
 		Shader(ComPtr<ID3DBlob>& bolb);
 
 
-		const ComPtr<ID3DBlob>& GetShaderBolb() { return m_ShaderBolb; }
+		const ComPtr<ID3DBlob>& GetShaderBolb() { return m_shaderBolb; }
 
 
 		/// <summary>
@@ -44,7 +44,7 @@ namespace og
 		/// <remarks>
 		/// シェーダーの生成を行った場合はこの関数を用いて生成に成功したかを判定できる。
 		/// </remarks>
-		inline bool IsValid()const { return m_ShaderBolb; };
+		inline bool IsValid()const { return m_shaderBolb; };
 
 	public:
 		/// <summary>

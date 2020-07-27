@@ -20,8 +20,8 @@ namespace og
 		~DX12Wrapper()
 		{
 			DefaultAsset::ResetSingleton();
-			ms_Device->Release();
-			ms_Device = nullptr;
+			ms_device->Release();
+			ms_device = nullptr;
 
 		}
 
@@ -70,29 +70,29 @@ namespace og
 	private:
 #pragma region
 		// ウィンドウ関係
-		HWND m_Hwnd;
-		LONG windowWidth;
-		LONG windowHeight;
+		HWND m_hwnd;
+		LONG m_windowWidth;
+		LONG m_windowHeight;
 
 		// DXGI関係
-		ComPtr<IDXGIFactory4> m_DxgiFactory = nullptr;  // DXGIインターフェイス
-		ComPtr<IDXGISwapChain4> m_Swapchain = nullptr;  // スワップチェイン
+		ComPtr<IDXGIFactory4> m_dxgiFactory = nullptr;  // DXGIインターフェイス
+		ComPtr<IDXGISwapChain4> m_swapchain = nullptr;  // スワップチェイン
 
 		// DirectX12関係
 		//ComPtr<ID3D12Device> m_Dev = nullptr;  //デバイス
-		ComPtr<ID3D12CommandAllocator> m_CmdAllocator = nullptr;  //コマンドアロケータ
-		ComPtr<ID3D12CommandQueue> m_CmdQueue = nullptr;  //コマンドキュー
-		ComPtr<ID3D12GraphicsCommandList> m_CmdList = nullptr;  //コマンドリスト
+		ComPtr<ID3D12CommandAllocator> m_cmdAllocator = nullptr;  //コマンドアロケータ
+		ComPtr<ID3D12CommandQueue> m_cmdQueue = nullptr;  //コマンドキュー
+		ComPtr<ID3D12GraphicsCommandList> m_cmdList = nullptr;  //コマンドリスト
 
 		// 表示に関わるバッファ関係
-		ArrayList<ComPtr<ID3D12Resource>> m_BackBuffers;         //バックバッファ(2つ以上…スワップチェインが確保)
-		ComPtr<ID3D12DescriptorHeap> m_RtvHeaps = nullptr;  //レンダーターゲット用デスクリプタヒープ
-		D3D12_VIEWPORT m_Viewport;         //ビューポート
-		D3D12_RECT m_Scissorrect;          //シザー矩形
+		ArrayList<ComPtr<ID3D12Resource>> m_backBuffers;         //バックバッファ(2つ以上…スワップチェインが確保)
+		ComPtr<ID3D12DescriptorHeap> m_rtvHeaps = nullptr;  //レンダーターゲット用デスクリプタヒープ
+		D3D12_VIEWPORT m_viewport;         //ビューポート
+		D3D12_RECT m_scissorrect;          //シザー矩形
 
 		// フェンス
-		ComPtr<ID3D12Fence> m_Fence = nullptr;
-		UINT64 m_FenceVal = 0;
+		ComPtr<ID3D12Fence> m_fence = nullptr;
+		UINT64 m_fenceVal = 0;
 
 
 		// 描画用リソース
@@ -100,8 +100,8 @@ namespace og
 		SPtr<IShape> m_shape;
 		SPtr<IMaterial> m_material;
 	public:
-		static ID3D12Device* ms_Device;
-		static ArrayList<IRenderTexture*> ms_RenderTextureQueue;
+		static ID3D12Device* ms_device;
+		static ArrayList<IRenderTexture*> ms_renderTextureQueue;
 
 #pragma endregion
 	};

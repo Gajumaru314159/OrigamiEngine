@@ -31,10 +31,10 @@ namespace og
 
 		for (U32 i = 0; i < MAX_REGISTER; i++)
 		{
-			m_ConstantBufferSizes[i] = 0;
-			m_TextureNums[i] = 0;
-			m_CRootParamIndices[i] = -1;
-			m_TRootParamIndices[i] = -1;
+			m_cBufDataSizes[i] = 0;
+			m_texNums[i] = 0;
+			m_cBufIndices[i] = -1;
+			m_texIndices[i] = -1;
 		}
 
 
@@ -56,8 +56,8 @@ namespace og
 		// 定数バッファ
 		for (S32 i = 0; i < MAX_REGISTER; i++)
 		{
-			if (m_ConstantBufferSizes[i] == 0)continue;
-			m_CRootParamIndices[i] = (S32)descriptorRanges.size();
+			if (m_cBufDataSizes[i] == 0)continue;
+			m_cBufIndices[i] = (S32)descriptorRanges.size();
 			CD3DX12_DESCRIPTOR_RANGE dr;
 			dr.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i);
 			descriptorRanges.push_back(dr);
@@ -65,8 +65,8 @@ namespace og
 		// テクスチャ
 		for (U32 i = 0; i < MAX_REGISTER; i++)
 		{
-			if (m_TextureNums[i] == 0)continue;
-			m_TRootParamIndices[i] = (S32)descriptorRanges.size();
+			if (m_texNums[i] == 0)continue;
+			m_texIndices[i] = (S32)descriptorRanges.size();
 			CD3DX12_DESCRIPTOR_RANGE dr;
 			dr.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, i);
 			descriptorRanges.push_back(dr);
@@ -106,9 +106,9 @@ namespace og
 		}
 
 		// ルートシグネチャの作成
-		result = DX12Wrapper::ms_Device->CreateRootSignature(0,
+		result = DX12Wrapper::ms_device->CreateRootSignature(0,
 			rootSigBlob->GetBufferPointer(),rootSigBlob->GetBufferSize(),
-			IID_PPV_ARGS(m_RootSignature.ReleaseAndGetAddressOf()));
+			IID_PPV_ARGS(m_rootSignature.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return;
@@ -124,7 +124,7 @@ namespace og
 		if (hs)pipelineStateDesc.HS = CD3DX12_SHADER_BYTECODE(hs->GetShaderBolb().Get());
 		if (ds)pipelineStateDesc.DS = CD3DX12_SHADER_BYTECODE(ds->GetShaderBolb().Get());
 
-		pipelineStateDesc.pRootSignature = m_RootSignature.Get();
+		pipelineStateDesc.pRootSignature = m_rootSignature.Get();
 
 		pipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 
@@ -139,8 +139,8 @@ namespace og
 		pipelineStateDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 		pipelineStateDesc.DepthStencilState.StencilEnable = false;
 
-		pipelineStateDesc.InputLayout.pInputElementDescs = m_InputLayout.data();			//頂点レイアウト先頭アドレス
-		pipelineStateDesc.InputLayout.NumElements = (UINT)m_InputLayout.size();				//頂点レイアウトサイズ
+		pipelineStateDesc.InputLayout.pInputElementDescs = m_inputLayout.data();			//頂点レイアウト先頭アドレス
+		pipelineStateDesc.InputLayout.NumElements = (UINT)m_inputLayout.size();				//頂点レイアウトサイズ
 
 		pipelineStateDesc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;	//ストリップ時のカットなし
 		pipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;	//三角形で構成
@@ -166,7 +166,7 @@ namespace og
 
 		// グラフィックパイプラインの生成
 		ComPtr<ID3D12PipelineState> pipelineState;
-		result = DX12Wrapper::ms_Device->CreateGraphicsPipelineState(&pipelineStateDesc, IID_PPV_ARGS(pipelineState.ReleaseAndGetAddressOf()));
+		result = DX12Wrapper::ms_device->CreateGraphicsPipelineState(&pipelineStateDesc, IID_PPV_ARGS(pipelineState.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return;
@@ -174,58 +174,12 @@ namespace og
 
 
 		// リソースを参照に追加
-		m_PipelineState = pipelineState;
-		m_IVS = desc.vs;
-		m_IPS = desc.ps;
-		m_IGS = desc.gs;
-		m_IHS = desc.hs;
-		m_IDS = desc.ds;
-	}
-
-	S32 GraphicPipeline::GetConstantBufferSize(const U32 resister)const
-	{
-		if (resister < 0 || MAX_REGISTER <= resister)return -1;
-		return (m_ConstantBufferSizes[resister] + 0xff) & ~0xff;
-	}
-
-	S32 GraphicPipeline::GetTextureNum(const U32 resister)const
-	{
-		if (resister < 0 || MAX_REGISTER <= resister)return -1;
-		return m_TextureNums[resister];
-	}
-
-	S32 GraphicPipeline::GetConstantBufferIndex(const U32 resister)const
-	{
-		if (resister < 0 || MAX_REGISTER <= resister)return -1;
-		return m_CRootParamIndices[resister];
-	}
-	S32 GraphicPipeline::GetTextureIndex(const U32 resister)const
-	{
-		if (resister < 0 || MAX_REGISTER <= resister)return -1;
-		return m_TRootParamIndices[resister];
-	}
-
-
-
-
-	ShaderVariableDesc GraphicPipeline::GetVariableData(const String& name)const
-	{
-		if (m_Data.count(name) == 0)
-		{
-			ShaderVariableDesc desc = {};
-			desc.registerNum = -1;
-			desc.type = ShaderParamType::UNDEFINED;
-			return desc;
-		}
-		return m_Data.at(name);
-	}
-
-
-	const HashMap<String, ShaderVariableDesc>& GraphicPipeline::GetShaderParamList()const
-	{
-		static const HashMap<String, ShaderVariableDesc> emptyMap;
-		if (!IsValid())return emptyMap;
-		return m_Data;
+		m_pipelineState = pipelineState;
+		m_vs = desc.vs;
+		m_ps = desc.ps;
+		m_gs = desc.gs;
+		m_hs = desc.hs;
+		m_ds = desc.ds;
 	}
 
 
@@ -233,11 +187,57 @@ namespace og
 	{
 		if (!IsValid())return -1;
 		if (!commandList)return -1;
-		commandList->SetPipelineState(m_PipelineState.Get());
-		commandList->SetGraphicsRootSignature(m_RootSignature.Get());
+		commandList->SetPipelineState(m_pipelineState.Get());
+		commandList->SetGraphicsRootSignature(m_rootSignature.Get());
 		return 0;
 	}
 
+
+	S32 GraphicPipeline::GetConstantBufferSize(const U32 resister)const
+	{
+		if (resister < 0 || MAX_REGISTER <= resister)return -1;
+		return (m_cBufDataSizes[resister] + 0xff) & ~0xff;
+	}
+
+	S32 GraphicPipeline::GetTextureNum(const U32 resister)const
+	{
+		if (resister < 0 || MAX_REGISTER <= resister)return -1;
+		return m_texNums[resister];
+	}
+
+	S32 GraphicPipeline::GetConstantBufferIndex(const U32 resister)const
+	{
+		if (resister < 0 || MAX_REGISTER <= resister)return -1;
+		return m_cBufIndices[resister];
+	}
+	S32 GraphicPipeline::GetTextureIndex(const U32 resister)const
+	{
+		if (resister < 0 || MAX_REGISTER <= resister)return -1;
+		return m_texIndices[resister];
+	}
+
+
+
+
+	ShaderVariableDesc GraphicPipeline::GetVariableData(const String& name)const
+	{
+		if (m_varMap.count(name) == 0)
+		{
+			ShaderVariableDesc desc = {};
+			desc.registerNum = -1;
+			desc.type = ShaderParamType::UNDEFINED;
+			return desc;
+		}
+		return m_varMap.at(name);
+	}
+
+
+	const HashMap<String, ShaderVariableDesc>& GraphicPipeline::GetShaderParamList()const
+	{
+		static const HashMap<String, ShaderVariableDesc> emptyMap;
+		if (!IsValid())return emptyMap;
+		return m_varMap;
+	}
 
 
 
@@ -267,16 +267,16 @@ namespace og
 		D3D12_SHADER_DESC shaderDesc;
 		reflection->GetDesc(&shaderDesc);
 
-		m_InputLayoutNames.resize(shaderDesc.InputParameters);
+		m_inputLayoutNames.resize(shaderDesc.InputParameters);
 		for (U32 i = 0; i < shaderDesc.InputParameters; i++)
 		{
 			D3D12_SIGNATURE_PARAMETER_DESC paramDesc;
 			reflection->GetInputParameterDesc(i, &paramDesc);
 
-			m_InputLayoutNames[i] = paramDesc.SemanticName;
+			m_inputLayoutNames[i] = paramDesc.SemanticName;
 
 			D3D12_INPUT_ELEMENT_DESC elementDesc;
-			elementDesc.SemanticName = m_InputLayoutNames[i].c_str();
+			elementDesc.SemanticName = m_inputLayoutNames[i].c_str();
 			elementDesc.SemanticIndex = paramDesc.SemanticIndex;
 			elementDesc.InputSlot = 0;
 			elementDesc.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
@@ -308,12 +308,12 @@ namespace og
 				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			}
 
-			if (m_InputLayoutNames[i] == "POSITION")
+			if (m_inputLayoutNames[i] == "POSITION")
 			{
 				elementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
 			}
 
-			m_InputLayout.push_back(elementDesc);
+			m_inputLayout.push_back(elementDesc);
 		}
 
 		return 0;
@@ -340,9 +340,9 @@ namespace og
 
 			// 定数バッファのサイズがより大きければ更新
 			U32 registerNum = inputDesc.BindPoint;
-			if (m_ConstantBufferSizes[registerNum] < bufferDesc.Size)
+			if (m_cBufDataSizes[registerNum] < bufferDesc.Size)
 			{
-				m_ConstantBufferSizes[registerNum] = bufferDesc.Size;
+				m_cBufDataSizes[registerNum] = bufferDesc.Size;
 			}
 
 
@@ -400,7 +400,7 @@ namespace og
 					break;
 				}
 
-				m_Data[variableDesc.Name] = vdesc;
+				m_varMap[variableDesc.Name] = vdesc;
 			}
 		}
 		return 0;
@@ -426,11 +426,11 @@ namespace og
 				vdesc.type = ShaderParamType::TEXTURE2D;
 				vdesc.registerNum = desc.BindPoint;
 
-				m_Data[desc.Name] = vdesc;
+				m_varMap[desc.Name] = vdesc;
 
-				if (m_TextureNums[desc.BindPoint] < desc.BindCount)
+				if (m_texNums[desc.BindPoint] < desc.BindCount)
 				{
-					m_TextureNums[desc.BindPoint] = desc.BindCount;
+					m_texNums[desc.BindPoint] = desc.BindCount;
 				}
 			}
 		}
@@ -449,16 +449,16 @@ namespace og
 		D3D12_SHADER_DESC shaderDesc;
 		reflection->GetDesc(&shaderDesc);
 
-		m_InputLayoutNames.resize(shaderDesc.InputParameters);
+		m_inputLayoutNames.resize(shaderDesc.InputParameters);
 		for (U32 i = 0; i < shaderDesc.OutputParameters; i++)
 		{
 			D3D12_SIGNATURE_PARAMETER_DESC paramDesc;
 			reflection->GetOutputParameterDesc(i, &paramDesc);
 
-			m_InputLayoutNames[i] = paramDesc.SemanticName;
+			m_inputLayoutNames[i] = paramDesc.SemanticName;
 
 			D3D12_INPUT_ELEMENT_DESC elementDesc;
-			elementDesc.SemanticName = m_InputLayoutNames[i].c_str();
+			elementDesc.SemanticName = m_inputLayoutNames[i].c_str();
 			elementDesc.SemanticIndex = paramDesc.SemanticIndex;
 			elementDesc.InputSlot = 0;
 			elementDesc.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
