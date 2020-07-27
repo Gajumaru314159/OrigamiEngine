@@ -40,8 +40,8 @@ namespace
 
 namespace og
 {
-	ID3D12Device* DX12Wrapper::ms_Device = nullptr;
-	ArrayList<IRenderTexture*> DX12Wrapper::ms_RenderTextureQueue;
+	ID3D12Device* DX12Wrapper::ms_device = nullptr;
+	ArrayList<IRenderTexture*> DX12Wrapper::ms_renderTextureQueue;
 
 
 	S32 DX12Wrapper::Init()
@@ -70,7 +70,7 @@ namespace og
 			return -1;
 		}
 		// スワップチェーンの作成
-		if (FAILED(CreateSwapChain(m_Hwnd)))
+		if (FAILED(CreateSwapChain(m_hwnd)))
 		{
 			return -1;
 		}
@@ -85,7 +85,7 @@ namespace og
 			return -1;
 		}
 
-		ShowWindow(m_Hwnd, SW_SHOW);
+		ShowWindow(m_hwnd, SW_SHOW);
 
 		// デフォルトアセットの作成
 		if (CreateDefaultAssets() == -1)
@@ -107,61 +107,61 @@ namespace og
 		}
 
 		auto pipelinePtr = reinterpret_cast<GraphicPipeline*>(m_graphicPipeline.get());
-		pipelinePtr->SetGraphicPipeline(m_CmdList);
+		pipelinePtr->SetGraphicPipeline(m_cmdList);
 
 		auto materialPtr = reinterpret_cast<Material*>(m_material.get());
-		materialPtr->SetMaterial(m_CmdList);
+		materialPtr->SetMaterial(m_cmdList);
 
 		auto shapePtr = reinterpret_cast<Shape*>(m_shape.get());
-		shapePtr->Draw(m_CmdList);
+		shapePtr->Draw(m_cmdList);
 
 
 
 		// スワップのためにリソースバリアを設定
-		auto bbIdx = m_Swapchain->GetCurrentBackBufferIndex();
-		m_CmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_BackBuffers[bbIdx].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+		auto bbIdx = m_swapchain->GetCurrentBackBufferIndex();
+		m_cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_backBuffers[bbIdx].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
 
-		m_CmdList->Close();
+		m_cmdList->Close();
 
 
 		// コマンドリストの実行
 		static ArrayList< ID3D12CommandList*> cmdlists;
-		for (auto rt : ms_RenderTextureQueue)
+		for (auto rt : ms_renderTextureQueue)
 		{
 			RenderTexture* ptr = reinterpret_cast<RenderTexture*>(rt);
 			cmdlists.push_back(ptr->GetCommandList());
 		}
-		cmdlists.push_back(m_CmdList.Get());
-		m_CmdQueue->ExecuteCommandLists((UINT)cmdlists.size(), cmdlists.data());
+		cmdlists.push_back(m_cmdList.Get());
+		m_cmdQueue->ExecuteCommandLists((UINT)cmdlists.size(), cmdlists.data());
 		cmdlists.clear();
 
 
 		// 描画待ち
-		m_CmdQueue->Signal(m_Fence.Get(), ++m_FenceVal);
-		if (m_Fence->GetCompletedValue() < m_FenceVal)
+		m_cmdQueue->Signal(m_fence.Get(), ++m_fenceVal);
+		if (m_fence->GetCompletedValue() < m_fenceVal)
 		{
 			auto event = CreateEvent(nullptr, false, false, nullptr);
-			m_Fence->SetEventOnCompletion(m_FenceVal, event);
+			m_fence->SetEventOnCompletion(m_fenceVal, event);
 			WaitForSingleObject(event, INFINITE);
 			CloseHandle(event);
 		}
 
 
-		m_CmdAllocator->Reset();
-		m_CmdList->Reset(m_CmdAllocator.Get(), nullptr);
-		for (auto rt : ms_RenderTextureQueue)
+		m_cmdAllocator->Reset();
+		m_cmdList->Reset(m_cmdAllocator.Get(), nullptr);
+		for (auto rt : ms_renderTextureQueue)
 		{
 			auto ptr = reinterpret_cast<RenderTexture*>(rt);
 			ptr->ResetCommand();
 		}
-		ms_RenderTextureQueue.clear();
+		ms_renderTextureQueue.clear();
 
 
 
 
 
-		m_Swapchain->Present(1, 0);
+		m_swapchain->Present(1, 0);
 
 		MSG msg = {};
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -177,26 +177,26 @@ namespace og
 
 		//DirectX処理
 		//バックバッファのインデックスを取得
-		bbIdx = m_Swapchain->GetCurrentBackBufferIndex();
+		bbIdx = m_swapchain->GetCurrentBackBufferIndex();
 
-		m_CmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_BackBuffers[bbIdx].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+		m_cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_backBuffers[bbIdx].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
 		//レンダーターゲットを指定
-		auto rtvH = m_RtvHeaps->GetCPUDescriptorHandleForHeapStart();
-		rtvH.ptr += (SIZE_T)bbIdx * ms_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV) * bbIdx;
+		auto rtvH = m_rtvHeaps->GetCPUDescriptorHandleForHeapStart();
+		rtvH.ptr += (SIZE_T)bbIdx * ms_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV) * bbIdx;
 
-		m_CmdList->OMSetRenderTargets(1, &rtvH, false, nullptr);
+		m_cmdList->OMSetRenderTargets(1, &rtvH, false, nullptr);
 
 		//画面クリア
 		float clearColor[] = { 0,0,0,1 };  //白色
-		m_CmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
+		m_cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
 
 		//ビューポート、シザー矩形のセット
-		m_CmdList->RSSetViewports(1, &m_Viewport);
-		m_CmdList->RSSetScissorRects(1, &m_Scissorrect);
+		m_cmdList->RSSetViewports(1, &m_viewport);
+		m_cmdList->RSSetScissorRects(1, &m_scissorrect);
 
 
-		m_CmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		return 0;
 	}
@@ -215,14 +215,14 @@ namespace og
 		RegisterClassEx(&w);
 
 		// ウィンドウサイズ
-		windowWidth = 1280;
-		windowHeight = 720;
-		RECT wrc = { 0, 0, windowWidth, windowHeight };
+		m_windowWidth = 1280;
+		m_windowHeight = 720;
+		RECT wrc = { 0, 0, m_windowWidth, m_windowHeight };
 
 		AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 
 		// ウィンドウオブジェクトの生成
-		m_Hwnd = CreateWindow(
+		m_hwnd = CreateWindow(
 			w.lpszClassName,       // クラス名
 			L"DX12テスト",    // ウィンドウタイトル
 			WS_OVERLAPPEDWINDOW,   // ウィンドウスタイル
@@ -241,7 +241,7 @@ namespace og
 	{
 		UINT flagsDXGI = 0;
 		flagsDXGI |= DXGI_CREATE_FACTORY_DEBUG;
-		auto result = CreateDXGIFactory2(flagsDXGI, IID_PPV_ARGS(m_DxgiFactory.ReleaseAndGetAddressOf()));
+		auto result = CreateDXGIFactory2(flagsDXGI, IID_PPV_ARGS(m_dxgiFactory.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return result;
@@ -253,7 +253,7 @@ namespace og
 		IDXGIAdapter* tmpAdapter = nullptr;
 		IDXGIAdapter* selectedAdapter = nullptr;
 		SIZE_T maxVideoCardMemory = 0;
-		for (int i = 0; m_DxgiFactory->EnumAdapters(i, &tmpAdapter) != DXGI_ERROR_NOT_FOUND; i++)
+		for (int i = 0; m_dxgiFactory->EnumAdapters(i, &tmpAdapter) != DXGI_ERROR_NOT_FOUND; i++)
 		{
 			DXGI_ADAPTER_DESC adesc = {};
 			tmpAdapter->GetDesc(&adesc);
@@ -279,7 +279,7 @@ namespace og
 		result = S_FALSE;
 		for (auto level : levels)
 		{
-			if (SUCCEEDED(D3D12CreateDevice(selectedAdapter, level, IID_PPV_ARGS(&ms_Device))))
+			if (SUCCEEDED(D3D12CreateDevice(selectedAdapter, level, IID_PPV_ARGS(&ms_device))))
 			{
 				featureLevel = level;
 				result = S_OK;
@@ -291,12 +291,12 @@ namespace og
 
 	HRESULT DX12Wrapper::InitializeCommand()
 	{
-		auto result = ms_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_CmdAllocator.ReleaseAndGetAddressOf()));
+		auto result = ms_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_cmdAllocator.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return result;
 		}
-		result = ms_Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_CmdAllocator.Get(), nullptr, IID_PPV_ARGS(m_CmdList.ReleaseAndGetAddressOf()));
+		result = ms_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_cmdAllocator.Get(), nullptr, IID_PPV_ARGS(m_cmdList.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return result;
@@ -309,7 +309,7 @@ namespace og
 		cmdQueueDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;  // コマンドキューの優先度
 		cmdQueueDesc.NodeMask = 0;                                    // GPUが1つの時は0、複数の時は識別用のbitを指定
 
-		result = ms_Device->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(m_CmdQueue.ReleaseAndGetAddressOf()));  //コマンドキュー生成
+		result = ms_device->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(m_cmdQueue.ReleaseAndGetAddressOf()));  //コマンドキュー生成
 
 		return result;
 	}
@@ -333,13 +333,13 @@ namespace og
 		swapchainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;             // バックバッファの透過の挙動
 		swapchainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;  // ウィンドウ⇔フルスクリーン切り替え可能
 
-		auto result = m_DxgiFactory->CreateSwapChainForHwnd(
-			m_CmdQueue.Get(),
+		auto result = m_dxgiFactory->CreateSwapChainForHwnd(
+			m_cmdQueue.Get(),
 			hwnd,
 			&swapchainDesc,
 			nullptr,  // フルスクリーン時の設定
 			nullptr,  // アウトプット
-			(IDXGISwapChain1**)m_Swapchain.ReleaseAndGetAddressOf());
+			(IDXGISwapChain1**)m_swapchain.ReleaseAndGetAddressOf());
 		return result;
 	}
 
@@ -351,7 +351,7 @@ namespace og
 		heapDesc.NumDescriptors = 2;                                // ディスクリプタの数。表と裏バッファの２つ。
 		heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;  // ビューの情報をシェーダから参照する必要があるか
 
-		auto result = ms_Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_RtvHeaps.ReleaseAndGetAddressOf()));
+		auto result = ms_device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_rtvHeaps.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return result;
@@ -359,9 +359,9 @@ namespace og
 
 
 		DXGI_SWAP_CHAIN_DESC swcDesc = {};
-		result = m_Swapchain->GetDesc(&swcDesc);
-		m_BackBuffers.resize(swcDesc.BufferCount);
-		D3D12_CPU_DESCRIPTOR_HANDLE handle = m_RtvHeaps->GetCPUDescriptorHandleForHeapStart();
+		result = m_swapchain->GetDesc(&swcDesc);
+		m_backBuffers.resize(swcDesc.BufferCount);
+		D3D12_CPU_DESCRIPTOR_HANDLE handle = m_rtvHeaps->GetCPUDescriptorHandleForHeapStart();
 
 		//SRGBレンダーターゲットビュー設定
 		D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
@@ -371,23 +371,23 @@ namespace og
 
 		for (U32 i = 0; i < swcDesc.BufferCount; ++i)
 		{
-			result = m_Swapchain->GetBuffer(i, IID_PPV_ARGS(m_BackBuffers[i].ReleaseAndGetAddressOf()));
-			ms_Device->CreateRenderTargetView(m_BackBuffers[i].Get(), &rtvDesc, handle);
-			handle.ptr += ms_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+			result = m_swapchain->GetBuffer(i, IID_PPV_ARGS(m_backBuffers[i].ReleaseAndGetAddressOf()));
+			ms_device->CreateRenderTargetView(m_backBuffers[i].Get(), &rtvDesc, handle);
+			handle.ptr += ms_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 		}
 
 
 
-		m_Viewport = CD3DX12_VIEWPORT(m_BackBuffers[0].Get());
-		m_Scissorrect = CD3DX12_RECT(0, 0, (U32)m_Viewport.Width, (U32)m_Viewport.Height);
+		m_viewport = CD3DX12_VIEWPORT(m_backBuffers[0].Get());
+		m_scissorrect = CD3DX12_RECT(0, 0, (U32)m_viewport.Width, (U32)m_viewport.Height);
 
 		return result;
 	}
 
 	HRESULT DX12Wrapper::CreateFence()
 	{
-		m_FenceVal = 0;
-		return ms_Device->CreateFence(m_FenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_Fence.ReleaseAndGetAddressOf()));
+		m_fenceVal = 0;
+		return ms_device->CreateFence(m_fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_fence.ReleaseAndGetAddressOf()));
 	}
 
 	S32 DX12Wrapper::CreateDefaultAssets()
@@ -430,6 +430,8 @@ namespace og
 			pipeline.vs = vs;
 			pipeline.ps = ps;
 			pipeline.numRenderTargets = 1;
+			pipeline.useDepth = false;
+			pipeline.useStencil = false;
 
 			m_graphicPipeline = CreateGraphicPipeline(pipeline);
 			if (m_graphicPipeline == nullptr)

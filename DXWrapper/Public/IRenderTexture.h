@@ -19,5 +19,8 @@ namespace og
 		virtual S32 SetMaterial(SPtr<IMaterial> material) = 0;
 
 		virtual S32 DrawInstanced(SPtr<IShape>& shape, const U32 count = 1) = 0;
+
+
+		virtual void SetClearColor(Color color)=0;
 	};
 }

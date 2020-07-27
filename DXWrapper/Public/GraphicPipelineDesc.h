@@ -26,7 +26,9 @@ namespace og
 	/// </summary>
 	enum class PrimitiveTopology
 	{
-		Triangles
+		POINT,
+		LINE,
+		TRIANGLE
 	};
 
 
@@ -38,10 +40,22 @@ namespace og
 		MIX,
 		ADD,
 		SUBSTRACT,
-		MULTIPLY
+		DARKEST,
+		LIGHTEST,
+		DIFF,
+		MULTIPLY,
+		SCREEN,
+		INVERT,
+		REPLACE
 	};
 
 
+	enum class CullMode
+	{
+		BACK,
+		FRONT,
+		NONE
+	};
 
 	/// <summary>
 	/// グラフィックパイプラインの定義
@@ -55,14 +69,16 @@ namespace og
 		SPtr<IShader> hs = nullptr;
 		SPtr<IShader> ds = nullptr;
 
-		// その他
-		bool alphaToCoverageEnable = false;
-		bool multisampleEnable = false;
-		S32 CullingMode = false;
-		bool wireframeFlag = false;
-		bool useDepth = false;
+		bool useWireframe = false;
+		CullMode cullMode= CullMode::BACK;
+		bool useMultisample = true;
+		bool useDepth = true;
+		bool useStencil = true;
 
-		PrimitiveTopology primitiveTopologyType = PrimitiveTopology::Triangles;
+
+		// その他
+
+		PrimitiveTopology primitiveTopologyType = PrimitiveTopology::TRIANGLE;
 
 		// レンダ―ターゲット
 		S32 numRenderTargets = 1;

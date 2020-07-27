@@ -30,7 +30,7 @@ namespace og
 		ComPtr<ID3DBlob> errorBlob = nullptr;
 		auto result = D3DCompile(src.c_str(), src.size(), NULL, NULL, NULL,
 								 shaderEntryPoints[(U32)type], shaderTargets[(U32)type],
-								 D3DCOMPILE_PREFER_FLOW_CONTROL, 0, m_ShaderBolb.ReleaseAndGetAddressOf(), errorBlob.ReleaseAndGetAddressOf());
+								 D3DCOMPILE_PREFER_FLOW_CONTROL, 0, m_shaderBolb.ReleaseAndGetAddressOf(), errorBlob.ReleaseAndGetAddressOf());
 
 		if (FAILED(result))
 		{
@@ -44,7 +44,7 @@ namespace og
 	{
 		if (!bolb)return;
 
-		m_ShaderBolb = bolb;
+		m_shaderBolb = bolb;
 	}
 
 

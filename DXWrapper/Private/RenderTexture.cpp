@@ -8,8 +8,10 @@
 #include "DX12Wrapper.h"
 namespace og
 {
-	RenderTexture::RenderTexture(const DXGI_FORMAT format, const U32 width, const U32 height)
+	RenderTexture::RenderTexture(const DXGI_FORMAT format, const U32 width, const U32 height,const bool useDepth)
 	{
+		m_clearColor.Set(0.0f,0.0f,0.0f);
+
 		HRESULT result;
 		ComPtr<ID3D12Resource> resource;
 
@@ -26,7 +28,7 @@ namespace og
 				auto clearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM, clearColor);
 
 
-				result = DX12Wrapper::ms_Device->CreateCommittedResource(
+				result = DX12Wrapper::ms_device->CreateCommittedResource(
 					&texHeapProp,
 					D3D12_HEAP_FLAG_NONE,
 					&resourceDesc,
@@ -49,7 +51,7 @@ namespace og
 				heapDesc.NumDescriptors = 1;
 				heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
-				result = DX12Wrapper::ms_Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_RTVHeap.ReleaseAndGetAddressOf()));
+				result = DX12Wrapper::ms_device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_rtvHeap.ReleaseAndGetAddressOf()));
 				if (FAILED(result))
 				{
 					return;
@@ -60,7 +62,7 @@ namespace og
 				rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 				rtvDesc.Format = format;
 
-				DX12Wrapper::ms_Device->CreateRenderTargetView(resource.Get(), &rtvDesc, m_RTVHeap->GetCPUDescriptorHandleForHeapStart());
+				DX12Wrapper::ms_device->CreateRenderTargetView(resource.Get(), &rtvDesc, m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 			}
 
 
@@ -73,7 +75,7 @@ namespace og
 				heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
 
-				result = DX12Wrapper::ms_Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_SRVHeap.ReleaseAndGetAddressOf()));
+				result = DX12Wrapper::ms_device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_srvHeap.ReleaseAndGetAddressOf()));
 				if (FAILED(result))
 				{
 					return;
@@ -85,7 +87,7 @@ namespace og
 				srvDesc.Texture2D.MipLevels = 1;
 				srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 
-				DX12Wrapper::ms_Device->CreateShaderResourceView(m_Resource.Get(), &srvDesc, m_SRVHeap->GetCPUDescriptorHandleForHeapStart());
+				DX12Wrapper::ms_device->CreateShaderResourceView(m_resource.Get(), &srvDesc, m_srvHeap->GetCPUDescriptorHandleForHeapStart());
 			}
 
 		}
@@ -97,13 +99,13 @@ namespace og
 			auto depthHeapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
 			D3D12_CLEAR_VALUE _depthClearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0);
-			result = DX12Wrapper::ms_Device->CreateCommittedResource(
+			result = DX12Wrapper::ms_device->CreateCommittedResource(
 				&depthHeapProp,
 				D3D12_HEAP_FLAG_NONE,
 				&depthResDesc,
 				D3D12_RESOURCE_STATE_DEPTH_WRITE,
 				&_depthClearValue,
-				IID_PPV_ARGS(m_Depth.ReleaseAndGetAddressOf()));
+				IID_PPV_ARGS(m_depth.ReleaseAndGetAddressOf()));
 
 
 
@@ -113,7 +115,7 @@ namespace og
 			dsvHeapDesc.NumDescriptors = 1;
 			dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 
-			result = DX12Wrapper::ms_Device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(m_DSVHeap.ReleaseAndGetAddressOf()));
+			result = DX12Wrapper::ms_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(m_dsvHeap.ReleaseAndGetAddressOf()));
 
 
 			//深度ビュー作成
@@ -121,27 +123,27 @@ namespace og
 			dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;//デプス値に32bit使用
 			dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 			dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
-			DX12Wrapper::ms_Device->CreateDepthStencilView(m_Depth.Get(), &dsvDesc, m_DSVHeap->GetCPUDescriptorHandleForHeapStart());
+			DX12Wrapper::ms_device->CreateDepthStencilView(m_depth.Get(), &dsvDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
 		}
 
 
-		result = DX12Wrapper::ms_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_CmdAllocator.ReleaseAndGetAddressOf()));
+		result = DX12Wrapper::ms_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_cmdAllocator.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return;
 		}
-		result = DX12Wrapper::ms_Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_CmdAllocator.Get(), nullptr, IID_PPV_ARGS(m_CmdList.ReleaseAndGetAddressOf()));
+		result = DX12Wrapper::ms_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_cmdAllocator.Get(), nullptr, IID_PPV_ARGS(m_cmdList.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return;
 		}
 
 
-		m_Resource = resource;
+		m_resource = resource;
 
-		m_Viewport = CD3DX12_VIEWPORT(m_Resource.Get());
-		m_Scissorrect = CD3DX12_RECT(0, 0, (U32)m_Viewport.Width, (U32)m_Viewport.Height);
+		m_viewport = CD3DX12_VIEWPORT(m_resource.Get());
+		m_scissorrect = CD3DX12_RECT(0, 0, (U32)m_viewport.Width, (U32)m_viewport.Height);
 
 	}
 
@@ -151,13 +153,13 @@ namespace og
 
 	ID3D12GraphicsCommandList* RenderTexture::GetCommandList()
 	{
-		return m_CmdList.Get();
+		return m_cmdList.Get();
 	}
 
 	void RenderTexture::ResetCommand()
 	{
-		m_CmdAllocator->Reset();
-		m_CmdList->Reset(m_CmdAllocator.Get(), nullptr);
+		m_cmdAllocator->Reset();
+		m_cmdList->Reset(m_cmdAllocator.Get(), nullptr);
 	}
 
 
@@ -165,33 +167,35 @@ namespace og
 	S32 RenderTexture::BeginDraw()
 	{
 		// 描画のための初期コマンドを記録
-		auto rtvHeapPointr = m_RTVHeap->GetCPUDescriptorHandleForHeapStart();
-		m_CmdList->OMSetRenderTargets(1, &rtvHeapPointr, false, &m_DSVHeap->GetCPUDescriptorHandleForHeapStart());
+		auto rtvHeapPointr = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+		m_cmdList->OMSetRenderTargets(1, &rtvHeapPointr, false, &m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
-		m_CmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_Resource
+		m_cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_resource
 			.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
 
 
 
-		auto rtvH = m_RTVHeap->GetCPUDescriptorHandleForHeapStart();
+		auto rtvH = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
 
-		float clearColor[] = { 0,0,0,1 };
-		m_CmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
-
+		float clearColor[] = { m_clearColor.r,m_clearColor.g,m_clearColor.b,m_clearColor.a };
+		m_cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
+		
+		// TODO デプスのクリア
+		//m_cmdList->ClearDepthStencilView();
 
 		//ビューポート、シザー矩形のセット
-		m_CmdList->RSSetViewports(1, &m_Viewport);
-		m_CmdList->RSSetScissorRects(1, &m_Scissorrect);
+		m_cmdList->RSSetViewports(1, &m_viewport);
+		m_cmdList->RSSetScissorRects(1, &m_scissorrect);
 		return 0;
 	}
 
 	S32 RenderTexture::EndDraw()
 	{
-		m_CmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_Resource
+		m_cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_resource
 			.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
-		m_CmdList->Close();
-		DX12Wrapper::ms_RenderTextureQueue.push_back(this);
+		m_cmdList->Close();
+		DX12Wrapper::ms_renderTextureQueue.push_back(this);
 		return 0;
 	}
 
@@ -200,7 +204,7 @@ namespace og
 	{
 		if (CheckArgs(!!pipeline))return -1;
 		auto ptr = reinterpret_cast<GraphicPipeline*>(pipeline.get());
-		ptr->SetGraphicPipeline(m_CmdList);
+		ptr->SetGraphicPipeline(m_cmdList);
 
 		return 0;
 	}
@@ -209,7 +213,7 @@ namespace og
 	{
 		if (CheckArgs(!!material))return -1;
 		auto ptr = reinterpret_cast<Material*>(material.get());
-		ptr->SetMaterial(m_CmdList);
+		ptr->SetMaterial(m_cmdList);
 		return 0;
 	}
 
@@ -219,7 +223,7 @@ namespace og
 		if (CheckArgs(!!shape))return -1;
 
 		auto ptr = reinterpret_cast<Shape*>(shape.get());
-		ptr->Draw(m_CmdList, count);
+		ptr->Draw(m_cmdList, count);
 		return 0;
 	}
 
@@ -230,14 +234,19 @@ namespace og
 	{
 		// TODO Vector3Intを作る
 		if (IsValid() == false)return Vector3();
-		auto desc = m_Resource->GetDesc();
+		auto desc = m_resource->GetDesc();
 		return Vector3((F32)desc.Width, (F32)desc.Height, (F32)desc.DepthOrArraySize);
 	}
 
 	S32 RenderTexture::GetDimension()
 	{
 		if (IsValid() == false)return 0;
-		auto desc = m_Resource->GetDesc();
+		auto desc = m_resource->GetDesc();
 		return desc.Dimension;
+	}
+
+	void RenderTexture::SetClearColor(Color color)
+	{
+		m_clearColor = color;
 	}
 }

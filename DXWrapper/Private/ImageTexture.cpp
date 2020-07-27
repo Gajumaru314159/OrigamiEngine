@@ -9,12 +9,12 @@
 
 namespace og
 {
-	ImageTexture::ImageTexture(const Path& path) :m_Path(path)
+	ImageTexture::ImageTexture(const Path& path) :m_path(path)
 	{
 		if (CheckArgs(path.IsValid()))return;
 
 		// 非対応の拡張子なら失敗
-		auto extention = m_Path.Extension();
+		auto extention = m_path.Extension();
 		if (s_ImageFormatMap.count(extention) == 0)return;
 
 		// テクスチャ読み込み関数用にワイド文字に変換
@@ -48,7 +48,7 @@ namespace og
 
 		ComPtr<ID3D12Resource> resource;
 
-		result = DX12Wrapper::ms_Device->CreateCommittedResource(
+		result = DX12Wrapper::ms_device->CreateCommittedResource(
 			&texHeapProp,
 			D3D12_HEAP_FLAG_NONE,
 			&resDesc,
@@ -70,7 +70,7 @@ namespace og
 		);
 		if (FAILED(result))return;
 
-		m_Resource = resource;
+		m_resource = resource;
 	}
 
 	/*

@@ -124,29 +124,39 @@ namespace og
 		if (hs)pipelineStateDesc.HS = CD3DX12_SHADER_BYTECODE(hs->GetShaderBolb().Get());
 		if (ds)pipelineStateDesc.DS = CD3DX12_SHADER_BYTECODE(ds->GetShaderBolb().Get());
 
-		pipelineStateDesc.pRootSignature = m_rootSignature.Get();
+		// TODO: StreamOutput
+
+		// TODO: ブレンドモード指定
+		pipelineStateDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 
 		pipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 
-		pipelineStateDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-
 		pipelineStateDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-		pipelineStateDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;					//カリングしない
+		if(desc.useWireframe)pipelineStateDesc.RasterizerState.FillMode = D3D12_FILL_MODE::D3D12_FILL_MODE_WIREFRAME;
+		else pipelineStateDesc.RasterizerState.FillMode = D3D12_FILL_MODE::D3D12_FILL_MODE_SOLID;
+		pipelineStateDesc.RasterizerState.MultisampleEnable = desc.useMultisample;
+
+		switch (desc.cullMode)
+		{
+		case CullMode::NONE:pipelineStateDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE; break;
+		case CullMode::FRONT:pipelineStateDesc.RasterizerState.CullMode = D3D12_CULL_MODE_FRONT; break;
+		case CullMode::BACK:pipelineStateDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK; break;
+		}
+		
 		// TODO 深度バッファ
-		pipelineStateDesc.DepthStencilState.DepthEnable = false;								//深度バッファを使うぞ
-		pipelineStateDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;	//全て書き込み
-		pipelineStateDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;			//小さい方を採用
-		pipelineStateDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
-		pipelineStateDesc.DepthStencilState.StencilEnable = false;
+		pipelineStateDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+		pipelineStateDesc.DepthStencilState.DepthEnable = false; desc.useDepth;								//深度バッファを使うぞ
+		pipelineStateDesc.DepthStencilState.StencilEnable = desc.useStencil;
 
 		pipelineStateDesc.InputLayout.pInputElementDescs = m_inputLayout.data();			//頂点レイアウト先頭アドレス
 		pipelineStateDesc.InputLayout.NumElements = (UINT)m_inputLayout.size();				//頂点レイアウトサイズ
-
-		pipelineStateDesc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;	//ストリップ時のカットなし
-		pipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;	//三角形で構成
-
-		pipelineStateDesc.SampleDesc.Count = 1;  //サンプリングは1ピクセルにつき１
-		pipelineStateDesc.SampleDesc.Quality = 0;  //クオリティは最低
+		
+		switch (desc.primitiveTopologyType)
+		{
+		case PrimitiveTopology::POINT:pipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		case PrimitiveTopology::LINE:pipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		case PrimitiveTopology::TRIANGLE:pipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		}
 
 		pipelineStateDesc.NumRenderTargets = desc.numRenderTargets;							//レンダ―ターゲットの数
 		for (U32 i = 0; i < pipelineStateDesc.NumRenderTargets; i++)
@@ -154,14 +164,17 @@ namespace og
 			pipelineStateDesc.RTVFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM;					//0～1に正規化されたRGBA
 		}
 
+		pipelineStateDesc.SampleDesc.Count = 1;  //サンプリングは1ピクセルにつき１
+		pipelineStateDesc.SampleDesc.Quality = 0;  //クオリティは最低
 
-		pipelineStateDesc.RasterizerState.FrontCounterClockwise = false;
-		pipelineStateDesc.RasterizerState.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
-		pipelineStateDesc.RasterizerState.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
-		pipelineStateDesc.RasterizerState.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
-		pipelineStateDesc.RasterizerState.AntialiasedLineEnable = false;
-		pipelineStateDesc.RasterizerState.ForcedSampleCount = 0;
-		pipelineStateDesc.RasterizerState.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+
+		pipelineStateDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+
+
+
+
+		pipelineStateDesc.pRootSignature = m_rootSignature.Get();
+
 
 
 		// グラフィックパイプラインの生成
