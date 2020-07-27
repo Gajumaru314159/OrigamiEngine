@@ -13,37 +13,50 @@
 
 namespace og
 {
-	Material::Material(const SPtr<IGraphicPipeline>& gpipeline, const S32 mask)
+	Material::Material(const SPtr<IGraphicPipeline>& gpipeline, const S32 cBufferMask, const S32 texMask) 
+		:m_cBufferMask(cBufferMask),m_texMask(texMask)
 	{
 		if (CheckArgs(!!gpipeline))return;
-
 		auto pipelinePtr = reinterpret_cast<GraphicPipeline*>(gpipeline.get());
 
 		m_IsChanged = true;
 		m_IsLocked = false;
-		m_DescriptorNum = 0;
 
 		// 確保する定数バッファのサイズを計算
-		S32 bufferSize = 0;
-		for (U32 i = 0; i < 32; i++)
+		m_DataSize = 0;
+		m_StartOffsets.resize(GraphicPipeline::MAX_REGISTER);
+		for (U32 i = 0; i < GraphicPipeline::MAX_REGISTER; i++)
 		{
 			S32 monoBufferSize = pipelinePtr->GetConstantBufferSize(i);
-			if (monoBufferSize <= 0 || (mask & (1 << i)) == 0)
+			if (monoBufferSize <= 0 || (m_cBufferMask & (1 << i)) == 0)
 			{
-				m_StartOffsets.push_back(-1);
+				m_StartOffsets[i]=-1;
 			}
 			else
 			{
-				m_StartOffsets.push_back(bufferSize);
-				bufferSize += monoBufferSize;
-				m_DescriptorNum++;
+				m_resisterIndices.push_back(pipelinePtr->GetConstantBufferIndex(i));
+				m_StartOffsets[i]= m_DataSize;
+				m_DataSize += monoBufferSize;
 			}
 		}
-		m_DataSize = (bufferSize + 0xff) & ~0xff;
 
+		S32 texNum = 0;
+		m_TextureNums.resize(GraphicPipeline::MAX_REGISTER);
+		for (U32 i = 0; i < GraphicPipeline::MAX_REGISTER; i++)
+		{
+			S32 num = pipelinePtr->GetTextureNum(i);
+			if (num <= 0 || (m_texMask & (1 << i)) == 0)
+			{
+				m_TextureNums[i] = 0;
+			}
+			else
+			{
+				m_resisterIndices.push_back(pipelinePtr->GetTextureIndex(i));
+				m_TextureNums[i] = num;
+				texNum++;
+			}
+		}
 
-		// テクスチャの枚数
-		const S32 texNum = pipelinePtr->GetTextureNum();
 
 		// テクスチャ領域の確保
 		m_ITextureList.resize(texNum);
@@ -87,17 +100,16 @@ namespace og
 		D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
 		descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 		descHeapDesc.NodeMask = 0;
-		descHeapDesc.NumDescriptors = m_DescriptorNum + (UINT)m_ITextureList.size();//定数バッファ + テクスチャ
+		descHeapDesc.NumDescriptors = (UINT)m_resisterIndices.size();//定数バッファ + テクスチャ
 		descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;//デスクリプタヒープ種別
 
-
-		if (descHeapDesc.NumDescriptors == 0)return 0;
-
-		auto result = DX12Wrapper::ms_Device->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(m_DescHeap.ReleaseAndGetAddressOf()));//生成
+		//生成
+		auto result = DX12Wrapper::ms_Device->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(m_DescHeap.ReleaseAndGetAddressOf()));
 		if (FAILED(result))return -1;
 
+
 		auto descHeapH = m_DescHeap->GetCPUDescriptorHandleForHeapStart();
-		auto incSize = DX12Wrapper::ms_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		auto incrementSize = DX12Wrapper::ms_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		// 定数
 		if (m_Resource != nullptr)
 		{
@@ -111,12 +123,13 @@ namespace og
 				cbvDesc.SizeInBytes = reinterpret_cast<GraphicPipeline*>(m_GraphicPipeline.get())->GetConstantBufferSize(i);
 
 				DX12Wrapper::ms_Device->CreateConstantBufferView(&cbvDesc, descHeapH);
-				descHeapH.ptr += incSize;
+				descHeapH.ptr += incrementSize;
 				cbvDesc.BufferLocation += cbvDesc.SizeInBytes;
 			}
 		}
 
 
+		// テクスチャ
 		for (S32 i = 0; i < m_ITextureListBuffer.size(); i++)
 		{
 			if (m_ITextureListBuffer[i] == nullptr)continue;
@@ -124,17 +137,18 @@ namespace og
 			m_ITextureListBuffer[i].reset();
 		}
 
-		// テクスチャ
-		for (auto& tex : m_ITextureList)
+		for (S32 i = 0; i < m_TextureNums.size(); i++)
 		{
-			if (tex == nullptr)
+			if (m_TextureNums[i] <= 0)continue;
+			if (m_ITextureList[i] == nullptr)
 			{
-				tex = DefaultAsset::Instance()->whiteTex;
+				m_ITextureList[i] = DefaultAsset::Instance()->whiteTex;
 			}
 
-			auto ptr = dynamic_cast<Texture*>(tex.get());
+			auto ptr = dynamic_cast<Texture*>(m_ITextureList[i].get());
 			ptr->CreateShaderResourceView(descHeapH);
 		}
+
 		return 0;
 	}
 
@@ -154,6 +168,7 @@ namespace og
 		// ディスクリプタを必要としないシェーダーの場合
 		if (m_DescHeap == nullptr)return 0;
 
+
 		ID3D12DescriptorHeap* heaps[] = { m_DescHeap.Get() };
 		commandList->SetDescriptorHeaps(1, heaps);
 
@@ -162,23 +177,12 @@ namespace og
 
 		auto incSize = DX12Wrapper::ms_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-
-		// 定数バッファ
-		U32 rootParamIndex = 0;
-		for (U32 i = 0; i < m_StartOffsets.size(); i++)
+		for (auto& index : m_resisterIndices)
 		{
-			if (m_StartOffsets[i] == -1)continue;
-
-			commandList->SetGraphicsRootDescriptorTable(rootParamIndex, heap);
+			commandList->SetGraphicsRootDescriptorTable(index, heap);
 			heap.ptr += incSize;
-			rootParamIndex++;
 		}
 
-		// テクスチャの指定
-		if (m_ITextureList.size() != 0)
-		{
-			commandList->SetGraphicsRootDescriptorTable(rootParamIndex, heap);
-		}
 		return 0;
 	}
 
@@ -205,6 +209,10 @@ namespace og
 			return -1;
 		}
 
+		// 変更なしなら何もしない
+		if (m_ITextureList[varData.registerNum]==texture)return 0;
+		if (m_TextureNums[varData.registerNum]==0)return -1;
+
 		m_ITextureListBuffer[varData.registerNum] = texture;
 		m_IsChanged = true;
 		return 0;
@@ -218,6 +226,7 @@ namespace og
 		auto varData = reinterpret_cast<GraphicPipeline*>(m_GraphicPipeline.get())->GetVariableData(name);
 
 		if (varData.type != ShaderParamType::FLOAT4)return -1;
+		if (m_StartOffsets[varData.registerNum] == -1)return -1;
 
 		Byte* bytePtr = m_Data + m_StartOffsets[varData.registerNum] + varData.offset;
 		auto ptr = reinterpret_cast<Vector4*>(bytePtr);
@@ -233,6 +242,7 @@ namespace og
 		auto varData = reinterpret_cast<GraphicPipeline*>(m_GraphicPipeline.get())->GetVariableData(name);
 
 		if (varData.type != ShaderParamType::MATRIX)return -1;
+		if (m_StartOffsets[varData.registerNum] == -1)return -1;
 
 		Byte* bytePtr = m_Data + m_StartOffsets[varData.registerNum] + varData.offset;
 		auto ptr = reinterpret_cast<Matrix*>(bytePtr);

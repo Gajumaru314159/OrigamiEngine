@@ -47,7 +47,7 @@ namespace og
 
 		//===================================================================================//
 
-		SPtr<IMaterial> CreateMaterial(const SPtr<IGraphicPipeline>& pipeline, const S32 mask = -1)override;
+		SPtr<IMaterial> CreateMaterial(const SPtr<IGraphicPipeline>& pipeline, const S32 cBufferMask, const S32 texMask)override;
 
 		//===================================================================================//
 

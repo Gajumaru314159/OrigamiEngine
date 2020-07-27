@@ -54,7 +54,7 @@ int main()
 		pssrc.append("\ncbuffer Data1 : register(b1) {float4 col;};");
 		pssrc.append("\nstruct Output {float4 pos:SV_POSITION;float2 uv:TEXCOORD;};");
 		pssrc.append("\nfloat4 PSMain(Output i) : SV_TARGET{");
-		pssrc.append("\n  return tex.Sample(smp,i.uv);");
+		pssrc.append("\n  return tex.Sample(smp,i.uv)*col;");
 		pssrc.append("\n}");
 
 		og::GraphicPipelineDesc desc;
@@ -67,9 +67,10 @@ int main()
 
 
 
-		auto mat = gapi->CreateMaterial(gp, -1);
-		auto mat2 = gapi->CreateMaterial(gp, 1);
+		auto mat = gapi->CreateMaterial(gp);
+		auto mat2 = gapi->CreateMaterial(gp,1,0);
 		auto tex = gapi->LoadTexture(Path(TC("test.png")));
+		auto tex2 = gapi->LoadTexture(Path(TC("test2.png")));
 
 		auto shape = gapi->CreateShape(sizeof(F32) * 5);
 		float m_Vertices[8 * 5] = {
@@ -92,6 +93,9 @@ int main()
 
 
 
+		mat->SetTexture(TC("tex"), tex);
+		mat->SetFloat4Param(TC("col"), Vector4(1.0f,1.0f,0.5f,1.0f));
+
 		F32 t = 0;
 		while (gapi->SwapScreen(rt) == 0)
 		{
@@ -104,7 +108,6 @@ int main()
 			matrix.Scale(1.0f / 1280, 1.0f / 720, 1);
 
 			mat->SetMatrixParam(TC("mat"), matrix);
-			mat->SetTexture(TC("tex"), tex);
 
 
 
@@ -123,7 +126,7 @@ int main()
 			matrix2.Scale(scale, scale, scale);
 			matrix2.Scale(1.0f / 1280, 1.0f / 720, 1);
 
-			auto reds = mat2->SetMatrixParam(TC("mat"), matrix2);
+			mat2->SetMatrixParam(TC("mat"), matrix2);
 
 			rt->SetMaterial(mat2);
 			rt->DrawInstanced(shape);

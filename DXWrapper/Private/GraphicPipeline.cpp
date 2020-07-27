@@ -9,6 +9,7 @@
 
 #include "DX12Wrapper.h"
 #include "Shader.h"
+#include "Material.h"
 
 
 #define OUT_OF_RANGE(container,index) (index<0||container.size()<=index)
@@ -25,68 +26,74 @@ namespace og
 		auto ds = reinterpret_cast<Shader*>(desc.ds.get());
 		auto hs = reinterpret_cast<Shader*>(desc.hs.get());
 
-
 		if (CheckArgs(vs != nullptr, ps != nullptr))return;
+
+
+		for (U32 i = 0; i < MAX_REGISTER; i++)
+		{
+			m_ConstantBufferSizes[i] = 0;
+			m_TextureNums[i] = 0;
+			m_CRootParamIndices[i] = -1;
+			m_TRootParamIndices[i] = -1;
+		}
+
 
 		// 頂点レイアウトを取得
 		if (ReflectInputLayout(vs->GetShaderBolb()) == -1)return;
 
-		for (U32 i = 0; i < MAX_CONSTANT_BUFFER; i++)
-		{
-			m_ConstantBufferSizes[i] = 0;
-		}
-		m_TextureNum = 0;
-
-
-		// 定数バッファの取得
+		// 定数バッファのリフレクション
 		if (desc.vs != nullptr)ReflectShader(vs->GetShaderBolb()); else return;
 		if (desc.ps != nullptr)ReflectShader(ps->GetShaderBolb()); else return;
 		if (desc.gs != nullptr)ReflectShader(gs->GetShaderBolb());
 		if (desc.ds != nullptr)ReflectShader(ds->GetShaderBolb());
 		if (desc.hs != nullptr)ReflectShader(hs->GetShaderBolb());
 
-		// データとレジスタの結び付け用
-		// レジスタ毎の定数バッファ / テクスチャ
+
+
+		// ディスクリプタレンジの生成
 		ArrayList<CD3DX12_DESCRIPTOR_RANGE> descriptorRanges;
+
 		// 定数バッファ
-		for (S32 i = 0; i < MAX_CONSTANT_BUFFER; i++)
+		for (S32 i = 0; i < MAX_REGISTER; i++)
 		{
 			if (m_ConstantBufferSizes[i] == 0)continue;
-
+			m_CRootParamIndices[i] = (S32)descriptorRanges.size();
 			CD3DX12_DESCRIPTOR_RANGE dr;
 			dr.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i);
 			descriptorRanges.push_back(dr);
 		}
 		// テクスチャ
-		// レジスタ番号に空きがないこと前提
-		if (0 < m_TextureNum)
+		for (U32 i = 0; i < MAX_REGISTER; i++)
 		{
+			if (m_TextureNums[i] == 0)continue;
+			m_TRootParamIndices[i] = (S32)descriptorRanges.size();
 			CD3DX12_DESCRIPTOR_RANGE dr;
-			dr.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, m_TextureNum, 0);
+			dr.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, i);
 			descriptorRanges.push_back(dr);
 		}
 
 
+
 		// SetDescriptorHeapsで割り当てる塊
-		CD3DX12_ROOT_PARAMETER rootParams[MAX_CONSTANT_BUFFER + 1] = {};
+		CD3DX12_ROOT_PARAMETER rootParams[MAX_REGISTER + MAX_REGISTER] = {};
 		for (S32 i = 0; i < descriptorRanges.size(); i++)
 		{
 			rootParams[i].InitAsDescriptorTable(1, &descriptorRanges[i]);
 		}
 
 
-		// サンプラー
+		// 静的サンプラー
+		// TODO テクスチャごとのサンプラーを定義するか検討
 		CD3DX12_STATIC_SAMPLER_DESC samplerDescs[1] = {};
 		samplerDescs[0].Init(0);
+
+
 
 
 		// ルートシグネチャディスクリプタ
 		CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
 		rootSignatureDesc.Init((UINT)descriptorRanges.size(), rootParams, 1, samplerDescs, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-
-		//D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
-		//rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 		// バイナリデータの作成
 		ComPtr<ID3DBlob> rootSigBlob = nullptr;
@@ -99,12 +106,9 @@ namespace og
 		}
 
 		// ルートシグネチャの作成
-		ComPtr<ID3D12RootSignature> rootSignature;
-		result = DX12Wrapper::ms_Device->CreateRootSignature(
-			0,
-			rootSigBlob->GetBufferPointer(),
-			rootSigBlob->GetBufferSize(),
-			IID_PPV_ARGS(rootSignature.ReleaseAndGetAddressOf()));
+		result = DX12Wrapper::ms_Device->CreateRootSignature(0,
+			rootSigBlob->GetBufferPointer(),rootSigBlob->GetBufferSize(),
+			IID_PPV_ARGS(m_RootSignature.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
 			return;
@@ -120,7 +124,7 @@ namespace og
 		if (hs)pipelineStateDesc.HS = CD3DX12_SHADER_BYTECODE(hs->GetShaderBolb().Get());
 		if (ds)pipelineStateDesc.DS = CD3DX12_SHADER_BYTECODE(ds->GetShaderBolb().Get());
 
-		pipelineStateDesc.pRootSignature = rootSignature.Get();
+		pipelineStateDesc.pRootSignature = m_RootSignature.Get();
 
 		pipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 
@@ -171,7 +175,6 @@ namespace og
 
 		// リソースを参照に追加
 		m_PipelineState = pipelineState;
-		m_RootSignature = rootSignature;
 		m_IVS = desc.vs;
 		m_IPS = desc.ps;
 		m_IGS = desc.gs;
@@ -179,18 +182,31 @@ namespace og
 		m_IDS = desc.ds;
 	}
 
-
-
-	S32 GraphicPipeline::GetConstantBufferSize(const U32 index)const
+	S32 GraphicPipeline::GetConstantBufferSize(const U32 resister)const
 	{
-		if (index < 0 || MAX_CONSTANT_BUFFER <= index)return -1;
-		return (m_ConstantBufferSizes[index] + 0xff) & ~0xff;
+		if (resister < 0 || MAX_REGISTER <= resister)return -1;
+		return (m_ConstantBufferSizes[resister] + 0xff) & ~0xff;
 	}
 
-	S32 GraphicPipeline::GetTextureNum()const
+	S32 GraphicPipeline::GetTextureNum(const U32 resister)const
 	{
-		return m_TextureNum;
+		if (resister < 0 || MAX_REGISTER <= resister)return -1;
+		return m_TextureNums[resister];
 	}
+
+	S32 GraphicPipeline::GetConstantBufferIndex(const U32 resister)const
+	{
+		if (resister < 0 || MAX_REGISTER <= resister)return -1;
+		return m_CRootParamIndices[resister];
+	}
+	S32 GraphicPipeline::GetTextureIndex(const U32 resister)const
+	{
+		if (resister < 0 || MAX_REGISTER <= resister)return -1;
+		return m_TRootParamIndices[resister];
+	}
+
+
+
 
 	ShaderVariableDesc GraphicPipeline::GetVariableData(const String& name)const
 	{
@@ -297,7 +313,6 @@ namespace og
 				elementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
 			}
 
-			//save element desc
 			m_InputLayout.push_back(elementDesc);
 		}
 
@@ -308,7 +323,7 @@ namespace og
 	{
 		if (CheckArgs(reflection))return -1;
 
-		D3D12_SHADER_DESC	shaderDesc;
+		D3D12_SHADER_DESC shaderDesc;
 		reflection->GetDesc(&shaderDesc);
 
 		for (U32 cBufIdx = 0; cBufIdx < shaderDesc.ConstantBuffers; cBufIdx++)
@@ -319,12 +334,11 @@ namespace og
 			D3D12_SHADER_BUFFER_DESC bufferDesc;
 			cbufferPtr->GetDesc(&bufferDesc);
 
-
 			D3D12_SHADER_INPUT_BIND_DESC inputDesc;
 			reflection->GetResourceBindingDescByName(bufferDesc.Name, &inputDesc);
 
 
-
+			// 定数バッファのサイズがより大きければ更新
 			U32 registerNum = inputDesc.BindPoint;
 			if (m_ConstantBufferSizes[registerNum] < bufferDesc.Size)
 			{
@@ -335,7 +349,7 @@ namespace og
 			for (UINT varIdx = 0; varIdx < bufferDesc.Variables; varIdx++)
 			{
 				auto variable = cbufferPtr->GetVariableByIndex(varIdx);
-				if (!variable)continue;
+				if (variable==nullptr)continue;
 
 				auto reflectionType = variable->GetType();
 
@@ -397,7 +411,7 @@ namespace og
 	{
 		if (CheckArgs(reflection))return -1;
 
-		D3D12_SHADER_DESC	shaderDesc;
+		D3D12_SHADER_DESC shaderDesc;
 		reflection->GetDesc(&shaderDesc);
 
 		for (U32 i = 0; i < shaderDesc.BoundResources; i++)
@@ -414,9 +428,9 @@ namespace og
 
 				m_Data[desc.Name] = vdesc;
 
-				if (m_TextureNum < vdesc.registerNum + 1)
+				if (m_TextureNums[desc.BindPoint] < desc.BindCount)
 				{
-					m_TextureNum = vdesc.registerNum + 1;
+					m_TextureNums[desc.BindPoint] = desc.BindCount;
 				}
 			}
 		}
@@ -475,8 +489,6 @@ namespace og
 				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_SINT;
 				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			}
-
-			//save element desc
 		}
 
 		return 0;

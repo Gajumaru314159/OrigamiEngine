@@ -126,7 +126,7 @@ namespace og
 
 		//===================================================================================//
 
-		virtual SPtr<IMaterial> CreateMaterial(const SPtr<IGraphicPipeline>& pipeline, const S32 mask = -1) = 0;
+		virtual SPtr<IMaterial> CreateMaterial(const SPtr<IGraphicPipeline>& pipeline, const S32 cBufferMask = -1,const S32 texMask=-1) = 0;
 
 		//===================================================================================//
 

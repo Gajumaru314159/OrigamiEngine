@@ -26,7 +26,6 @@ namespace og
 
 	SPtr<IRenderTexture> DX12Wrapper::CreateRenderTexture(const S32 width, const S32 height, const TextureFormat format)
 	{
-		HRESULT result;
 		ComPtr<ID3D12GraphicsCommandList> commandList = nullptr;
 
 		auto texture = MSPtr<RenderTexture>(ConvertTextureFormat(format), width, height);
@@ -61,12 +60,12 @@ namespace og
 	}
 
 
-	SPtr<IMaterial> DX12Wrapper::CreateMaterial(const SPtr<IGraphicPipeline>& pipeline, const S32 mask)
+	SPtr<IMaterial> DX12Wrapper::CreateMaterial(const SPtr<IGraphicPipeline>& pipeline, const S32 cBufferMask, const S32 texMask)
 	{
 		if (CheckArgs(!!pipeline))return nullptr;
 
 		// シェーダーパラメータの作成
-		auto material = MUPtr<Material>(pipeline, mask);
+		auto material = MUPtr<Material>(pipeline, cBufferMask, texMask);
 		if (material->IsValid() == false)return nullptr;
 
 		return material;

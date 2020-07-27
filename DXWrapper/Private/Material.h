@@ -23,17 +23,23 @@ namespace og
 		ComPtr<ID3D12DescriptorHeap> m_DescHeap;
 
 
+		ArrayList<S32> m_resisterIndices;
+
+
 		// 定数バッファマップ領域
 		S32 m_DataSize;
 		Byte* m_Data;
 		ArrayList<S32> m_StartOffsets;
+		ArrayList<S32> m_TextureNums;
 
 		bool m_IsChanged;
 		bool m_IsLocked;
-		S32 m_DescriptorNum;
+
+		const S32 m_cBufferMask;
+		const S32 m_texMask;
 
 	public:
-		Material(const SPtr<IGraphicPipeline>& gpipeline, const S32 mask = -1);
+		Material(const SPtr<IGraphicPipeline>& gpipeline, const S32 cBufferMask = -1,const S32 texMask=-1);
 
 		S32 SetMaterial(ComPtr<ID3D12GraphicsCommandList>& commandList);
 

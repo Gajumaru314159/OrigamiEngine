@@ -133,7 +133,7 @@ namespace og
 			cmdlists.push_back(ptr->GetCommandList());
 		}
 		cmdlists.push_back(m_CmdList.Get());
-		m_CmdQueue->ExecuteCommandLists(cmdlists.size(), cmdlists.data());
+		m_CmdQueue->ExecuteCommandLists((UINT)cmdlists.size(), cmdlists.data());
 		cmdlists.clear();
 
 
@@ -438,7 +438,7 @@ namespace og
 			}
 
 
-			m_material = CreateMaterial(m_graphicPipeline);
+			m_material = CreateMaterial(m_graphicPipeline,-1,-1);
 
 
 			// 描画用シェイプの作成

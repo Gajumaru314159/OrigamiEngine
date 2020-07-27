@@ -15,7 +15,7 @@ namespace og
 	class GraphicPipeline :public IGraphicPipeline
 	{
 	public:
-		static const S32 MAX_CONSTANT_BUFFER = 16;
+		static const S32 MAX_REGISTER = 32;
 	private:
 		// メインリソース
 		ComPtr<ID3D12PipelineState> m_PipelineState;
@@ -34,12 +34,21 @@ namespace og
 		ArrayList<String> m_InputLayoutNames;
 		ArrayList<D3D12_INPUT_ELEMENT_DESC> m_InputLayout;
 
+		// 変数定義マップ
 		HashMap<String, ShaderVariableDesc> m_Data;
-		U32 m_ConstantBufferSizes[MAX_CONSTANT_BUFFER];
-		S32 m_TextureNum;
+
+		// 定数バッファのレジスタごとのサイズ
+		U32 m_ConstantBufferSizes[MAX_REGISTER];
+		// テクスチャのレジスタごとの枚数
+		U32 m_TextureNums[MAX_REGISTER];
+
+
+		S32 m_CRootParamIndices[MAX_REGISTER];
+		S32 m_TRootParamIndices[MAX_REGISTER];
 
 	public:
 		GraphicPipeline(const GraphicPipelineDesc& desc);
+
 
 		/// <summary>
 		/// コマンドリストにこのグラフィックパイプラインを設定する
@@ -53,14 +62,17 @@ namespace og
 		/// </summary>
 		/// <param name="index">レジスタ番号</param>
 		/// <returns></returns>
-		S32 GetConstantBufferSize(const U32 index)const;
+		S32 GetConstantBufferSize(const U32 resister)const;
 
 		/// <summary>
-		/// 使用するテクスチャの枚数を取得
+		/// 指定したレジスタのテクスチャの枚数を取得
 		/// </summary>
 		///  <param name="index">レジスタ番号</param>
 		/// <returns>枚数</returns>
-		S32 GetTextureNum()const;
+		S32 GetTextureNum(const U32 resister)const;
+
+		S32 GetConstantBufferIndex(const U32 resister)const;
+		S32 GetTextureIndex(const U32 resister)const;
 
 		/// <summary>
 		/// シェーダー変数の情報を変数名から取得する
@@ -75,6 +87,7 @@ namespace og
 		/// <param name="dest">変数データの出力先のリスト</param>
 		/// <returns>　０：取得成功\n－１：取得失敗</returns>
 		const HashMap<String, ShaderVariableDesc>& GetShaderParamList()const;
+
 
 		/// <summary>
 		/// インスタンスの生成に成功しているか
