@@ -47,6 +47,9 @@
     <Filter Include="ソース ファイル\Texture\Texture">
       <UniqueIdentifier>{cb1c4736-d243-467f-b731-8ffce429c7c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\CommandBuffer">
+      <UniqueIdentifier>{cb2fb7b4-247c-4e92-b6b9-c40cc8b4a2e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Private\framework.h">
@@ -118,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="Private\Texture.h">
       <Filter>ソース ファイル\Texture\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\ICommandBuffer.h">
+      <Filter>ソース ファイル\CommandBuffer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
