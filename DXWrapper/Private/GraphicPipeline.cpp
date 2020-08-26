@@ -40,6 +40,7 @@ namespace og
 
 		// 頂点レイアウトを取得
 		if (ReflectInputLayout(vs->GetShaderBolb()) == -1)return;
+		//if (ReflectOutputLayout(ps->GetShaderBolb()) == -1)return;
 
 		// 定数バッファのリフレクション
 		if (desc.vs != nullptr)ReflectShader(vs->GetShaderBolb()); else return;
@@ -68,7 +69,7 @@ namespace og
 			if (m_texNums[i] == 0)continue;
 			m_texIndices[i] = (S32)descriptorRanges.size();
 			CD3DX12_DESCRIPTOR_RANGE dr;
-			dr.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, i);
+			dr.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, m_texNums[i], i);
 			descriptorRanges.push_back(dr);
 		}
 
@@ -107,7 +108,7 @@ namespace og
 
 		// ルートシグネチャの作成
 		result = DX12Wrapper::ms_device->CreateRootSignature(0,
-			rootSigBlob->GetBufferPointer(),rootSigBlob->GetBufferSize(),
+			rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(),
 			IID_PPV_ARGS(m_rootSignature.ReleaseAndGetAddressOf()));
 		if (FAILED(result))
 		{
@@ -132,7 +133,7 @@ namespace og
 		pipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 
 		pipelineStateDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-		if(desc.useWireframe)pipelineStateDesc.RasterizerState.FillMode = D3D12_FILL_MODE::D3D12_FILL_MODE_WIREFRAME;
+		if (desc.useWireframe)pipelineStateDesc.RasterizerState.FillMode = D3D12_FILL_MODE::D3D12_FILL_MODE_WIREFRAME;
 		else pipelineStateDesc.RasterizerState.FillMode = D3D12_FILL_MODE::D3D12_FILL_MODE_SOLID;
 		pipelineStateDesc.RasterizerState.MultisampleEnable = desc.useMultisample;
 
@@ -142,7 +143,7 @@ namespace og
 		case CullMode::FRONT:pipelineStateDesc.RasterizerState.CullMode = D3D12_CULL_MODE_FRONT; break;
 		case CullMode::BACK:pipelineStateDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK; break;
 		}
-		
+
 		// TODO 深度バッファ
 		pipelineStateDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 		pipelineStateDesc.DepthStencilState.DepthEnable = false; desc.useDepth;								//深度バッファを使うぞ
@@ -150,7 +151,7 @@ namespace og
 
 		pipelineStateDesc.InputLayout.pInputElementDescs = m_inputLayout.data();			//頂点レイアウト先頭アドレス
 		pipelineStateDesc.InputLayout.NumElements = (UINT)m_inputLayout.size();				//頂点レイアウトサイズ
-		
+
 		switch (desc.primitiveTopologyType)
 		{
 		case PrimitiveTopology::POINT:pipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
@@ -362,7 +363,7 @@ namespace og
 			for (UINT varIdx = 0; varIdx < bufferDesc.Variables; varIdx++)
 			{
 				auto variable = cbufferPtr->GetVariableByIndex(varIdx);
-				if (variable==nullptr)continue;
+				if (variable == nullptr)continue;
 
 				auto reflectionType = variable->GetType();
 
@@ -461,49 +462,8 @@ namespace og
 
 		D3D12_SHADER_DESC shaderDesc;
 		reflection->GetDesc(&shaderDesc);
-
-		m_inputLayoutNames.resize(shaderDesc.InputParameters);
-		for (U32 i = 0; i < shaderDesc.OutputParameters; i++)
-		{
-			D3D12_SIGNATURE_PARAMETER_DESC paramDesc;
-			reflection->GetOutputParameterDesc(i, &paramDesc);
-
-			m_inputLayoutNames[i] = paramDesc.SemanticName;
-
-			D3D12_INPUT_ELEMENT_DESC elementDesc;
-			elementDesc.SemanticName = m_inputLayoutNames[i].c_str();
-			elementDesc.SemanticIndex = paramDesc.SemanticIndex;
-			elementDesc.InputSlot = 0;
-			elementDesc.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-			elementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-			elementDesc.InstanceDataStepRate = 0;
-
-			if (paramDesc.Mask == 1)
-			{
-				if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32_UINT;
-				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32_SINT;
-				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32_FLOAT;
-			}
-			else if (paramDesc.Mask <= 3)
-			{
-				if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32G32_UINT;
-				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32G32_SINT;
-				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
-			}
-			else if (paramDesc.Mask <= 7)
-			{
-				if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32_UINT;
-				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32_SINT;
-				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			}
-			else if (paramDesc.Mask <= 15)
-			{
-				if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
-				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_SINT;
-				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			}
-		}
-
+		m_targetNum = shaderDesc.OutputParameters;
+		if (m_targetNum <= 0 || 8 <= shaderDesc.OutputParameters)return -1;
 		return 0;
 	}
 }

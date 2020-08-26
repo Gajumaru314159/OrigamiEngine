@@ -8,25 +8,60 @@
 #include "DX12Wrapper.h"
 namespace og
 {
-	RenderTexture::RenderTexture(const DXGI_FORMAT format, const U32 width, const U32 height,const bool useDepth)
+	RenderTexture::RenderTexture(const ArrayList<TextureFormat>& formats, const U32 width, const U32 height, const bool useDepth)
 	{
-		m_clearColor.Set(0.0f,0.0f,0.0f);
+		S32 targetNum = formats.size();
+		// レンダーターゲットの枚数が不正なら終了
+		if (targetNum <= 0 || 8 <= targetNum)return;
+
+		m_clearColor.Set(0.0f, 0.0f, 0.0f);
+
+
+		ArrayList<ComPtr<ID3D12Resource>> resources(targetNum);
+
 
 		HRESULT result;
-		ComPtr<ID3D12Resource> resource;
+		// RTVディスクリプタの生成
+		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+		heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+		heapDesc.NodeMask = 0;
+		heapDesc.NumDescriptors = targetNum;
+		heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
-		// メインリソースの生成
+		result = DX12Wrapper::ms_device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_rtvHeap.ReleaseAndGetAddressOf()));
+		if (FAILED(result))
 		{
-			// リソースの生成
+			return;
+		}
+		auto heapHandleRTV = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+
+		// SRVディスクリプタの生成
+		heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+
+		result = DX12Wrapper::ms_device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_srvHeap.ReleaseAndGetAddressOf()));
+		if (FAILED(result))
+		{
+			return;
+		}
+		auto heapHandleSRV = m_srvHeap->GetCPUDescriptorHandleForHeapStart();
+
+
+		const auto incSizeRTV = DX12Wrapper::ms_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		const auto incSizeSRV = DX12Wrapper::ms_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+		for (S32 i = 0; i < targetNum; i++)
+		{
+			auto format = ConvertTextureFormat(formats[i]);
+
+			// メインリソースの生成
 			{
 				auto texHeapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 				auto resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(format, width, height);
-
 				resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
 				float clearColor[4] = { 0.0,0.0,0.0,1.0 };
 				auto clearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM, clearColor);
-
 
 				result = DX12Wrapper::ms_device->CreateCommittedResource(
 					&texHeapProp,
@@ -34,7 +69,7 @@ namespace og
 					&resourceDesc,
 					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 					&clearValue,
-					IID_PPV_ARGS(resource.ReleaseAndGetAddressOf())
+					IID_PPV_ARGS(resources[i].ReleaseAndGetAddressOf())
 				);
 				if (FAILED(result))
 				{
@@ -42,54 +77,113 @@ namespace og
 				}
 			}
 
-
-			// RTVディスクリプタの生成
+			// レンダーターゲットビューの生成
 			{
-				D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-				heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-				heapDesc.NodeMask = 0;
-				heapDesc.NumDescriptors = 1;
-				heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-
-				result = DX12Wrapper::ms_device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_rtvHeap.ReleaseAndGetAddressOf()));
-				if (FAILED(result))
-				{
-					return;
-				}
-
-				// レンダーターゲットビューの生成
 				D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 				rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 				rtvDesc.Format = format;
 
-				DX12Wrapper::ms_device->CreateRenderTargetView(resource.Get(), &rtvDesc, m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+				DX12Wrapper::ms_device->CreateRenderTargetView(resources[i].Get(), &rtvDesc, heapHandleRTV);
+				heapHandleRTV.ptr += incSizeRTV;
 			}
 
-
-			// SRVディスクリプタの生成
+			// シェーダリソースビューの生成
 			{
-				D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-				heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-				heapDesc.NodeMask = 0;
-				heapDesc.NumDescriptors = 1;
-				heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-
-
-				result = DX12Wrapper::ms_device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_srvHeap.ReleaseAndGetAddressOf()));
-				if (FAILED(result))
-				{
-					return;
-				}
-
 				D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 				srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 				srvDesc.Format = format;
 				srvDesc.Texture2D.MipLevels = 1;
 				srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 
-				DX12Wrapper::ms_device->CreateShaderResourceView(m_resource.Get(), &srvDesc, m_srvHeap->GetCPUDescriptorHandleForHeapStart());
+				DX12Wrapper::ms_device->CreateShaderResourceView(resources[i].Get(), &srvDesc, heapHandleSRV);
+				heapHandleSRV.ptr += incSizeSRV;
 			}
 
+
+		}
+
+		//==============
+
+		{
+			//// メインリソースの生成
+			//{
+			//	// リソースの生成
+			//	for (auto& format : formats)
+			//	{
+			//		auto texHeapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+			//		auto resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(ConvertTextureFormat(format), width, height);
+
+			//		resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+			//		float clearColor[4] = { 0.0,0.0,0.0,1.0 };
+			//		auto clearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM, clearColor);
+
+
+			//		result = DX12Wrapper::ms_device->CreateCommittedResource(
+			//			&texHeapProp,
+			//			D3D12_HEAP_FLAG_NONE,
+			//			&resourceDesc,
+			//			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			//			&clearValue,
+			//			IID_PPV_ARGS(resource.ReleaseAndGetAddressOf())
+			//		);
+			//		if (FAILED(result))
+			//		{
+			//			return;
+			//		}
+
+
+			//	}
+
+
+			//	// RTVディスクリプタの生成
+			//	{
+			//		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+			//		heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+			//		heapDesc.NodeMask = 0;
+			//		heapDesc.NumDescriptors = 1;
+			//		heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+
+			//		result = DX12Wrapper::ms_device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_rtvHeap.ReleaseAndGetAddressOf()));
+			//		if (FAILED(result))
+			//		{
+			//			return;
+			//		}
+
+			//		// レンダーターゲットビューの生成
+			//		D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+			//		rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+			//		rtvDesc.Format = format;
+
+			//		DX12Wrapper::ms_device->CreateRenderTargetView(resource.Get(), &rtvDesc, m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+			//	}
+
+
+			//	// SRVディスクリプタの生成
+			//	{
+			//		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+			//		heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+			//		heapDesc.NodeMask = 0;
+			//		heapDesc.NumDescriptors = 1;
+			//		heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+
+
+			//		result = DX12Wrapper::ms_device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_srvHeap.ReleaseAndGetAddressOf()));
+			//		if (FAILED(result))
+			//		{
+			//			return;
+			//		}
+
+			//		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+			//		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			//		srvDesc.Format = format;
+			//		srvDesc.Texture2D.MipLevels = 1;
+			//		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+			//		DX12Wrapper::ms_device->CreateShaderResourceView(resource.Get(), &srvDesc, m_srvHeap->GetCPUDescriptorHandleForHeapStart());
+			//	}
+
+			//}
 		}
 
 		// デプスリソースの生成
@@ -140,9 +234,9 @@ namespace og
 		}
 
 
-		m_resource = resource;
+		m_resources = resources;
 
-		m_viewport = CD3DX12_VIEWPORT(m_resource.Get());
+		m_viewport = CD3DX12_VIEWPORT(m_resources[0].Get());
 		m_scissorrect = CD3DX12_RECT(0, 0, (U32)m_viewport.Width, (U32)m_viewport.Height);
 
 	}
@@ -168,19 +262,34 @@ namespace og
 	{
 		// 描画のための初期コマンドを記録
 		auto rtvHeapPointr = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
-		m_cmdList->OMSetRenderTargets(1, &rtvHeapPointr, false, &m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+		const S32 incSizeRTV = DX12Wrapper::ms_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvs[8];
+		for (S32 i = 0; i < m_resources.size(); i++)
+		{
+			rtvs[i] = rtvHeapPointr;
+			rtvHeapPointr.ptr += incSizeRTV;
+		}
 
-		m_cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_resource
-			.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET));
+		m_cmdList->OMSetRenderTargets(m_resources.size(), rtvs, false, &m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+
+		for (auto& resource : m_resources)
+		{
+			m_cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(resource.Get(),
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET));
+		}
 
 
 
 
 		auto rtvH = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+		const auto incSize = DX12Wrapper::ms_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 		float clearColor[] = { m_clearColor.r,m_clearColor.g,m_clearColor.b,m_clearColor.a };
-		m_cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
-		
+		for (S32 i = 0; i < m_resources.size(); i++)
+		{
+			m_cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
+			rtvH.ptr += incSize;
+		}
 		// TODO デプスのクリア
 		//m_cmdList->ClearDepthStencilView();
 
@@ -192,8 +301,12 @@ namespace og
 
 	S32 RenderTexture::EndDraw()
 	{
-		m_cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_resource
-			.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+
+		for (auto& resource : m_resources)
+		{
+			m_cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(resource.Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+		}
 		m_cmdList->Close();
 		DX12Wrapper::ms_renderTextureQueue.push_back(this);
 		return 0;
@@ -234,14 +347,14 @@ namespace og
 	{
 		// TODO Vector3Intを作る
 		if (IsValid() == false)return Vector3();
-		auto desc = m_resource->GetDesc();
+		auto desc = m_resources[0]->GetDesc();
 		return Vector3((F32)desc.Width, (F32)desc.Height, (F32)desc.DepthOrArraySize);
 	}
 
 	S32 RenderTexture::GetDimension()
 	{
 		if (IsValid() == false)return 0;
-		auto desc = m_resource->GetDesc();
+		auto desc = m_resources[0]->GetDesc();
 		return desc.Dimension;
 	}
 

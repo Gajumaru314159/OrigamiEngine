@@ -26,9 +26,16 @@ namespace og
 
 	SPtr<IRenderTexture> DX12Wrapper::CreateRenderTexture(const S32 width, const S32 height, const TextureFormat format)
 	{
-		ComPtr<ID3D12GraphicsCommandList> commandList = nullptr;
+		static ArrayList<TextureFormat> formats(1);
+		formats[0] = format;
+		return CreateRenderTexture(width, height, formats);
+	}
 
-		auto texture = MSPtr<RenderTexture>(ConvertTextureFormat(format), width, height);
+	SPtr<IRenderTexture> DX12Wrapper::CreateRenderTexture(const S32 width, const S32 height, const ArrayList<TextureFormat>& formats)
+	{
+		ComPtr<ID3D12GraphicsCommandList> commandList = nullptr;
+		ArrayList<TextureFormat> a = { TextureFormat::R16 };
+		auto texture = MSPtr<RenderTexture>(formats, width, height);
 		if (texture->IsValid() == false)return nullptr;
 		return texture;
 	}
@@ -76,32 +83,5 @@ namespace og
 		if (stribeSize <= 0)return nullptr;
 		auto shape = MSPtr<Shape>(stribeSize);
 		return shape;
-	}
-
-
-	//S32 DX12Wrapper::DrawShape(SPtr<IShape> shape)
-	//{
-	//	if (CheckArgs(!!shape))return -1;
-	//	auto ptr = dynamic_cast<Shape*>(shape.get());
-	//	return ptr->Draw(m_Dev, m_CmdList);
-	//}
-
-	// ここからプライベート関数
-	DXGI_FORMAT DX12Wrapper::ConvertTextureFormat(const TextureFormat format)const
-	{
-		switch (format)
-		{
-		case TextureFormat::RGBA32:		return DXGI_FORMAT_R32G32B32A32_FLOAT;//
-		case TextureFormat::RGBA16:		return DXGI_FORMAT_R16G16B16A16_UNORM;
-		case TextureFormat::RGBA8:		return DXGI_FORMAT_R8G8B8A8_UNORM;
-		case TextureFormat::RG8:		return DXGI_FORMAT_R8G8_SNORM;
-		case TextureFormat::R32:		return DXGI_FORMAT_R32_FLOAT;//
-		case TextureFormat::R16:		return DXGI_FORMAT_R16_UNORM;
-		case TextureFormat::R8:			return DXGI_FORMAT_R8_UNORM;
-		case TextureFormat::Depth:		return DXGI_FORMAT_D24_UNORM_S8_UINT;
-		case TextureFormat::RGB565:		return DXGI_FORMAT_B5G6R5_UNORM;
-		case TextureFormat::RGBA5551:	return DXGI_FORMAT_B5G5R5A1_UNORM;
-		}
-		return DXGI_FORMAT_UNKNOWN;
 	}
 }

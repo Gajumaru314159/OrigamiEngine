@@ -38,15 +38,18 @@ namespace og
 		const S32 m_cBufferMask;
 		const S32 m_texMask;
 
+
+		ArrayList<S32> m_targets;
+
 	public:
-		Material(const SPtr<IGraphicPipeline>& gpipeline, const S32 cBufferMask = -1,const S32 texMask=-1);
+		Material(const SPtr<IGraphicPipeline>& gpipeline, const S32 cBufferMask = -1, const S32 texMask = -1);
 
 		S32 SetMaterial(ComPtr<ID3D12GraphicsCommandList>& commandList);
 
 		S32 Lock()override;
 
 
-		S32 SetTexture(const String& name, const SPtr<ITexture>& texture)override;
+		S32 SetTexture(const String& name, const SPtr<ITexture>& texture, const S32 target)override;
 
 		S32 SetFloat4Param(const String& name, const Vector4& value)override;
 		S32 SetMatrixParam(const String& name, const Matrix& value)override;

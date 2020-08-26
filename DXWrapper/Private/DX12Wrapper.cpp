@@ -411,7 +411,7 @@ namespace og
 			vssrc.append("\n    return o;");
 			vssrc.append("\n}");
 			String pssrc;
-			pssrc.append("\nTexture2D<float4> tex:register(t0);");
+			pssrc.append("\nTexture2D tex:register(t0);");
 			pssrc.append("\nSamplerState smp:register(s0);");
 			pssrc.append("\nstruct Output {float4 pos:SV_POSITION;float2 uv:TEXCOORD;};");
 			pssrc.append("\nfloat4 PSMain(Output i) : SV_TARGET{");
@@ -440,7 +440,7 @@ namespace og
 			}
 
 
-			m_material = CreateMaterial(m_graphicPipeline,-1,-1);
+			m_material = CreateMaterial(m_graphicPipeline, -1, -1);
 
 
 			// 描画用シェイプの作成

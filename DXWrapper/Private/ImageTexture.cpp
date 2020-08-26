@@ -70,7 +70,7 @@ namespace og
 		);
 		if (FAILED(result))return;
 
-		m_resource = resource;
+		m_resources.push_back(resource);
 	}
 
 	/*

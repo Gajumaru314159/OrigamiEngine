@@ -56,19 +56,32 @@ int main()
 		pssrc.append("\nfloat4 PSMain(Output i) : SV_TARGET{");
 		pssrc.append("\n  return tex.Sample(smp,i.uv)*col;");
 		pssrc.append("\n}");
+		String pssrc2;
+		pssrc2.append("\nTexture2D<float4> tex:register(t0);");
+		pssrc2.append("\nSamplerState smp:register(s0);");
+		pssrc2.append("\ncbuffer Data0 : register(b0) {matrix mat;};");
+		pssrc2.append("\ncbuffer Data1 : register(b1) {float4 col;};");
+		pssrc2.append("\nstruct po{float4 col:SV_TARGET0;float4 normal:SV_TARGET1;};");
+		pssrc2.append("\nstruct Output {float4 pos:SV_POSITION;float2 uv:TEXCOORD;};");
+		pssrc2.append("\po PSMain(Output i) : SV_TARGET{");
+		pssrc2.append("\   po p;p.col=tex.Sample(smp,i.uv);p.normal=p.col*col;");
+		pssrc2.append("\n  return p;");
+		pssrc2.append("\n}");
 
 		og::GraphicPipelineDesc desc;
 
+
+
 		desc.vs = gapi->CreateShader(vssrc, og::ShaderType::VERTEX, errorDest);
-		desc.ps = gapi->CreateShader(pssrc, og::ShaderType::PIXEL, errorDest);
-		desc.numRenderTargets = 1;
+		desc.ps = gapi->CreateShader(pssrc2, og::ShaderType::PIXEL, errorDest);
+		desc.numRenderTargets = 2;
 		auto gp = gapi->CreateGraphicPipeline(desc);
 
 
 
 
 		auto mat = gapi->CreateMaterial(gp);
-		auto mat2 = gapi->CreateMaterial(gp,1,0);
+		auto mat2 = gapi->CreateMaterial(gp, 1, 0);
 		auto tex = gapi->LoadTexture(Path(TC("test.png")));
 		auto tex2 = gapi->LoadTexture(Path(TC("test2.png")));
 
@@ -89,12 +102,12 @@ int main()
 		shape->Indices(indices, 12);
 
 
-		auto rt = gapi->CreateRenderTexture(1280, 720, og::TextureFormat::RGBA8);
+		auto rt = gapi->CreateRenderTexture(1280, 720, { og::TextureFormat::RGBA8,og::TextureFormat::RGBA8 });
 
 
 
 		mat->SetTexture(TC("tex"), tex);
-		mat->SetFloat4Param(TC("col"), Vector4(1.0f,1.0f,0.5f,1.0f));
+		mat->SetFloat4Param(TC("col"), Vector4(1.0f, 1.0f, 0.5f, 1.0f));
 
 		F32 t = 0;
 		while (gapi->SwapScreen(rt) == 0)

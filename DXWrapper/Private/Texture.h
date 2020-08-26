@@ -9,16 +9,19 @@ namespace og
 	class Texture :public ITexture
 	{
 	protected:
-		ComPtr<ID3D12Resource> m_resource;
+		ArrayList<ComPtr<ID3D12Resource>> m_resources;
 		ComPtr<ID3D12DescriptorHeap> m_srvHeap;
 	public:
 
-		S32 CreateShaderResourceView(D3D12_CPU_DESCRIPTOR_HANDLE& handle);
+		S32 CreateShaderResourceView(D3D12_CPU_DESCRIPTOR_HANDLE& handle, const S32 target = 0);
 
-		inline bool IsValid()const { return m_resource != nullptr; }
+		inline bool IsValid()const { return m_resources.empty() == false; }
 
 
 		virtual Vector3 GetSize()override;
 		virtual S32 GetDimension()override;
+
+
+		DXGI_FORMAT ConvertTextureFormat(const TextureFormat format)const;
 	};
 }

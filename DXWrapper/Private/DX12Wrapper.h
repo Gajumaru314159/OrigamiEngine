@@ -34,6 +34,7 @@ namespace og
 		//===================================================================================//
 
 		SPtr<IRenderTexture> CreateRenderTexture(const S32 width, const S32 height, const TextureFormat format)override;
+		SPtr<IRenderTexture> CreateRenderTexture(const S32 width, const S32 height, const ArrayList<TextureFormat>& formats)override;
 		SPtr<ITexture> LoadTexture(const Path& path, const bool async) override;
 
 		//===================================================================================//
@@ -66,7 +67,6 @@ namespace og
 		HRESULT CreateFence();
 		S32 CreateDefaultAssets();
 
-		DXGI_FORMAT ConvertTextureFormat(const TextureFormat format)const;
 	private:
 #pragma region
 		// ウィンドウ関係

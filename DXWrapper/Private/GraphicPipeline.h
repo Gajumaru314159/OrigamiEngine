@@ -46,6 +46,9 @@ namespace og
 		S32 m_cBufIndices[MAX_REGISTER];
 		S32 m_texIndices[MAX_REGISTER];
 
+		// レンダーターゲットの枚数
+		S32 m_targetNum;
+
 	public:
 		GraphicPipeline(const GraphicPipelineDesc& desc);
 

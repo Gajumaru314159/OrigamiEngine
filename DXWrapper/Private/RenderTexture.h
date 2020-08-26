@@ -25,12 +25,12 @@ namespace og
 
 		D3D12_VIEWPORT m_viewport;         //ビューポート
 		D3D12_RECT m_scissorrect;          //シザー矩形
-		
+
 
 		Color m_clearColor;
 
 	public:
-		RenderTexture(const DXGI_FORMAT format, const U32 width, const U32 height,const bool useDepht=true);
+		RenderTexture(const ArrayList<TextureFormat>& formats, const U32 width, const U32 height, const bool useDepht = true);
 
 
 		ID3D12GraphicsCommandList* GetCommandList();

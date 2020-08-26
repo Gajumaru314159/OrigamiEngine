@@ -13,8 +13,8 @@
 
 namespace og
 {
-	Material::Material(const SPtr<IGraphicPipeline>& gpipeline, const S32 cBufferMask, const S32 texMask) 
-		:m_cBufferMask(cBufferMask),m_texMask(texMask)
+	Material::Material(const SPtr<IGraphicPipeline>& gpipeline, const S32 cBufferMask, const S32 texMask)
+		:m_cBufferMask(cBufferMask), m_texMask(texMask)
 	{
 		if (CheckArgs(!!gpipeline))return;
 		auto pipelinePtr = reinterpret_cast<GraphicPipeline*>(gpipeline.get());
@@ -25,17 +25,18 @@ namespace og
 		// 確保する定数バッファのサイズを計算
 		m_dataSize = 0;
 		m_startOffsets.resize(GraphicPipeline::MAX_REGISTER);
+		m_targets.resize(GraphicPipeline::MAX_REGISTER);
 		for (U32 i = 0; i < GraphicPipeline::MAX_REGISTER; i++)
 		{
 			S32 monoBufferSize = pipelinePtr->GetConstantBufferSize(i);
 			if (monoBufferSize <= 0 || (m_cBufferMask & (1 << i)) == 0)
 			{
-				m_startOffsets[i]=-1;
+				m_startOffsets[i] = -1;
 			}
 			else
 			{
 				m_resisterIndices.push_back(pipelinePtr->GetConstantBufferIndex(i));
-				m_startOffsets[i]= m_dataSize;
+				m_startOffsets[i] = m_dataSize;
 				m_dataSize += monoBufferSize;
 			}
 		}
@@ -146,7 +147,7 @@ namespace og
 			}
 
 			auto ptr = dynamic_cast<Texture*>(m_textureList[i].get());
-			ptr->CreateShaderResourceView(descHeapH);
+			ptr->CreateShaderResourceView(descHeapH, m_targets[i]);
 		}
 
 		return 0;
@@ -195,7 +196,7 @@ namespace og
 
 
 
-	S32 Material::SetTexture(const String& name, const SPtr<ITexture>& texture)
+	S32 Material::SetTexture(const String& name, const SPtr<ITexture>& texture, const S32 target)
 	{
 		if (!IsValid())return -1;
 		if (CheckArgs(!!texture))return -1;
@@ -210,10 +211,11 @@ namespace og
 		}
 
 		// 変更なしなら何もしない
-		if (m_textureList[varData.registerNum]==texture)return 0;
-		if (m_textureNums[varData.registerNum]==0)return -1;
+		if (m_textureList[varData.registerNum] == texture)return 0;
+		if (m_textureNums[varData.registerNum] == 0)return -1;
 
 		m_textureListBuffer[varData.registerNum] = texture;
+		m_targets[varData.registerNum] = target;
 		m_isChanged = true;
 		return 0;
 	}
